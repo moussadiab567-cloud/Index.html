@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <!-- iOS & Mobile Viewport Configuration -->
@@ -37,6 +37,20 @@
       --accent-orange: #ff9f0a;
       --accent-purple: #bf5af2;
       --nav-bg: rgba(18, 18, 20, 0.88);
+      --input-bg: #000000;
+      --modal-overlay: rgba(0, 0, 0, 0.8);
+      --ease-ios: cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    [data-theme="light"] {
+      --bg: #f2f2f7;
+      --card-bg: #ffffff;
+      --card-border: #e5e5ea;
+      --text: #000000;
+      --subtext: #8e8e93;
+      --nav-bg: rgba(249, 249, 249, 0.88);
+      --input-bg: #e5e5ea;
+      --modal-overlay: rgba(0, 0, 0, 0.4);
     }
 
     * {
@@ -55,6 +69,13 @@
       flex-direction: column;
       height: 100vh;
       overflow: hidden;
+      transition: background-color 0.3s var(--ease-ios), color 0.3s var(--ease-ios);
+    }
+
+    /* --- Performance Optimizations & Animations --- */
+    .smooth-transition {
+      transition: all 0.25s var(--ease-ios);
+      will-change: transform, opacity;
     }
 
     /* --- Update Banner --- */
@@ -88,6 +109,7 @@
       position: sticky;
       top: 0;
       z-index: 10;
+      transition: background-color 0.3s var(--ease-ios);
     }
 
     .header-top {
@@ -114,7 +136,7 @@
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      background-color: #222226;
+      background-color: var(--card-border);
       border: 1px solid var(--card-border);
       color: var(--text);
       display: flex;
@@ -124,7 +146,10 @@
       font-size: 0.85rem;
       cursor: pointer;
       overflow: hidden;
+      transition: transform 0.15s var(--ease-ios);
     }
+
+    .user-avatar-btn:active { transform: scale(0.92); }
 
     .user-avatar-btn img {
       width: 100%;
@@ -141,7 +166,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: transform 0.15s var(--ease-ios), color 0.2s ease;
     }
+
+    .icon-btn:active { transform: scale(0.88); }
 
     .date-subtitle {
       font-size: 0.85rem;
@@ -155,14 +183,21 @@
       padding: 0.5rem 1rem calc(6rem + env(safe-area-inset-bottom));
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
+      transform: translateZ(0); /* Hardware acceleration */
     }
 
-    .view { display: none; }
-    .view.active { display: block; animation: fadeIn 0.25s ease-out; }
+    .view {
+      display: none;
+      opacity: 0;
+      transform: scale(0.98) translateY(8px);
+      transition: opacity 0.25s var(--ease-ios), transform 0.25s var(--ease-ios);
+      will-change: opacity, transform;
+    }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
+    .view.active {
+      display: block;
+      opacity: 1;
+      transform: scale(1) translateY(0);
     }
 
     .section-title {
@@ -180,6 +215,7 @@
       border-radius: 16px;
       padding: 1.25rem;
       margin-bottom: 1rem;
+      transition: background-color 0.3s var(--ease-ios), border-color 0.3s var(--ease-ios);
     }
 
     /* --- Bottom Navigation --- */
@@ -196,6 +232,7 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       z-index: 100;
+      transition: background-color 0.3s var(--ease-ios), border-color 0.3s var(--ease-ios);
     }
 
     .nav-item {
@@ -208,8 +245,10 @@
       cursor: pointer;
       gap: 4px;
       position: relative;
+      transition: color 0.2s ease, transform 0.15s var(--ease-ios);
     }
 
+    .nav-item:active { transform: scale(0.9); }
     .nav-item.active { color: var(--accent-pink); }
     .nav-item .material-icons-round { font-size: 1.3rem; }
     .nav-item span.label { font-size: 0.6rem; font-weight: 600; }
@@ -230,8 +269,8 @@
       position: fixed;
       bottom: calc(5rem + env(safe-area-inset-bottom));
       right: 1.25rem;
-      background-color: #ffffff;
-      color: #000000;
+      background-color: var(--text);
+      color: var(--bg);
       border: none;
       width: 54px;
       height: 54px;
@@ -241,12 +280,13 @@
       justify-content: center;
       font-size: 1.8rem;
       cursor: pointer;
-      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.25);
+      box-shadow: 0 4px 20px var(--modal-overlay);
       z-index: 90;
-      transition: transform 0.15s ease;
+      transition: transform 0.2s var(--ease-ios), background-color 0.3s ease;
+      will-change: transform;
     }
 
-    #fab:active { transform: scale(0.92); }
+    #fab:active { transform: scale(0.88); }
 
     /* --- Timetable View --- */
     .week-scroller {
@@ -265,12 +305,15 @@
       text-align: center;
       min-width: 58px;
       cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s var(--ease-ios);
     }
 
+    .day-chip:active { transform: scale(0.94); }
+
     .day-chip.active {
-      background-color: #ffffff;
-      border-color: #ffffff;
-      color: #000000;
+      background-color: var(--text);
+      border-color: var(--text);
+      color: var(--bg);
     }
 
     .day-chip .day-name { font-size: 0.8rem; font-weight: 700; }
@@ -286,6 +329,7 @@
       border-radius: 14px;
       padding: 1rem 1.25rem;
       margin-bottom: 0.75rem;
+      transition: background-color 0.3s var(--ease-ios);
     }
 
     .subject-left { display: flex; align-items: center; gap: 12px; }
@@ -294,7 +338,7 @@
     .subject-meta { font-size: 0.75rem; color: var(--subtext); }
 
     .counter-btn {
-      background-color: #222226;
+      background-color: var(--card-border);
       border: none;
       color: var(--text);
       width: 32px;
@@ -303,7 +347,10 @@
       cursor: pointer;
       font-size: 1.1rem;
       font-weight: 600;
+      transition: transform 0.15s var(--ease-ios);
     }
+
+    .counter-btn:active { transform: scale(0.9); }
 
     .grade-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
     .grade-card { background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 1rem; text-align: center; }
@@ -312,9 +359,9 @@
 
     /* --- Tasks View --- */
     .tab-bar { display: flex; border-bottom: 1px solid var(--card-border); margin-bottom: 1.25rem; }
-    .tab-btn { flex: 1; text-align: center; padding: 0.75rem 0; font-size: 0.9rem; font-weight: 600; color: var(--subtext); background: none; border: none; cursor: pointer; position: relative; }
+    .tab-btn { flex: 1; text-align: center; padding: 0.75rem 0; font-size: 0.9rem; font-weight: 600; color: var(--subtext); background: none; border: none; cursor: pointer; position: relative; transition: color 0.2s ease; }
     .tab-btn.active { color: var(--text); }
-    .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 20%; width: 60%; height: 2px; background-color: var(--accent-pink); }
+    .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 20%; width: 60%; height: 2px; background-color: var(--accent-pink); transition: background-color 0.3s ease; }
 
     .task-card {
       background-color: var(--card-bg);
@@ -325,6 +372,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      transition: background-color 0.3s var(--ease-ios), opacity 0.2s ease;
     }
     .task-card.completed { opacity: 0.5; text-decoration: line-through; }
 
@@ -332,14 +380,16 @@
     .attendance-header { display: flex; align-items: center; gap: 20px; }
     .progress-circle {
       width: 80px; height: 80px; border-radius: 50%;
-      background: conic-gradient(var(--accent-pink) var(--progress, 0%), #222226 var(--progress, 0%));
+      background: conic-gradient(var(--accent-pink) var(--progress, 0%), var(--card-border) var(--progress, 0%));
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      transition: background 0.4s var(--ease-ios);
     }
-    .inner-circle { width: 64px; height: 64px; border-radius: 50%; background-color: var(--card-bg); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; }
+    .inner-circle { width: 64px; height: 64px; border-radius: 50%; background-color: var(--card-bg); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; transition: background-color 0.3s var(--ease-ios); }
     .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
     .day-header { text-align: center; font-size: 0.7rem; color: var(--subtext); font-weight: 600; padding-bottom: 4px; }
-    .cal-day { aspect-ratio: 1; background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; cursor: pointer; color: var(--text); }
+    .cal-day { aspect-ratio: 1; background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; cursor: pointer; color: var(--text); transition: transform 0.15s var(--ease-ios); }
+    .cal-day:active:not(.empty) { transform: scale(0.88); }
     .cal-day.empty { background: none; border: none; cursor: default; }
     .cal-day.present { background-color: rgba(48, 209, 88, 0.2); color: var(--accent-green); border-color: var(--accent-green); }
     .cal-day.absent { background-color: rgba(255, 55, 95, 0.2); color: var(--accent-pink); border-color: var(--accent-pink); }
@@ -350,8 +400,112 @@
       width: 100%; background-color: var(--card-bg); border: 1px solid var(--card-border);
       color: var(--text); padding: 1rem; border-radius: 14px; font-size: 0.95rem; font-weight: 600;
       display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-bottom: 0.75rem;
+      transition: background-color 0.2s ease, transform 0.15s var(--ease-ios);
     }
-    .settings-btn:active { background-color: #1a1a1e; }
+    .settings-btn:active { transform: scale(0.98); background-color: var(--card-border); }
+
+    /* Theme Option Selector Grid */
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .theme-option {
+      background-color: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 14px;
+      padding: 0.8rem 0.5rem;
+      text-align: center;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      transition: border-color 0.2s ease, transform 0.15s var(--ease-ios);
+    }
+
+    .theme-option:active { transform: scale(0.94); }
+    .theme-option.active { border-color: var(--accent-pink); color: var(--accent-pink); }
+
+    /* Color Swatch Selection */
+    .accent-grid {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .accent-swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.15s var(--ease-ios), border-color 0.2s ease;
+    }
+
+    .accent-swatch:active { transform: scale(0.85); }
+    .accent-swatch.active { border-color: var(--text); transform: scale(1.1); }
+
+    /* Switch Rows for Notifications */
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 0.85rem 1rem;
+      border-radius: 14px;
+      margin-bottom: 0.75rem;
+    }
+
+    .switch-row span.label-text {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    /* iOS Style Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 28px;
+    }
+
+    .switch input { opacity: 0; width: 0; height: 0; }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--card-border);
+      transition: .25s var(--ease-ios);
+      border-radius: 28px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #ffffff;
+      transition: .25s var(--ease-ios);
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    input:checked + .slider { background-color: var(--accent-green); }
+    input:checked + .slider:before { transform: translateX(20px); }
 
     /* --- Google & Auth Custom Styling --- */
     .google-btn {
@@ -369,7 +523,10 @@
       gap: 10px;
       cursor: pointer;
       margin-bottom: 1rem;
+      transition: transform 0.15s var(--ease-ios);
     }
+
+    .google-btn:active { transform: scale(0.97); }
     
     .divider-line {
       display: flex;
@@ -390,25 +547,40 @@
     /* --- Modals --- */
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(0, 0, 0, 0.8);
+      background-color: var(--modal-overlay);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       display: none; align-items: center; justify-content: center;
       z-index: 200; padding: 1rem;
+      animation: fadeIn 0.2s var(--ease-ios);
     }
+
     .modal {
       background-color: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 18px; width: 100%; max-width: 400px; padding: 1.5rem;
+      box-shadow: 0 10px 30px var(--modal-overlay);
+      animation: scaleUp 0.25s var(--ease-ios);
     }
+
+    @keyframes scaleUp {
+      from { opacity: 0; transform: scale(0.92); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
     .modal h3 { margin-bottom: 1rem; font-size: 1.2rem; }
     .modal input, .modal select {
-      width: 100%; padding: 0.75rem; background-color: #000000;
+      width: 100%; padding: 0.75rem; background-color: var(--input-bg);
       border: 1px solid var(--card-border); border-radius: 10px;
       color: var(--text); font-size: 0.95rem; margin-bottom: 0.8rem;
+      outline: none;
     }
+
     .modal-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 0.5rem; }
-    .btn { padding: 0.6rem 1.2rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; }
-    .btn-primary { background-color: #ffffff; color: #000000; }
-    .btn-cancel { background-color: #222226; color: var(--subtext); }
+    .btn { padding: 0.6rem 1.2rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: transform 0.15s var(--ease-ios); }
+    .btn:active { transform: scale(0.94); }
+    .btn-primary { background-color: var(--text); color: var(--bg); }
+    .btn-cancel { background-color: var(--card-border); color: var(--subtext); }
   </style>
 </head>
 <body>
@@ -502,7 +674,7 @@
       <p style="text-align: center; font-size: 0.75rem; color: var(--subtext);">Tap a day to toggle: Present → Absent → Holiday → Clear</p>
     </div>
 
-    <!-- 5. Settings & Updates View -->
+    <!-- 5. Settings, Appearance, Notifications & Updates View -->
     <div id="viewUpdates" class="view">
       
       <!-- Account & Cloud Backup Card -->
@@ -521,6 +693,67 @@
           <button class="btn btn-cancel" id="accountSignOutBtn" onclick="signOutUser()" style="display:none;">Sign Out</button>
         </div>
       </div>
+
+      <!-- Appearance Customization Section -->
+      <p class="section-title">Appearance Options</p>
+
+      <div class="theme-grid">
+        <div class="theme-option" id="themeDarkBtn" onclick="setThemeMode('dark')">
+          <span class="material-icons-round">dark_mode</span>
+          <span>Dark</span>
+        </div>
+        <div class="theme-option" id="themeLightBtn" onclick="setThemeMode('light')">
+          <span class="material-icons-round">light_mode</span>
+          <span>Light</span>
+        </div>
+        <div class="theme-option" id="themeSystemBtn" onclick="setThemeMode('system')">
+          <span class="material-icons-round">settings_brightness</span>
+          <span>System</span>
+        </div>
+      </div>
+
+      <div class="accent-grid">
+        <div class="accent-swatch" style="background-color: #ff375f;" onclick="setAccentColor('#ff375f')" id="accentPink"></div>
+        <div class="accent-swatch" style="background-color: #0a84ff;" onclick="setAccentColor('#0a84ff')" id="accentBlue"></div>
+        <div class="accent-swatch" style="background-color: #30d158;" onclick="setAccentColor('#30d158')" id="accentGreen"></div>
+        <div class="accent-swatch" style="background-color: #bf5af2;" onclick="setAccentColor('#bf5af2')" id="accentPurple"></div>
+        <div class="accent-swatch" style="background-color: #ff9f0a;" onclick="setAccentColor('#ff9f0a')" id="accentOrange"></div>
+      </div>
+
+      <!-- Notifications Settings Section -->
+      <p class="section-title">Notification Options</p>
+
+      <div class="switch-row">
+        <span class="label-text">Enable Notifications</span>
+        <label class="switch">
+          <input type="checkbox" id="notifMasterToggle" onchange="handleNotificationToggle(this.checked)" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="switch-row">
+        <span class="label-text">Daily Study Reminders</span>
+        <label class="switch">
+          <input type="checkbox" id="notifReminderToggle" onchange="updateSubNotifSetting('reminders', this.checked)" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="switch-row">
+        <span class="label-text">Task Due Date Alerts</span>
+        <label class="switch">
+          <input type="checkbox" id="notifAlertsToggle" onchange="updateSubNotifSetting('dueDateAlerts', this.checked)" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <button class="settings-btn" onclick="sendTestNotification()">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="material-icons-round" style="color: var(--accent-purple);">notifications_active</span>
+          <span>Send Test Notification</span>
+        </div>
+        <span class="material-icons-round" style="color: var(--subtext);">chevron_right</span>
+      </button>
 
       <p class="section-title">Cloud Backup & Sync</p>
 
@@ -591,8 +824,8 @@
     </button>
     <button class="nav-item" onclick="switchMainView(this, 'Updates')">
       <div class="nav-badge" id="updateBadge"></div>
-      <span class="material-icons-round">system_update</span>
-      <span class="label">Updates</span>
+      <span class="material-icons-round">tune</span>
+      <span class="label">Settings</span>
     </button>
   </nav>
 
@@ -615,7 +848,7 @@
   <div class="modal-overlay" id="authModalOverlay">
     <div class="modal">
       <h3 id="authTitle" style="text-align: center;">Sign In to StudyFlow</h3>
-      <p style="font-size:0.8rem; color:var(--subtext); text-align:center; margin-bottom:1.2rem;">Back up your timetable, subjects, and tasks across all devices.</p>
+      <p style="font-size:0.8rem; color:var(--subtext); text-align:center; margin-bottom:1.2rem;">Back up your timetable, subjects, and settings across all devices.</p>
       
       <!-- Google Sign In Button -->
       <button class="google-btn" onclick="loginWithGoogle()">
@@ -658,7 +891,7 @@
     let currentUser = null;
 
     // --- APP VERSION CONTROL ---
-    const APP_VERSION = "1.2.0";
+    const APP_VERSION = "1.3.0";
 
     // Prevent internal iOS standalone links from opening in browser Safari
     (function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^http/;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.href)&&d.parentNode)d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone");
@@ -672,13 +905,21 @@
     let store = {
       subjects: JSON.parse(localStorage.getItem('sf_subjects')) || [],
       attendance: JSON.parse(localStorage.getItem('sf_attendance')) || {},
-      tasks: JSON.parse(localStorage.getItem('sf_tasks')) || []
+      tasks: JSON.parse(localStorage.getItem('sf_tasks')) || [],
+      settings: JSON.parse(localStorage.getItem('sf_settings')) || {
+        themeMode: 'dark', // 'dark' | 'light' | 'system'
+        accentColor: '#ff375f',
+        notifications: false,
+        reminders: true,
+        dueDateAlerts: true
+      }
     };
 
     function saveStore() {
       localStorage.setItem('sf_subjects', JSON.stringify(store.subjects));
       localStorage.setItem('sf_attendance', JSON.stringify(store.attendance));
       localStorage.setItem('sf_tasks', JSON.stringify(store.tasks));
+      localStorage.setItem('sf_settings', JSON.stringify(store.settings));
       renderCurrentView();
 
       // Automatically sync to Firebase Cloud if user is logged in
@@ -692,6 +933,133 @@
       const mo = String(d.getMonth() + 1).padStart(2, '0');
       const da = String(d.getDate()).padStart(2, '0');
       return `${yr}-${mo}-${da}`;
+    }
+
+    // --- APPEARANCE & THEME ENGINE ---
+    function initAppearance() {
+      applyThemeMode(store.settings.themeMode || 'dark');
+      applyAccentColor(store.settings.accentColor || '#ff375f');
+      updateAppearanceUI();
+
+      // System color scheme change listener
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if (store.settings.themeMode === 'system') {
+          document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+        }
+      });
+    }
+
+    function setThemeMode(mode) {
+      store.settings.themeMode = mode;
+      applyThemeMode(mode);
+      saveStore();
+      updateAppearanceUI();
+    }
+
+    function applyThemeMode(mode) {
+      if (mode === 'system') {
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+      } else {
+        document.documentElement.setAttribute('data-theme', mode);
+      }
+    }
+
+    function setAccentColor(color) {
+      store.settings.accentColor = color;
+      applyAccentColor(color);
+      saveStore();
+      updateAppearanceUI();
+    }
+
+    function applyAccentColor(color) {
+      document.documentElement.style.setProperty('--accent-pink', color);
+    }
+
+    function updateAppearanceUI() {
+      // Update Theme buttons
+      ['dark', 'light', 'system'].forEach(m => {
+        const el = document.getElementById(`theme${m.charAt(0).toUpperCase() + m.slice(1)}Btn`);
+        if (el) {
+          if (store.settings.themeMode === m) el.classList.add('active');
+          else el.classList.remove('active');
+        }
+      });
+
+      // Update Swatches
+      const swatches = {
+        '#ff375f': 'accentPink',
+        '#0a84ff': 'accentBlue',
+        '#30d158': 'accentGreen',
+        '#bf5af2': 'accentPurple',
+        '#ff9f0a': 'accentOrange'
+      };
+
+      Object.keys(swatches).forEach(hex => {
+        const el = document.getElementById(swatches[hex]);
+        if (el) {
+          if (store.settings.accentColor === hex) el.classList.add('active');
+          else el.classList.remove('active');
+        }
+      });
+    }
+
+    // --- NOTIFICATIONS SYSTEM ---
+    function initNotificationsUI() {
+      const masterToggle = document.getElementById('notifMasterToggle');
+      const reminderToggle = document.getElementById('notifReminderToggle');
+      const alertsToggle = document.getElementById('notifAlertsToggle');
+
+      if (masterToggle) masterToggle.checked = !!store.settings.notifications;
+      if (reminderToggle) reminderToggle.checked = store.settings.reminders !== false;
+      if (alertsToggle) alertsToggle.checked = store.settings.dueDateAlerts !== false;
+    }
+
+    async function handleNotificationToggle(enabled) {
+      if (enabled) {
+        if (!("Notification" in window)) {
+          alert("Web Notifications are not supported on this device/browser.");
+          document.getElementById('notifMasterToggle').checked = false;
+          store.settings.notifications = false;
+          saveStore();
+          return;
+        }
+
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          store.settings.notifications = true;
+          sendWebNotification('Notifications Activated 🔔', 'StudyFlow will keep you posted on your schedule and tasks!');
+        } else {
+          alert("Notification permissions were denied in your browser settings.");
+          document.getElementById('notifMasterToggle').checked = false;
+          store.settings.notifications = false;
+        }
+      } else {
+        store.settings.notifications = false;
+      }
+      saveStore();
+    }
+
+    function updateSubNotifSetting(key, enabled) {
+      store.settings[key] = enabled;
+      saveStore();
+    }
+
+    function sendWebNotification(title, body) {
+      if ("Notification" in window && Notification.permission === "granted" && store.settings.notifications) {
+        new Notification(title, {
+          body: body,
+          icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' style='background:%23000000'><rect width='512' height='512' fill='%23000000'/><path fill='%23ff375f' d='M256 120c-70 0-128 58-128 128s58 128 128 128 128-58 128-128-58-128-128-128zm0 216c-48.5 0-88-39.5-88-88s39.5-88 88-88 88 39.5 88 88-39.5 88-88 88z'/><circle cx='256' cy='248' r='48' fill='%230a84ff'/></svg>"
+        });
+      }
+    }
+
+    function sendTestNotification() {
+      if (!store.settings.notifications) {
+        alert("Please turn on 'Enable Notifications' first!");
+        return;
+      }
+      sendWebNotification('StudyFlow Test Notification 📚', 'Everything is working smoothly!');
     }
 
     // --- AUTHENTICATION & CLOUD SYNC LOGIC ---
@@ -818,10 +1186,19 @@
       try {
         const doc = await db.collection('users').doc(currentUser.uid).get();
         if (doc.exists && doc.data().store) {
-          store = doc.data().store;
-          localStorage.setItem('sf_subjects', JSON.stringify(store.subjects || []));
-          localStorage.setItem('sf_attendance', JSON.stringify(store.attendance || {}));
-          localStorage.setItem('sf_tasks', JSON.stringify(store.tasks || []));
+          const cloudStore = doc.data().store;
+          store.subjects = cloudStore.subjects || [];
+          store.attendance = cloudStore.attendance || {};
+          store.tasks = cloudStore.tasks || [];
+          if (cloudStore.settings) store.settings = cloudStore.settings;
+
+          localStorage.setItem('sf_subjects', JSON.stringify(store.subjects));
+          localStorage.setItem('sf_attendance', JSON.stringify(store.attendance));
+          localStorage.setItem('sf_tasks', JSON.stringify(store.tasks));
+          localStorage.setItem('sf_settings', JSON.stringify(store.settings));
+          
+          initAppearance();
+          initNotificationsUI();
           renderCurrentView();
         } else {
           // Push initial local data to cloud
@@ -871,7 +1248,8 @@
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
 
       btn.classList.add('active');
-      document.getElementById(`view${viewName}`).classList.add('active');
+      const targetView = document.getElementById(`view${viewName}`);
+      targetView.classList.add('active');
       activeView = viewName;
 
       if (viewName === 'Lessons') document.getElementById('appHeading').textContent = 'Subjects & Grades';
@@ -1120,13 +1498,28 @@
     function clearAllData() {
       if (confirm("Reset all local data back to 0?")) {
         localStorage.clear();
-        store = { subjects: [], attendance: {}, tasks: [] };
+        store = {
+          subjects: [],
+          attendance: {},
+          tasks: [],
+          settings: {
+            themeMode: 'dark',
+            accentColor: '#ff375f',
+            notifications: false,
+            reminders: true,
+            dueDateAlerts: true
+          }
+        };
+        initAppearance();
+        initNotificationsUI();
         saveStore();
       }
     }
 
     // Initialize App
     document.getElementById('headerSub').textContent = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+    initAppearance();
+    initNotificationsUI();
     renderCurrentView();
     checkForUpdates();
   </script>
