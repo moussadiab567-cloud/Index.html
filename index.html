@@ -1,34 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StudyFlow - Modern Student Hub</title>
-  <!-- Material Icons for sleek look -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>StudyFlow - Student Tracker</title>
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
   <style>
-    /* --- Modern Neon Dark Theme --- */
     :root {
       --bg: #000000;
-      --card-bg: #111111;
-      --card-border: #222222;
+      --card-bg: #121214;
+      --card-border: #222226;
       --text: #ffffff;
-      --subtext: #aaaaaa;
-      --accent-blue: #007bff; /* Vibrant Blue */
-      --accent-pink: #ff4d88; /* Pop Pink */
-      --accent-green: #00e676; /* Bright Green */
-      --accent-orange: #ff9100; /* Warm Orange */
-      --nav-bg: rgba(0, 0, 0, 0.9); /* Frosted Glass effect */
-      --easing: cubic-bezier(0.4, 0, 0.2, 1);
+      --subtext: #8e8e93;
+      --accent-blue: #0a84ff;
+      --accent-pink: #ff375f;
+      --accent-green: #30d158;
+      --accent-orange: #ff9f0a;
+      --accent-purple: #bf5af2;
+      --nav-bg: rgba(18, 18, 20, 0.85);
     }
 
-    /* --- Base Styles --- */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-      -webkit-tap-highlight-color: transparent; /* Clean mobile interactions */
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
@@ -53,13 +51,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
     }
 
     .header-top h1 {
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       font-weight: 700;
-      color: var(--text);
+      letter-spacing: -0.5px;
     }
 
     .header-top .icons {
@@ -68,26 +66,28 @@
       color: var(--subtext);
     }
 
-    .header-top .icon-btn {
+    .icon-btn {
       background: none;
       border: none;
-      color: inherit;
+      color: var(--subtext);
       cursor: pointer;
-      font-size: 1.25rem;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .date-summary {
+    .date-subtitle {
       font-size: 0.85rem;
       color: var(--subtext);
       font-weight: 500;
     }
 
-    /* --- Main Content Area (Scrollable) --- */
+    /* --- Scrollable Content --- */
     main {
       flex: 1;
-      padding: 0.5rem 1rem 5rem; /* Large bottom padding for the nav */
+      padding: 0.5rem 1rem 6rem;
       overflow-y: auto;
-      transition: opacity 0.3s ease;
     }
 
     .view {
@@ -96,54 +96,30 @@
 
     .view.active {
       display: block;
-      animation: fadeIn 0.4s var(--easing);
+      animation: fadeIn 0.25s ease-out;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* --- General UI Components --- */
+    /* --- UI Components --- */
     .section-title {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 700;
       color: var(--subtext);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.6px;
       margin: 1.25rem 0 0.75rem;
     }
 
     .card {
       background-color: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 12px;
+      border-radius: 16px;
       padding: 1.25rem;
       margin-bottom: 1rem;
-      transition: transform 0.2s ease, border-color 0.2s ease;
-    }
-
-    .card:active {
-      transform: scale(0.98);
-    }
-
-    .card h2 {
-      font-size: 1.15rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-
-    .stat {
-      font-size: 0.9rem;
-      color: var(--subtext);
-      margin-bottom: 0.25rem;
-    }
-
-    .action-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 0.75rem;
     }
 
     /* --- Bottom Navigation --- */
@@ -156,8 +132,9 @@
       border-top: 1px solid var(--card-border);
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      padding: 0.6rem 0.25rem;
-      backdrop-filter: blur(10px); /* Frosted effect */
+      padding: 0.6rem 0 1.2rem;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       z-index: 100;
     }
 
@@ -165,83 +142,57 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       color: var(--subtext);
-      text-decoration: none;
       background: none;
       border: none;
       cursor: pointer;
-      transition: color 0.3s ease;
-      position: relative;
+      gap: 4px;
     }
 
     .nav-item.active {
       color: var(--accent-pink);
     }
 
-    .nav-item .icon {
+    .nav-item .material-icons-round {
       font-size: 1.4rem;
-      margin-bottom: 0.25rem;
     }
 
-    .nav-item span {
+    .nav-item span.label {
       font-size: 0.65rem;
       font-weight: 600;
-      text-transform: capitalize;
-    }
-
-    /* Red dot notification */
-    .nav-item .notification-dot {
-      position: absolute;
-      top: 0;
-      right: calc(50% - 14px);
-      width: 6px;
-      height: 6px;
-      background-color: var(--accent-pink);
-      border-radius: 50%;
-      display: none;
-    }
-
-    .nav-item.active .notification-dot {
-      display: block;
     }
 
     /* --- Floating Action Button --- */
-    #floatingAddBtn {
+    #fab {
       position: fixed;
-      bottom: 5.5rem;
-      right: 1.5rem;
-      background-color: var(--accent-blue);
-      color: var(--bg);
+      bottom: 5rem;
+      right: 1.25rem;
+      background-color: #ffffff;
+      color: #000000;
       border: none;
-      width: 56px;
-      height: 56px;
-      border-radius: 28px;
+      width: 54px;
+      height: 54px;
+      border-radius: 27px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.8rem;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
-      transition: transform 0.2s ease;
+      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.25);
       z-index: 90;
+      transition: transform 0.15s ease;
     }
 
-    #floatingAddBtn:active {
+    #fab:active {
       transform: scale(0.92);
     }
-
-    /* =========================================
-       SPECIFIC VIEW STYLES
-       ========================================= */
 
     /* --- Timetable View --- */
     .week-scroller {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       overflow-x: auto;
-      padding: 0.5rem 0 1rem;
-      -webkit-overflow-scrolling: touch;
+      padding-bottom: 1rem;
     }
 
     .week-scroller::-webkit-scrollbar { display: none; }
@@ -249,81 +200,49 @@
     .day-chip {
       background-color: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 1rem 0.75rem;
+      border-radius: 12px;
+      padding: 0.8rem 0.6rem;
       text-align: center;
-      min-width: 60px;
+      min-width: 58px;
       cursor: pointer;
-      transition: border-color 0.2s ease, background-color 0.2s ease;
     }
 
     .day-chip.active {
-      background-color: var(--accent-pink);
-      border-color: var(--accent-pink);
-      color: var(--bg);
+      background-color: #ffffff;
+      border-color: #ffffff;
+      color: #000000;
     }
 
-    .day-chip .day-name {
-      font-size: 0.85rem;
-      font-weight: 700;
-      margin-bottom: 2px;
-    }
+    .day-chip .day-name { font-size: 0.8rem; font-weight: 700; }
+    .day-chip .day-date { font-size: 0.7rem; opacity: 0.8; }
 
-    .day-chip .day-date {
-      font-size: 0.7rem;
-      opacity: 0.8;
-    }
-
-    .task-list { list-style: none; margin-top: 1rem; }
-    .task-item {
-      background-color: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 1rem;
-      margin-bottom: 0.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .task-info { display: flex; align-items: center; gap: 12px; }
-    .task-icon { font-size: 1.25rem; color: var(--accent-blue); }
-    .task-text { font-size: 0.95rem; font-weight: 500; }
-    .task-time { font-size: 0.75rem; color: var(--subtext); }
-
-    /* --- Lessons View --- */
-    .subject-list { margin-bottom: 1.5rem; }
+    /* --- Subject & Grade View --- */
     .subject-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
       background-color: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 1rem 1.25rem;
       margin-bottom: 0.75rem;
     }
 
-    .subject-info { display: flex; align-items: center; gap: 12px; }
-    .subject-color { width: 12px; height: 12px; border-radius: 6px; }
-    .subject-name { font-size: 1rem; font-weight: 600; }
-    .subject-lessons { font-size: 0.8rem; color: var(--subtext); }
-
-    .counter-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    .subject-left { display: flex; align-items: center; gap: 12px; }
+    .subject-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .subject-title { font-size: 1rem; font-weight: 600; }
+    .subject-meta { font-size: 0.75rem; color: var(--subtext); }
 
     .counter-btn {
-      background-color: #222;
+      background-color: #222226;
       border: none;
       color: var(--text);
       width: 32px;
       height: 32px;
-      border-radius: 16px;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
     }
 
     .grade-grid {
@@ -335,48 +254,66 @@
     .grade-card {
       background-color: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 1rem;
       text-align: center;
     }
 
-    .grade-value { font-size: 1.6rem; font-weight: 700; margin-bottom: 2px; }
-    .grade-label { font-size: 0.7rem; color: var(--subtext); text-transform: uppercase; }
+    .grade-val { font-size: 1.6rem; font-weight: 700; margin-bottom: 2px; }
+    .grade-lbl { font-size: 0.7rem; color: var(--subtext); text-transform: uppercase; font-weight: 600; }
 
-    /* --- Tasks View --- */
+    /* --- Tasks Tab Bar --- */
     .tab-bar {
       display: flex;
       border-bottom: 1px solid var(--card-border);
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
     }
 
-    .tab-item {
+    .tab-btn {
       flex: 1;
       text-align: center;
-      padding: 0.8rem 0;
+      padding: 0.75rem 0;
       font-size: 0.9rem;
       font-weight: 600;
       color: var(--subtext);
+      background: none;
+      border: none;
       cursor: pointer;
       position: relative;
     }
 
-    .tab-item.active {
-      color: var(--accent-pink);
+    .tab-btn.active {
+      color: var(--text);
     }
 
-    .tab-item.active::after {
+    .tab-btn.active::after {
       content: '';
       position: absolute;
       bottom: -1px;
-      left: 15%;
-      width: 70%;
+      left: 20%;
+      width: 60%;
       height: 2px;
       background-color: var(--accent-pink);
     }
 
+    .task-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .task-card.completed {
+      opacity: 0.5;
+      text-decoration: line-through;
+    }
+
     /* --- Attendance View --- */
-    .attendance-summary {
+    .attendance-header {
       display: flex;
       align-items: center;
       gap: 20px;
@@ -385,49 +322,114 @@
     .progress-circle {
       width: 80px;
       height: 80px;
-      border-radius: 40px;
-      background: conic-gradient(var(--accent-pink) var(--progress, 0%), #222 var(--progress, 0%));
+      border-radius: 50%;
+      background: conic-gradient(var(--accent-pink) var(--progress, 0%), #222226 var(--progress, 0%));
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
 
-    .progress-circle .inner-circle {
+    .inner-circle {
       width: 64px;
       height: 64px;
-      border-radius: 32px;
+      border-radius: 50%;
       background-color: var(--card-bg);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       font-weight: 700;
+    }
+
+    .calendar-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
     }
 
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 6px;
-      margin-top: 1rem;
     }
 
-    .calendar-day {
+    .day-header {
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--subtext);
+      font-weight: 600;
+      padding-bottom: 4px;
+    }
+
+    .cal-day {
+      aspect-ratio: 1;
       background-color: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 8px;
-      padding: 0.8rem 0.2rem;
-      text-align: center;
-      cursor: pointer;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 0.85rem;
-      color: var(--subtext);
-      transition: background-color 0.2s;
+      cursor: pointer;
+      color: var(--text);
     }
 
-    .calendar-day.present { background-color: rgba(0, 230, 118, 0.15); color: var(--accent-green); border-color: transparent; }
-    .calendar-day.absent { background-color: rgba(255, 77, 136, 0.15); color: var(--accent-pink); border-color: transparent; }
-    .calendar-day.holiday { background-color: rgba(255, 145, 0, 0.15); color: var(--accent-orange); border-color: transparent; }
-    .calendar-day.active { border-color: var(--accent-pink); font-weight: 700; }
+    .cal-day.empty { background: none; border: none; cursor: default; }
+    .cal-day.present { background-color: rgba(48, 209, 88, 0.2); color: var(--accent-green); border-color: var(--accent-green); }
+    .cal-day.absent { background-color: rgba(255, 55, 95, 0.2); color: var(--accent-pink); border-color: var(--accent-pink); }
+    .cal-day.holiday { background-color: rgba(255, 159, 10, 0.2); color: var(--accent-orange); border-color: var(--accent-orange); }
 
+    /* --- Modal Dialog --- */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 1rem;
+    }
+
+    .modal {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 400px;
+      padding: 1.5rem;
+    }
+
+    .modal h3 { margin-bottom: 1rem; font-size: 1.2rem; }
+    .modal input, .modal select {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #000000;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .modal-btns {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-primary { background-color: #ffffff; color: #000000; }
+    .btn-cancel { background-color: #222226; color: var(--subtext); }
   </style>
 </head>
 <body>
@@ -435,324 +437,427 @@
   <!-- App Header -->
   <header>
     <div class="header-top">
-      <h1>StudyFlow</h1>
+      <h1 id="appHeading">Timetable</h1>
       <div class="icons">
-        <button class="icon-btn"><span class="material-icons-round">search</span></button>
-        <button class="icon-btn"><span class="material-icons-round">notifications_none</span></button>
-        <button class="icon-btn"><span class="material-icons-round">settings</span></button>
+        <button class="icon-btn" onclick="clearAllData()"><span class="material-icons-round">restart_alt</span></button>
       </div>
     </div>
-    <div class="date-summary" id="headerDate">Loading date...</div>
+    <div class="date-subtitle" id="headerSub">Today</div>
   </header>
 
-  <!-- Main Content Area -->
-  <main id="mainContent">
+  <!-- Main Views Container -->
+  <main>
 
     <!-- 1. Timetable View -->
     <div id="viewTimetable" class="view active">
-      <div class="week-scroller" id="weekScroller">
-        <!-- Day Chips Generated Here by JS -->
+      <div class="week-scroller" id="weekScroller"></div>
+      <div class="card">
+        <h2 id="selectedDayTitle">Schedule</h2>
+        <p class="section-title" style="margin-top:0.5rem">Classes & Events</p>
+        <div id="timetableList"></div>
       </div>
-      <div class="card" style="border-color: var(--accent-pink)">
-        <h2 id="currentDayTitle">Saturday, 26 Sep</h2>
-        <div class="stat"><span class="material-icons-round" style="font-size: 0.8rem">check_circle</span> 1 earlier task • Show</div>
-        <p class="stat">Nothing else planned today. Free day!</p>
-        <div class="action-row">
-          <button class="counter-btn" style="width: auto; padding: 0.5rem 1rem; font-size: 0.8rem; background-color: #222">+ Add Class</button>
-        </div>
-      </div>
-      <ul class="task-list" id="timetableTaskList">
-        <!-- Task items for the selected day will appear here -->
-      </ul>
     </div>
 
-    <!-- 2. Lessons View -->
+    <!-- 2. Lessons & Grades View -->
     <div id="viewLessons" class="view">
-      <div class="subject-list" id="subjectList">
-        <!-- Subjects Generated Here by JS -->
-      </div>
-      <button class="card" style="width: 100%; text-align: center; color: var(--subtext); border-style: dashed;" onclick="addSubject()">
-        + Add subject
-      </button>
-      <h3 class="section-title">Grade Averages</h3>
-      <div class="grade-grid">
+      <div class="grade-grid" style="margin-bottom: 1.25rem;">
         <div class="grade-card" style="border-color: var(--accent-green)">
-          <div class="grade-value" style="color: var(--accent-green)">87.1%</div>
-          <div class="grade-label">Overall</div>
+          <div class="grade-val" id="overallGradeDisplay" style="color: var(--accent-green)">0.0%</div>
+          <div class="grade-lbl">Overall Average</div>
         </div>
         <div class="grade-card">
-          <div class="grade-value">83.3%</div>
-          <div class="grade-label">Programming</div>
+          <div class="grade-val" id="totalSubjectsDisplay">0</div>
+          <div class="grade-lbl">Total Subjects</div>
         </div>
       </div>
+
+      <p class="section-title">Your Subjects</p>
+      <div id="subjectList"></div>
     </div>
 
     <!-- 3. Tasks View -->
     <div id="viewTasks" class="view">
       <div class="tab-bar">
-        <div class="tab-item active" onclick="switchTab('lessons')">Lessons</div>
-        <div class="tab-item" onclick="switchTab('homework')">Homework <span class="notification-dot" style="display:inline-block;position:static;margin-left:5px"></span></div>
-        <div class="tab-item" onclick="switchTab('exams')">Exams</div>
+        <button class="tab-btn active" onclick="switchTaskTab(this, 'homework')">Homework</button>
+        <button class="tab-btn" onclick="switchTaskTab(this, 'exam')">Exams</button>
+        <button class="tab-btn" onclick="switchTaskTab(this, 'general')">General</button>
       </div>
-      <div id="taskContent">
-        <p style="text-align: center; color: var(--subtext); margin-top: 2rem;">Select a tab above to view tasks.</p>
-      </div>
+      <div id="taskList"></div>
     </div>
 
     <!-- 4. Attendance View -->
     <div id="viewAttendance" class="view">
-      <div class="card attendance-summary">
-        <div class="progress-circle" id="attendanceCircle" style="--progress: 62.5%;">
-          <div class="inner-circle" id="attendancePercent">62.5%</div>
+      <div class="card attendance-header">
+        <div class="progress-circle" id="attCircle" style="--progress: 0%;">
+          <div class="inner-circle" id="attPercentText">0.0%</div>
         </div>
         <div>
-          <h3>September 2026</h3>
-          <p class="stat">5 present, 3 absent</p>
+          <h3 id="attMonthTitle">Attendance</h3>
+          <p class="date-subtitle" id="attStatText">0 present, 0 absent</p>
         </div>
       </div>
+
       <div class="card">
-        <div class="calendar-grid" id="attendanceCalendar">
-          <!-- Calendar Days Generated Here by JS -->
+        <div class="calendar-controls">
+          <button class="icon-btn" onclick="changeMonth(-1)"><span class="material-icons-round">chevron_left</span></button>
+          <strong id="calMonthYear">September 2026</strong>
+          <button class="icon-btn" onclick="changeMonth(1)"><span class="material-icons-round">chevron_right</span></button>
         </div>
+
+        <div class="calendar-grid">
+          <div class="day-header">S</div><div class="day-header">M</div><div class="day-header">T</div>
+          <div class="day-header">W</div><div class="day-header">T</div><div class="day-header">F</div>
+          <div class="day-header">S</div>
+        </div>
+        <div class="calendar-grid" id="calDaysGrid" style="margin-top: 6px;"></div>
       </div>
+      <p style="text-align: center; font-size: 0.75rem; color: var(--subtext);">Tap a day to toggle: Present $\rightarrow$ Absent $\rightarrow$ Holiday $\rightarrow$ Clear</p>
     </div>
 
   </main>
 
   <!-- Bottom Navigation -->
-  <nav id="bottomNav">
-    <button class="nav-item active" onclick="switchView('Timetable')">
-      <span class="material-icons-round icon">calendar_today</span>
-      <span>Timetable</span>
+  <nav>
+    <button class="nav-item active" onclick="switchMainView(this, 'Timetable')">
+      <span class="material-icons-round">calendar_today</span>
+      <span class="label">Timetable</span>
     </button>
-    <button class="nav-item" onclick="switchView('Lessons')">
-      <span class="material-icons-round icon">book</span>
-      <span>Lessons</span>
+    <button class="nav-item" onclick="switchMainView(this, 'Lessons')">
+      <span class="material-icons-round">book</span>
+      <span class="label">Subjects</span>
     </button>
-    <button class="nav-item" onclick="switchView('Tasks')">
-      <span class="material-icons-round icon">task_alt</span>
-      <span>Tasks</span>
-      <div class="notification-dot"></div>
+    <button class="nav-item" onclick="switchMainView(this, 'Tasks')">
+      <span class="material-icons-round">task_alt</span>
+      <span class="label">Tasks</span>
     </button>
-    <button class="nav-item" onclick="switchView('Attendance')">
-      <span class="material-icons-round icon">rule</span>
-      <span>Attendance</span>
+    <button class="nav-item" onclick="switchMainView(this, 'Attendance')">
+      <span class="material-icons-round">rule</span>
+      <span class="label">Attendance</span>
     </button>
   </nav>
 
   <!-- Floating Add Button -->
-  <button id="floatingAddBtn"><span class="material-icons-round">add</span></button>
+  <button id="fab" onclick="handleFabClick()"><span class="material-icons-round">add</span></button>
+
+  <!-- Dynamic Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h3 id="modalTitle">Add Item</h3>
+      <div id="modalBody"></div>
+      <div class="modal-btns">
+        <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="submitModal()">Save</button>
+      </div>
+    </div>
+  </div>
 
   <script>
-    // --- APP STATE & INITIALIZATION ---
-    const appData = {
-      greetingName: "Student",
-      currentDate: new Date(2026, 8, 26), // Mock date: Sep 26, 2026 (Saturday)
-      subjects: JSON.parse(localStorage.getItem('studyHub_subjects')) || [
-        { name: "Programming", color: "blue", lessonsLeft: 5 },
-        { name: "Arabic", color: "green", lessonsLeft: 2 },
-        { name: "History", color: "orange", lessonsLeft: 0 }
-      ],
-      attendance: JSON.parse(localStorage.getItem('studyHub_attendance')) || {
-        "2026-09-13": "present", "2026-09-14": "present", "2026-09-15": "absent", "2026-09-16": "absent",
-        "2026-09-20": "absent", "2026-09-21": "present", "2026-09-22": "present", "2026-09-23": "present",
-        "2026-09-26": "active" // Today
-      }
+    // --- STATE & LOCAL STORAGE ---
+    let activeView = 'Timetable';
+    let currentTaskTab = 'homework';
+    let currentDate = new Date(); // Live Date
+    let selectedDayKey = dateToKey(currentDate);
+
+    let store = {
+      subjects: JSON.parse(localStorage.getItem('sf_subjects')) || [],
+      attendance: JSON.parse(localStorage.getItem('sf_attendance')) || {}, // Format: "YYYY-MM-DD": "present"|"absent"|"holiday"
+      tasks: JSON.parse(localStorage.getItem('sf_tasks')) || []
     };
 
-    function initApp() {
-      renderHeader();
-      renderWeekScroller();
-      renderSubjects();
-      renderAttendanceCalendar();
+    function saveStore() {
+      localStorage.setItem('sf_subjects', JSON.stringify(store.subjects));
+      localStorage.setItem('sf_attendance', JSON.stringify(store.attendance));
+      localStorage.setItem('sf_tasks', JSON.stringify(store.tasks));
+      renderCurrentView();
     }
 
-    // --- HELPER FUNCTIONS ---
-    function formatDate(date) {
-      return date.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' });
-    }
-    function dateToKey(date) { return date.toISOString().split('T')[0]; }
-
-    // --- UI RENDERING ---
-
-    function renderHeader() {
-      const hours = appData.currentDate.getHours();
-      const greeting = hours < 12 ? "Good Morning" : hours < 18 ? "Good Afternoon" : "Good Evening";
-      document.getElementById('headerDate').textContent = `${greeting}, ${appData.greetingName}`;
+    function dateToKey(d) {
+      const yr = d.getFullYear();
+      const mo = String(d.getMonth() + 1).padStart(2, '0');
+      const da = String(d.getDate()).padStart(2, '0');
+      return `${yr}-${mo}-${da}`;
     }
 
-    // --- Timetable Logic ---
-    function renderWeekScroller() {
+    // --- NAVIGATION ---
+    function switchMainView(btn, viewName) {
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+
+      btn.classList.add('active');
+      document.getElementById(`view${viewName}`).classList.add('active');
+      activeView = viewName;
+
+      document.getElementById('appHeading').textContent = viewName === 'Lessons' ? 'Subjects & Grades' : viewName;
+      renderCurrentView();
+    }
+
+    function renderCurrentView() {
+      if (activeView === 'Timetable') renderTimetable();
+      if (activeView === 'Lessons') renderSubjectsView();
+      if (activeView === 'Tasks') renderTasksView();
+      if (activeView === 'Attendance') renderAttendanceView();
+    }
+
+    // --- TIMETABLE LOGIC ---
+    function renderTimetable() {
       const scroller = document.getElementById('weekScroller');
       scroller.innerHTML = '';
-      const todayKey = dateToKey(appData.currentDate);
 
-      for (let i = -1; i < 6; i++) { // Render 1 day before today and 5 days after
-        const day = new Date(appData.currentDate);
-        day.setDate(appData.currentDate.getDate() + i);
-        const dayKey = dateToKey(day);
+      for (let i = -2; i <= 4; i++) {
+        let d = new Date();
+        d.setDate(currentDate.getDate() + i);
+        let key = dateToKey(d);
 
-        const chip = document.createElement('div');
-        chip.className = `day-chip ${dayKey === todayKey ? 'active' : ''}`;
-        chip.onclick = () => selectTimetableDay(dayKey, chip);
-
-        const dayName = day.toLocaleDateString('en-US', { weekday: 'short' });
-        const dayNum = day.getDate();
-        const monthName = day.toLocaleDateString('en-US', { month: 'short' });
-
+        let chip = document.createElement('div');
+        chip.className = `day-chip ${key === selectedDayKey ? 'active' : ''}`;
+        chip.onclick = () => { selectedDayKey = key; renderTimetable(); };
         chip.innerHTML = `
-          <div class="day-name">${i === 0 ? 'Today' : dayName}</div>
-          <div class="day-date">${dayNum} ${monthName}</div>
+          <div class="day-name">${i === 0 ? 'Today' : d.toLocaleDateString('en-US', {weekday:'short'})}</div>
+          <div class="day-date">${d.getDate()} ${d.toLocaleDateString('en-US', {month:'short'})}</div>
         `;
         scroller.appendChild(chip);
       }
-    }
 
-    function selectTimetableDay(dayKey, chipEl) {
-      document.querySelectorAll('.day-chip').forEach(c => c.classList.remove('active'));
-      chipEl.classList.add('active');
-
-      const dateObj = new Date(dayKey);
-      const title = formatDate(dateObj);
-      document.getElementById('currentDayTitle').textContent = title;
-
-      // In a real app, populate tasks here. For demo, show empty state.
-      const taskList = document.getElementById('timetableTaskList');
-      taskList.innerHTML = `
-        <div class="card" style="text-align: center; color: var(--subtext); border-color: dashed;">
-          + Add first task for ${title}
-        </div>
-      `;
-    }
-
-    // --- Lessons Logic ---
-    function renderSubjects() {
-      const list = document.getElementById('subjectList');
-      list.innerHTML = '';
-      appData.subjects.forEach((subj, index) => {
-        const item = document.createElement('div');
-        item.className = 'subject-item';
-        item.innerHTML = `
-          <div class="subject-info">
-            <div class="subject-color" style="background-color: var(--accent-${subj.color})"></div>
-            <div>
-              <div class="subject-name">${subj.name}</div>
-              <div class="subject-lessons">${subj.lessonsLeft} lessons left</div>
+      document.getElementById('selectedDayTitle').textContent = new Date(selectedDayKey + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+      
+      const dayTasks = store.tasks.filter(t => t.dayKey === selectedDayKey);
+      const container = document.getElementById('timetableList');
+      container.innerHTML = dayTasks.length === 0 
+        ? `<p style="color:var(--subtext); font-size:0.85rem; margin-top:0.5rem">No classes or events scheduled for this day.</p>`
+        : dayTasks.map((t, idx) => `
+            <div class="task-card">
+              <div>
+                <strong>${t.title}</strong>
+                <div style="font-size:0.75rem; color:var(--subtext)">${t.subject || 'General'}</div>
+              </div>
+              <button class="icon-btn" onclick="deleteTask('${t.id}')"><span class="material-icons-round">delete_outline</span></button>
             </div>
-          </div>
-          <div class="counter-group">
-            <button class="counter-btn" onclick="updateLessonCount(${index}, -1)">–</button>
-            <button class="counter-btn" onclick="updateLessonCount(${index}, 1)">+</button>
-          </div>
-        `;
-        list.appendChild(item);
-      });
-      localStorage.setItem('studyHub_subjects', JSON.stringify(appData.subjects));
+          `).join('');
     }
 
-    function updateLessonCount(index, change) {
-      const subj = appData.subjects[index];
-      subj.lessonsLeft = Math.max(0, subj.lessonsLeft + change);
-      renderSubjects();
+    // --- SUBJECTS & GRADES LOGIC ---
+    function renderSubjectsView() {
+      const list = document.getElementById('subjectList');
+      let totalPct = 0;
+      let gradedSubjectsCount = 0;
+
+      list.innerHTML = store.subjects.length === 0
+        ? `<p style="color:var(--subtext); text-align:center; padding: 2rem 0;">No subjects added yet. Tap + to add one!</p>`
+        : store.subjects.map((sub, i) => {
+            let score = parseFloat(sub.score) || 0;
+            let max = parseFloat(sub.maxScore) || 0;
+            let pct = max > 0 ? Math.round((score / max) * 100) : 0;
+
+            if (max > 0) {
+              totalPct += pct;
+              gradedSubjectsCount++;
+            }
+
+            return `
+              <div class="subject-item">
+                <div class="subject-left">
+                  <div class="subject-dot" style="background-color: ${sub.color}"></div>
+                  <div>
+                    <div class="subject-title">${sub.name}</div>
+                    <div class="subject-meta">Score: ${score}/${max} (${pct}%) • ${sub.lessons || 0} lessons left</div>
+                  </div>
+                </div>
+                <div style="display:flex; gap:6px;">
+                  <button class="counter-btn" onclick="editGrade(${i})"><span class="material-icons-round" style="font-size:1rem">edit</span></button>
+                  <button class="counter-btn" onclick="deleteSubject(${i})"><span class="material-icons-round" style="font-size:1rem">delete</span></button>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+      let avg = gradedSubjectsCount > 0 ? (totalPct / gradedSubjectsCount).toFixed(1) : "0.0";
+      document.getElementById('overallGradeDisplay').textContent = `${avg}%`;
+      document.getElementById('totalSubjectsDisplay').textContent = store.subjects.length;
     }
 
-    function addSubject() {
-      const name = prompt("Enter Subject Name:");
-      if (name) {
-        appData.subjects.push({ name: name, color: "blue", lessonsLeft: 0 });
-        renderSubjects();
+    function deleteSubject(idx) {
+      store.subjects.splice(idx, 1);
+      saveStore();
+    }
+
+    function editGrade(idx) {
+      let sub = store.subjects[idx];
+      let score = prompt(`Enter score earned for ${sub.name}:`, sub.score || 0);
+      let max = prompt(`Enter max possible score for ${sub.name}:`, sub.maxScore || 100);
+      if (score !== null && max !== null) {
+        sub.score = parseFloat(score) || 0;
+        sub.maxScore = parseFloat(max) || 0;
+        saveStore();
       }
     }
 
-    // --- Attendance Logic ---
-    function renderAttendanceCalendar() {
-      const grid = document.getElementById('attendanceCalendar');
+    // --- TASKS LOGIC ---
+    function switchTaskTab(btn, category) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTaskTab = category;
+      renderTasksView();
+    }
+
+    function renderTasksView() {
+      const container = document.getElementById('taskList');
+      const filtered = store.tasks.filter(t => t.category === currentTaskTab);
+
+      container.innerHTML = filtered.length === 0
+        ? `<p style="color:var(--subtext); text-align:center; padding: 2rem 0;">No ${currentTaskTab} tasks added.</p>`
+        : filtered.map(t => `
+            <div class="task-card ${t.completed ? 'completed' : ''}">
+              <div style="display:flex; align-items:center; gap:10px;" onclick="toggleTask('${t.id}')">
+                <span class="material-icons-round" style="color:var(--accent-pink); cursor:pointer">
+                  ${t.completed ? 'check_circle' : 'radio_button_unchecked'}
+                </span>
+                <div>
+                  <strong>${t.title}</strong>
+                  <div style="font-size:0.75rem; color:var(--subtext)">Due: ${t.dueDate || 'No date'}</div>
+                </div>
+              </div>
+              <button class="icon-btn" onclick="deleteTask('${t.id}')"><span class="material-icons-round">delete_outline</span></button>
+            </div>
+          `).join('');
+    }
+
+    function toggleTask(id) {
+      let task = store.tasks.find(t => t.id === id);
+      if (task) {
+        task.completed = !task.completed;
+        saveStore();
+      }
+    }
+
+    function deleteTask(id) {
+      store.tasks = store.tasks.filter(t => t.id !== id);
+      saveStore();
+    }
+
+    // --- ATTENDANCE LOGIC ---
+    let calViewDate = new Date();
+
+    function changeMonth(dir) {
+      calViewDate.setMonth(calViewDate.getMonth() + dir);
+      renderAttendanceView();
+    }
+
+    function renderAttendanceView() {
+      const year = calViewDate.getFullYear();
+      const month = calViewDate.getMonth();
+      
+      document.getElementById('calMonthYear').textContent = calViewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      document.getElementById('attMonthTitle').textContent = `${calViewDate.toLocaleDateString('en-US', { month: 'long' })} Attendance`;
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const totalDays = new Date(year, month + 1, 0).getDate();
+
+      const grid = document.getElementById('calDaysGrid');
       grid.innerHTML = '';
-      
-      const year = 2026;
-      const month = 8; // September
-      const numDays = 30;
-      
+
+      // Blank spaces for offset
+      for (let i = 0; i < firstDay; i++) {
+        grid.appendChild(document.createElement('div')).className = 'cal-day empty';
+      }
+
       let presentCount = 0;
       let absentCount = 0;
 
-      for (let d = 1; d <= numDays; d++) {
-        const dateKey = `${year}-09-${d.toString().padStart(2, '0')}`;
-        const status = appData.attendance[dateKey] || 'weekend'; // basic weekend detection needed for real calendar
-
-        const dayEl = document.createElement('div');
-        dayEl.className = `calendar-day ${status}`;
-        dayEl.textContent = d;
+      for (let day = 1; day <= totalDays; day++) {
+        let dKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        let status = store.attendance[dKey] || '';
 
         if (status === 'present') presentCount++;
         if (status === 'absent') absentCount++;
 
-        // Add dummy weekend styling (for Sat 26th)
-        if (d == 26) dayEl.classList.add('active');
-
+        let dayEl = document.createElement('div');
+        dayEl.className = `cal-day ${status}`;
+        dayEl.textContent = day;
+        dayEl.onclick = () => cycleAttendance(dKey);
         grid.appendChild(dayEl);
       }
 
-      // Update summary card
-      const totalLogged = presentCount + absentCount;
-      let percent = totalLogged === 0 ? 0 : Math.round((presentCount / totalLogged) * 1000) / 10;
-      
-      // Update UI elements from screenshot
-      document.getElementById('attendanceCircle').style.setProperty('--progress', `${percent}%`);
-      document.getElementById('attendancePercent').textContent = `${percent}%`;
+      let totalLogged = presentCount + absentCount;
+      let pct = totalLogged > 0 ? ((presentCount / totalLogged) * 100).toFixed(1) : "0.0";
+
+      document.getElementById('attCircle').style.setProperty('--progress', `${pct}%`);
+      document.getElementById('attPercentText').textContent = `${pct}%`;
+      document.getElementById('attStatText').textContent = `${presentCount} present, ${absentCount} absent`;
     }
 
-    // --- Tasks Tabs Logic ---
-    function switchTab(tabName) {
-      document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-      event.target.closest('.tab-item').classList.add('active');
-      const content = document.getElementById('taskContent');
+    function cycleAttendance(dKey) {
+      const current = store.attendance[dKey];
+      if (!current) store.attendance[dKey] = 'present';
+      else if (current === 'present') store.attendance[dKey] = 'absent';
+      else if (current === 'absent') store.attendance[dKey] = 'holiday';
+      else delete store.attendance[dKey];
 
-      if (tabName === 'lessons') {
-        content.innerHTML = `
-          <div class="task-item">
-            <div class="task-info">
-              <span class="subject-color" style="background-color: var(--accent-blue)"></span>
-              <div class="subject-name">Programming</div>
-            </div>
-            <div class="counter-group">
-              <button class="counter-btn" style="background-color:#ef4444">–</button>
-              <button class="counter-btn" style="background-color:#10b981">+</button>
-            </div>
-          </div>
+      saveStore();
+    }
+
+    // --- MODALS & FAB ACTIONS ---
+    function handleFabClick() {
+      const overlay = document.getElementById('modalOverlay');
+      const body = document.getElementById('modalBody');
+      const title = document.getElementById('modalTitle');
+
+      if (activeView === 'Lessons') {
+        title.textContent = "Add Subject";
+        body.innerHTML = `
+          <input type="text" id="mSubName" placeholder="Subject Name (e.g. History)" />
+          <input type="color" id="mSubColor" value="#0a84ff" style="height:40px; padding:2px" />
         `;
-      } else if (tabName === 'homework') {
-        content.innerHTML = `
-          <div class="task-item">
-            <div class="task-info">
-              <span class="material-icons-round task-icon" style="color:var(--accent-pink)">radio_button_unchecked</span>
-              <div>
-                <div class="task-text">Complete History essay</div>
-                <div class="task-time">Due: Tuesday • 1h</div>
-              </div>
-            </div>
-          </div>
+      } else if (activeView === 'Tasks') {
+        title.textContent = `Add ${currentTaskTab.toUpperCase()}`;
+        body.innerHTML = `
+          <input type="text" id="mTaskTitle" placeholder="Task Title" />
+          <input type="date" id="mTaskDate" />
         `;
       } else {
-        content.innerHTML = `<p style="text-align: center; color: var(--subtext); margin-top: 2rem;">No upcoming exams.</p>`;
+        title.textContent = "Add Class / Event";
+        body.innerHTML = `
+          <input type="text" id="mClassTitle" placeholder="Class Title (e.g. Math Lecture)" />
+          <input type="text" id="mClassSub" placeholder="Subject Name" />
+        `;
+      }
+
+      overlay.style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('modalOverlay').style.display = 'none';
+    }
+
+    function submitModal() {
+      if (activeView === 'Lessons') {
+        let name = document.getElementById('mSubName').value;
+        let color = document.getElementById('mSubColor').value;
+        if (name) store.subjects.push({ name, color, score: 0, maxScore: 100, lessons: 0 });
+      } else if (activeView === 'Tasks') {
+        let title = document.getElementById('mTaskTitle').value;
+        let dueDate = document.getElementById('mTaskDate').value;
+        if (title) store.tasks.push({ id: Date.now().toString(), category: currentTaskTab, title, dueDate, completed: false });
+      } else {
+        let title = document.getElementById('mClassTitle').value;
+        let subject = document.getElementById('mClassSub').value;
+        if (title) store.tasks.push({ id: Date.now().toString(), dayKey: selectedDayKey, title, subject, category: 'timetable' });
+      }
+
+      saveStore();
+      closeModal();
+    }
+
+    function clearAllData() {
+      if (confirm("Reset all data back to 0?")) {
+        localStorage.clear();
+        store = { subjects: [], attendance: {}, tasks: [] };
+        saveStore();
       }
     }
 
-    // --- GLOBAL VIEW NAVIGATION ---
-    function switchView(viewName) {
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      
-      const targetView = document.getElementById(`view${viewName}`);
-      const targetNav = event.target.closest('.nav-item');
-      
-      targetView.classList.add('active');
-      targetNav.classList.add('active');
-    }
-
-    // Initialize the app on load
-    window.onload = initApp;
-
+    // Initialize App
+    document.getElementById('headerSub').textContent = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+    renderCurrentView();
   </script>
 </body>
 </html>
