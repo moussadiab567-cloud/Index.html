@@ -52,6 +52,31 @@
       overflow: hidden;
     }
 
+    /* --- Update Notification Banner --- */
+    #updateBanner {
+      display: none;
+      background-color: var(--accent-blue);
+      color: #ffffff;
+      padding: calc(0.6rem + env(safe-area-inset-top)) 1rem 0.6rem;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+      z-index: 300;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    #updateBanner button {
+      background-color: #ffffff;
+      color: #000000;
+      border: none;
+      padding: 0.35rem 0.8rem;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
     /* --- App Header with Notch Support --- */
     header {
       padding: calc(0.8rem + env(safe-area-inset-top)) 1rem 0.5rem;
@@ -146,7 +171,7 @@
       background-color: var(--nav-bg);
       border-top: 1px solid var(--card-border);
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       padding: 0.6rem 0 calc(0.6rem + env(safe-area-inset-bottom));
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
@@ -162,6 +187,7 @@
       border: none;
       cursor: pointer;
       gap: 4px;
+      position: relative;
     }
 
     .nav-item.active {
@@ -169,12 +195,23 @@
     }
 
     .nav-item .material-icons-round {
-      font-size: 1.4rem;
+      font-size: 1.3rem;
     }
 
     .nav-item span.label {
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       font-weight: 600;
+    }
+
+    .nav-badge {
+      position: absolute;
+      top: 0;
+      right: 22%;
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent-blue);
+      border-radius: 50%;
+      display: none;
     }
 
     /* --- Floating Action Button --- */
@@ -396,6 +433,27 @@
     .cal-day.absent { background-color: rgba(255, 55, 95, 0.2); color: var(--accent-pink); border-color: var(--accent-pink); }
     .cal-day.holiday { background-color: rgba(255, 159, 10, 0.2); color: var(--accent-orange); border-color: var(--accent-orange); }
 
+    /* --- Settings / Updates View --- */
+    .settings-btn {
+      width: 100%;
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 1rem;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      margin-bottom: 0.75rem;
+    }
+
+    .settings-btn:active {
+      background-color: #1a1a1e;
+    }
+
     /* --- Modal Dialog --- */
     .modal-overlay {
       position: fixed;
@@ -448,6 +506,12 @@
   </style>
 </head>
 <body>
+
+  <!-- Top Notification Banner for New Updates -->
+  <div id="updateBanner">
+    <span>🚀 New version available!</span>
+    <button onclick="applyUpdate()">Update Now</button>
+  </div>
 
   <!-- App Header -->
   <header>
@@ -529,6 +593,52 @@
       <p style="text-align: center; font-size: 0.75rem; color: var(--subtext);">Tap a day to toggle: Present → Absent → Holiday → Clear</p>
     </div>
 
+    <!-- 5. Settings & Updates View -->
+    <div id="viewUpdates" class="view">
+      <div class="card" style="text-align: center; padding: 2rem 1rem;">
+        <span class="material-icons-round" style="font-size: 3rem; color: var(--accent-blue); margin-bottom: 0.5rem;">system_update</span>
+        <h2 style="font-size: 1.2rem; margin-bottom: 0.2rem;">App Updates & Version</h2>
+        <p style="color: var(--subtext); font-size: 0.85rem;" id="versionText">Current Version: v1.1.0</p>
+        <p style="color: var(--subtext); font-size: 0.75rem; margin-top: 0.4rem;" id="updateCheckStatus">Checked just now</p>
+      </div>
+
+      <p class="section-title">Update Actions</p>
+
+      <button class="settings-btn" onclick="checkForUpdates(true)">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="material-icons-round" style="color: var(--accent-blue);">refresh</span>
+          <span>Check for Updates Now</span>
+        </div>
+        <span class="material-icons-round" style="color: var(--subtext);">chevron_right</span>
+      </button>
+
+      <button class="settings-btn" id="forceUpdateBtn" onclick="applyUpdate()" style="display: none; border-color: var(--accent-blue);">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="material-icons-round" style="color: var(--accent-blue);">download_for_offline</span>
+          <span>Apply New Version</span>
+        </div>
+        <span class="material-icons-round" style="color: var(--accent-blue);">chevron_right</span>
+      </button>
+
+      <button class="settings-btn" onclick="forceReloadApp()">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="material-icons-round" style="color: var(--accent-orange);">cached</span>
+          <span>Force Refresh App Cache</span>
+        </div>
+        <span class="material-icons-round" style="color: var(--subtext);">chevron_right</span>
+      </button>
+
+      <p class="section-title">Storage & Reset</p>
+
+      <button class="settings-btn" onclick="clearAllData()">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="material-icons-round" style="color: var(--accent-pink);">delete_forever</span>
+          <span style="color: var(--accent-pink);">Clear All Saved Data</span>
+        </div>
+        <span class="material-icons-round" style="color: var(--subtext);">chevron_right</span>
+      </button>
+    </div>
+
   </main>
 
   <!-- Bottom Navigation -->
@@ -549,6 +659,11 @@
       <span class="material-icons-round">rule</span>
       <span class="label">Attendance</span>
     </button>
+    <button class="nav-item" onclick="switchMainView(this, 'Updates')">
+      <div class="nav-badge" id="updateBadge"></div>
+      <span class="material-icons-round">system_update</span>
+      <span class="label">Updates</span>
+    </button>
   </nav>
 
   <!-- Floating Add Button -->
@@ -567,7 +682,11 @@
   </div>
 
   <script>
-    // Prevent internal iOS links from opening in Safari
+    // --- APP VERSION CONTROL ---
+    // Increment this number whenever you upload new code to GitHub/Server
+    const APP_VERSION = "1.1.0";
+
+    // Prevent internal iOS standalone links from opening in browser Safari
     (function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^http/;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.href)&&d.parentNode)d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone");
 
     // --- STATE & LOCAL STORAGE ---
@@ -596,6 +715,62 @@
       return `${yr}-${mo}-${da}`;
     }
 
+    // --- AUTO-UPDATE SYSTEM ---
+    async function checkForUpdates(isManual = false) {
+      const statusEl = document.getElementById('updateCheckStatus');
+      if (statusEl) statusEl.textContent = 'Checking server for updates...';
+
+      try {
+        // Fetch index.html bypassing iOS browser cache using cache-buster query parameter
+        const response = await fetch(window.location.origin + window.location.pathname + '?nocache=' + Date.now(), {
+          cache: 'no-store',
+          headers: { 'Cache-Control': 'no-cache' }
+        });
+        const text = await response.text();
+
+        // Match version string in the fetched file
+        const versionMatch = text.match(/const APP_VERSION = ["']([^"']+)["']/);
+
+        if (versionMatch && versionMatch[1]) {
+          const remoteVersion = versionMatch[1];
+
+          if (remoteVersion !== APP_VERSION) {
+            // New version detected!
+            document.getElementById('updateBanner').style.display = 'flex';
+            document.getElementById('updateBadge').style.display = 'block';
+            document.getElementById('forceUpdateBtn').style.display = 'flex';
+            if (statusEl) statusEl.innerHTML = `<span style="color:var(--accent-green); font-weight:700;">New version ${remoteVersion} available!</span>`;
+            
+            if (isManual) alert(`New update available (${remoteVersion})! Tap 'Apply New Version' to install.`);
+          } else {
+            if (statusEl) statusEl.textContent = `App is up to date (${APP_VERSION}).`;
+            if (isManual) alert(`You are running the latest version (v${APP_VERSION}).`);
+          }
+        } else {
+          if (statusEl) statusEl.textContent = 'Could not verify server version.';
+        }
+      } catch (err) {
+        console.error('Update check failed:', err);
+        if (statusEl) statusEl.textContent = 'Unable to check updates (Offline).';
+      }
+    }
+
+    function applyUpdate() {
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          for (let name of names) caches.delete(name);
+        });
+      }
+      // Force reload ignoring cache
+      window.location.reload(true);
+    }
+
+    function forceReloadApp() {
+      if (confirm("Force refresh app and clear web cache? Your saved tasks and subjects will NOT be deleted.")) {
+        applyUpdate();
+      }
+    }
+
     // --- NAVIGATION ---
     function switchMainView(btn, viewName) {
       document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -605,7 +780,14 @@
       document.getElementById(`view${viewName}`).classList.add('active');
       activeView = viewName;
 
-      document.getElementById('appHeading').textContent = viewName === 'Lessons' ? 'Subjects & Grades' : viewName;
+      // Dynamic Header Title
+      if (viewName === 'Lessons') document.getElementById('appHeading').textContent = 'Subjects & Grades';
+      else if (viewName === 'Updates') document.getElementById('appHeading').textContent = 'Settings & Updates';
+      else document.getElementById('appHeading').textContent = viewName;
+
+      // Hide FAB on Updates screen
+      document.getElementById('fab').style.display = viewName === 'Updates' ? 'none' : 'flex';
+
       renderCurrentView();
     }
 
@@ -874,7 +1056,11 @@
 
     // Initialize App
     document.getElementById('headerSub').textContent = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+    document.getElementById('versionText').textContent = `Current Version: v${APP_VERSION}`;
     renderCurrentView();
+
+    // Check for updates automatically on startup
+    checkForUpdates();
   </script>
 </body>
 </html>
