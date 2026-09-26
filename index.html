@@ -19,6 +19,11 @@
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
   
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
   <style>
     :root {
       --bg: #000000;
@@ -52,7 +57,7 @@
       overflow: hidden;
     }
 
-    /* --- Update Notification Banner --- */
+    /* --- Update Banner --- */
     #updateBanner {
       display: none;
       background-color: var(--accent-blue);
@@ -63,7 +68,6 @@
       font-size: 0.85rem;
       font-weight: 600;
       z-index: 300;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
 
     #updateBanner button {
@@ -77,7 +81,7 @@
       cursor: pointer;
     }
 
-    /* --- App Header with Notch Support --- */
+    /* --- App Header --- */
     header {
       padding: calc(0.8rem + env(safe-area-inset-top)) 1rem 0.5rem;
       background-color: var(--bg);
@@ -101,8 +105,31 @@
 
     .header-top .icons {
       display: flex;
+      align-items: center;
       gap: 12px;
       color: var(--subtext);
+    }
+
+    .user-avatar-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: #222226;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .user-avatar-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .icon-btn {
@@ -122,7 +149,7 @@
       font-weight: 500;
     }
 
-    /* --- Scrollable Content --- */
+    /* --- Main Scroll Area --- */
     main {
       flex: 1;
       padding: 0.5rem 1rem calc(6rem + env(safe-area-inset-bottom));
@@ -130,21 +157,14 @@
       -webkit-overflow-scrolling: touch;
     }
 
-    .view {
-      display: none;
-    }
-
-    .view.active {
-      display: block;
-      animation: fadeIn 0.25s ease-out;
-    }
+    .view { display: none; }
+    .view.active { display: block; animation: fadeIn 0.25s ease-out; }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* --- UI Components --- */
     .section-title {
       font-size: 0.75rem;
       font-weight: 700;
@@ -162,7 +182,7 @@
       margin-bottom: 1rem;
     }
 
-    /* --- Bottom Navigation with Home Indicator Support --- */
+    /* --- Bottom Navigation --- */
     nav {
       position: fixed;
       bottom: 0;
@@ -190,18 +210,9 @@
       position: relative;
     }
 
-    .nav-item.active {
-      color: var(--accent-pink);
-    }
-
-    .nav-item .material-icons-round {
-      font-size: 1.3rem;
-    }
-
-    .nav-item span.label {
-      font-size: 0.6rem;
-      font-weight: 600;
-    }
+    .nav-item.active { color: var(--accent-pink); }
+    .nav-item .material-icons-round { font-size: 1.3rem; }
+    .nav-item span.label { font-size: 0.6rem; font-weight: 600; }
 
     .nav-badge {
       position: absolute;
@@ -214,7 +225,7 @@
       display: none;
     }
 
-    /* --- Floating Action Button --- */
+    /* --- FAB --- */
     #fab {
       position: fixed;
       bottom: calc(5rem + env(safe-area-inset-bottom));
@@ -235,9 +246,7 @@
       transition: transform 0.15s ease;
     }
 
-    #fab:active {
-      transform: scale(0.92);
-    }
+    #fab:active { transform: scale(0.92); }
 
     /* --- Timetable View --- */
     .week-scroller {
@@ -246,7 +255,6 @@
       overflow-x: auto;
       padding-bottom: 1rem;
     }
-
     .week-scroller::-webkit-scrollbar { display: none; }
 
     .day-chip {
@@ -268,7 +276,7 @@
     .day-chip .day-name { font-size: 0.8rem; font-weight: 700; }
     .day-chip .day-date { font-size: 0.7rem; opacity: 0.8; }
 
-    /* --- Subject & Grade View --- */
+    /* --- Subjects View --- */
     .subject-item {
       display: flex;
       justify-content: space-between;
@@ -297,56 +305,16 @@
       font-weight: 600;
     }
 
-    .grade-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .grade-card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 1rem;
-      text-align: center;
-    }
-
+    .grade-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .grade-card { background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 1rem; text-align: center; }
     .grade-val { font-size: 1.6rem; font-weight: 700; margin-bottom: 2px; }
     .grade-lbl { font-size: 0.7rem; color: var(--subtext); text-transform: uppercase; font-weight: 600; }
 
-    /* --- Tasks Tab Bar --- */
-    .tab-bar {
-      display: flex;
-      border-bottom: 1px solid var(--card-border);
-      margin-bottom: 1.25rem;
-    }
-
-    .tab-btn {
-      flex: 1;
-      text-align: center;
-      padding: 0.75rem 0;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--subtext);
-      background: none;
-      border: none;
-      cursor: pointer;
-      position: relative;
-    }
-
-    .tab-btn.active {
-      color: var(--text);
-    }
-
-    .tab-btn.active::after {
-      content: '';
-      position: absolute;
-      bottom: -1px;
-      left: 20%;
-      width: 60%;
-      height: 2px;
-      background-color: var(--accent-pink);
-    }
+    /* --- Tasks View --- */
+    .tab-bar { display: flex; border-bottom: 1px solid var(--card-border); margin-bottom: 1.25rem; }
+    .tab-btn { flex: 1; text-align: center; padding: 0.75rem 0; font-size: 0.9rem; font-weight: 600; color: var(--subtext); background: none; border: none; cursor: pointer; position: relative; }
+    .tab-btn.active { color: var(--text); }
+    .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 20%; width: 60%; height: 2px; background-color: var(--accent-pink); }
 
     .task-card {
       background-color: var(--card-bg);
@@ -358,76 +326,20 @@
       align-items: center;
       justify-content: space-between;
     }
-
-    .task-card.completed {
-      opacity: 0.5;
-      text-decoration: line-through;
-    }
+    .task-card.completed { opacity: 0.5; text-decoration: line-through; }
 
     /* --- Attendance View --- */
-    .attendance-header {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
+    .attendance-header { display: flex; align-items: center; gap: 20px; }
     .progress-circle {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
+      width: 80px; height: 80px; border-radius: 50%;
       background: conic-gradient(var(--accent-pink) var(--progress, 0%), #222226 var(--progress, 0%));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-
-    .inner-circle {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background-color: var(--card-bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-      font-weight: 700;
-    }
-
-    .calendar-controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-    }
-
-    .day-header {
-      text-align: center;
-      font-size: 0.7rem;
-      color: var(--subtext);
-      font-weight: 600;
-      padding-bottom: 4px;
-    }
-
-    .cal-day {
-      aspect-ratio: 1;
-      background-color: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.85rem;
-      cursor: pointer;
-      color: var(--text);
-    }
-
+    .inner-circle { width: 64px; height: 64px; border-radius: 50%; background-color: var(--card-bg); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; }
+    .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+    .day-header { text-align: center; font-size: 0.7rem; color: var(--subtext); font-weight: 600; padding-bottom: 4px; }
+    .cal-day { aspect-ratio: 1; background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; cursor: pointer; color: var(--text); }
     .cal-day.empty { background: none; border: none; cursor: default; }
     .cal-day.present { background-color: rgba(48, 209, 88, 0.2); color: var(--accent-green); border-color: var(--accent-green); }
     .cal-day.absent { background-color: rgba(255, 55, 95, 0.2); color: var(--accent-pink); border-color: var(--accent-pink); }
@@ -435,72 +347,66 @@
 
     /* --- Settings / Updates View --- */
     .settings-btn {
+      width: 100%; background-color: var(--card-bg); border: 1px solid var(--card-border);
+      color: var(--text); padding: 1rem; border-radius: 14px; font-size: 0.95rem; font-weight: 600;
+      display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-bottom: 0.75rem;
+    }
+    .settings-btn:active { background-color: #1a1a1e; }
+
+    /* --- Google & Auth Custom Styling --- */
+    .google-btn {
       width: 100%;
-      background-color: var(--card-bg);
-      border: 1px solid var(--card-border);
-      color: var(--text);
-      padding: 1rem;
-      border-radius: 14px;
+      background-color: #ffffff;
+      color: #000000;
+      border: none;
+      padding: 0.8rem;
+      border-radius: 12px;
       font-size: 0.95rem;
       font-weight: 600;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      margin-bottom: 0.75rem;
-    }
-
-    .settings-btn:active {
-      background-color: #1a1a1e;
-    }
-
-    /* --- Modal Dialog --- */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(0, 0, 0, 0.75);
-      display: none;
-      align-items: center;
       justify-content: center;
-      z-index: 200;
-      padding: 1rem;
+      gap: 10px;
+      cursor: pointer;
+      margin-bottom: 1rem;
     }
+    
+    .divider-line {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: var(--subtext);
+      font-size: 0.75rem;
+      margin: 1rem 0;
+    }
+    .divider-line::before, .divider-line::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .divider-line::before { margin-right: .5em; }
+    .divider-line::after { margin-left: .5em; }
 
+    /* --- Modals --- */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: none; align-items: center; justify-content: center;
+      z-index: 200; padding: 1rem;
+    }
     .modal {
       background-color: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 18px;
-      width: 100%;
-      max-width: 400px;
-      padding: 1.5rem;
+      border-radius: 18px; width: 100%; max-width: 400px; padding: 1.5rem;
     }
-
     .modal h3 { margin-bottom: 1rem; font-size: 1.2rem; }
     .modal input, .modal select {
-      width: 100%;
-      padding: 0.75rem;
-      background-color: #000000;
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      color: var(--text);
-      font-size: 0.95rem;
-      margin-bottom: 1rem;
+      width: 100%; padding: 0.75rem; background-color: #000000;
+      border: 1px solid var(--card-border); border-radius: 10px;
+      color: var(--text); font-size: 0.95rem; margin-bottom: 0.8rem;
     }
-
-    .modal-btns {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-    }
-
-    .btn {
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
+    .modal-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 0.5rem; }
+    .btn { padding: 0.6rem 1.2rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; }
     .btn-primary { background-color: #ffffff; color: #000000; }
     .btn-cancel { background-color: #222226; color: var(--subtext); }
   </style>
@@ -518,6 +424,9 @@
     <div class="header-top">
       <h1 id="appHeading">Timetable</h1>
       <div class="icons">
+        <button class="user-avatar-btn" id="headerUserAvatar" onclick="openAuthModal()">
+          <span class="material-icons-round" style="font-size:1.1rem">person</span>
+        </button>
         <button class="icon-btn" onclick="clearAllData()"><span class="material-icons-round">restart_alt</span></button>
       </div>
     </div>
@@ -595,14 +504,35 @@
 
     <!-- 5. Settings & Updates View -->
     <div id="viewUpdates" class="view">
-      <div class="card" style="text-align: center; padding: 2rem 1rem;">
-        <span class="material-icons-round" style="font-size: 3rem; color: var(--accent-blue); margin-bottom: 0.5rem;">system_update</span>
-        <h2 style="font-size: 1.2rem; margin-bottom: 0.2rem;">App Updates & Version</h2>
-        <p style="color: var(--subtext); font-size: 0.85rem;" id="versionText">Current Version: v1.1.0</p>
-        <p style="color: var(--subtext); font-size: 0.75rem; margin-top: 0.4rem;" id="updateCheckStatus">Checked just now</p>
+      
+      <!-- Account & Cloud Backup Card -->
+      <div class="card" id="accountCard">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom: 0.8rem;">
+          <div class="user-avatar-btn" id="settingsUserAvatar" style="width:44px; height:44px; font-size:1.2rem;">
+            <span class="material-icons-round">person</span>
+          </div>
+          <div>
+            <h3 id="accountName" style="font-size:1rem;">Guest User</h3>
+            <p id="accountEmail" style="font-size:0.75rem; color:var(--subtext);">Not logged in (Local storage only)</p>
+          </div>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-primary" id="accountAuthBtn" onclick="openAuthModal()" style="flex:1;">Sign In / Cloud Sync</button>
+          <button class="btn btn-cancel" id="accountSignOutBtn" onclick="signOutUser()" style="display:none;">Sign Out</button>
+        </div>
       </div>
 
-      <p class="section-title">Update Actions</p>
+      <p class="section-title">Cloud Backup & Sync</p>
+
+      <button class="settings-btn" onclick="syncDataToCloud(true)">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="material-icons-round" style="color: var(--accent-green);">cloud_upload</span>
+          <span>Sync & Backup Data Now</span>
+        </div>
+        <span class="material-icons-round" style="color: var(--subtext);">chevron_right</span>
+      </button>
+
+      <p class="section-title">App Updates & Maintenance</p>
 
       <button class="settings-btn" onclick="checkForUpdates(true)">
         <div style="display:flex; align-items:center; gap:10px;">
@@ -633,7 +563,7 @@
       <button class="settings-btn" onclick="clearAllData()">
         <div style="display:flex; align-items:center; gap:10px;">
           <span class="material-icons-round" style="color: var(--accent-pink);">delete_forever</span>
-          <span style="color: var(--accent-pink);">Clear All Saved Data</span>
+          <span style="color: var(--accent-pink);">Clear All Local Data</span>
         </div>
         <span class="material-icons-round" style="color: var(--subtext);">chevron_right</span>
       </button>
@@ -666,10 +596,10 @@
     </button>
   </nav>
 
-  <!-- Floating Add Button -->
+  <!-- FAB -->
   <button id="fab" onclick="handleFabClick()"><span class="material-icons-round">add</span></button>
 
-  <!-- Dynamic Modal -->
+  <!-- Modal for Item Creation -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
       <h3 id="modalTitle">Add Item</h3>
@@ -681,10 +611,54 @@
     </div>
   </div>
 
+  <!-- Modal for Authentication (Sign In / Sign Up) -->
+  <div class="modal-overlay" id="authModalOverlay">
+    <div class="modal">
+      <h3 id="authTitle" style="text-align: center;">Sign In to StudyFlow</h3>
+      <p style="font-size:0.8rem; color:var(--subtext); text-align:center; margin-bottom:1.2rem;">Back up your timetable, subjects, and tasks across all devices.</p>
+      
+      <!-- Google Sign In Button -->
+      <button class="google-btn" onclick="loginWithGoogle()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#EA4335" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#FBBC05" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+        Continue with Google
+      </button>
+
+      <div class="divider-line">OR WITH EMAIL</div>
+
+      <input type="email" id="authEmail" placeholder="Email address" />
+      <input type="password" id="authPassword" placeholder="Password" />
+
+      <div class="modal-btns" style="flex-direction: column;">
+        <button class="btn btn-primary" style="width:100%" onclick="loginWithEmail()">Sign In</button>
+        <button class="btn btn-cancel" style="width:100%; margin-top:6px;" onclick="signUpWithEmail()">Create New Account</button>
+        <button class="btn btn-cancel" style="width:100%; margin-top:6px; background:none; color:var(--subtext)" onclick="closeAuthModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // --- 1. FIREBASE CONFIGURATION ---
+    // Replace these placeholder keys with your actual Firebase Console Project Keys
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    const auth = firebase.apps.length ? firebase.auth() : null;
+    const db = firebase.apps.length ? firebase.firestore() : null;
+    let currentUser = null;
+
     // --- APP VERSION CONTROL ---
-    // Increment this number whenever you upload new code to GitHub/Server
-    const APP_VERSION = "1.1.0";
+    const APP_VERSION = "1.2.0";
 
     // Prevent internal iOS standalone links from opening in browser Safari
     (function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^http/;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.href)&&d.parentNode)d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone");
@@ -706,6 +680,11 @@
       localStorage.setItem('sf_attendance', JSON.stringify(store.attendance));
       localStorage.setItem('sf_tasks', JSON.stringify(store.tasks));
       renderCurrentView();
+
+      // Automatically sync to Firebase Cloud if user is logged in
+      if (currentUser && db) {
+        syncDataToCloud(false);
+      }
     }
 
     function dateToKey(d) {
@@ -715,60 +694,175 @@
       return `${yr}-${mo}-${da}`;
     }
 
-    // --- AUTO-UPDATE SYSTEM ---
-    async function checkForUpdates(isManual = false) {
-      const statusEl = document.getElementById('updateCheckStatus');
-      if (statusEl) statusEl.textContent = 'Checking server for updates...';
+    // --- AUTHENTICATION & CLOUD SYNC LOGIC ---
+    if (auth) {
+      auth.onAuthStateChanged(user => {
+        currentUser = user;
+        updateUserUI();
+        if (user) {
+          loadDataFromCloud();
+        }
+      });
+    }
+
+    function updateUserUI() {
+      const headerAvatar = document.getElementById('headerUserAvatar');
+      const settingsAvatar = document.getElementById('settingsUserAvatar');
+      const accountName = document.getElementById('accountName');
+      const accountEmail = document.getElementById('accountEmail');
+      const authBtn = document.getElementById('accountAuthBtn');
+      const signOutBtn = document.getElementById('accountSignOutBtn');
+
+      if (currentUser) {
+        let name = currentUser.displayName || currentUser.email.split('@')[0];
+        let photo = currentUser.photoURL;
+
+        if (photo) {
+          headerAvatar.innerHTML = `<img src="${photo}" alt="Avatar">`;
+          settingsAvatar.innerHTML = `<img src="${photo}" alt="Avatar">`;
+        } else {
+          let initial = name.charAt(0).toUpperCase();
+          headerAvatar.innerHTML = initial;
+          settingsAvatar.innerHTML = initial;
+        }
+
+        accountName.textContent = name;
+        accountEmail.textContent = currentUser.email;
+        authBtn.style.display = 'none';
+        signOutBtn.style.display = 'block';
+      } else {
+        headerAvatar.innerHTML = `<span class="material-icons-round" style="font-size:1.1rem">person</span>`;
+        settingsAvatar.innerHTML = `<span class="material-icons-round">person</span>`;
+        accountName.textContent = 'Guest User';
+        accountEmail.textContent = 'Not logged in (Local storage only)';
+        authBtn.style.display = 'block';
+        signOutBtn.style.display = 'none';
+      }
+    }
+
+    function openAuthModal() {
+      if (!auth) {
+        alert("Firebase Config required! Please insert your Firebase keys inside index.html to activate authentication.");
+        return;
+      }
+      document.getElementById('authModalOverlay').style.display = 'flex';
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authModalOverlay').style.display = 'none';
+    }
+
+    async function loginWithGoogle() {
+      try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        await auth.signInWithPopup(provider);
+        closeAuthModal();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    async function loginWithEmail() {
+      const email = document.getElementById('authEmail').value;
+      const pass = document.getElementById('authPassword').value;
+      if (!email || !pass) return alert('Please enter email and password.');
 
       try {
-        // Fetch index.html bypassing iOS browser cache using cache-buster query parameter
+        await auth.signInWithEmailAndPassword(email, pass);
+        closeAuthModal();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    async function signUpWithEmail() {
+      const email = document.getElementById('authEmail').value;
+      const pass = document.getElementById('authPassword').value;
+      if (!email || !pass) return alert('Please enter email and password.');
+
+      try {
+        await auth.createUserWithEmailAndPassword(email, pass);
+        closeAuthModal();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    function signOutUser() {
+      if (confirm("Are you sure you want to sign out?")) {
+        auth.signOut();
+      }
+    }
+
+    async function syncDataToCloud(showToast = true) {
+      if (!currentUser || !db) {
+        if (showToast) alert("Please sign in to sync your data to the cloud.");
+        return;
+      }
+
+      try {
+        await db.collection('users').doc(currentUser.uid).set({
+          store: store,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        if (showToast) alert("✨ Cloud Backup Successful!");
+      } catch (err) {
+        console.error("Cloud backup error:", err);
+        if (showToast) alert("Backup failed: " + err.message);
+      }
+    }
+
+    async function loadDataFromCloud() {
+      if (!currentUser || !db) return;
+
+      try {
+        const doc = await db.collection('users').doc(currentUser.uid).get();
+        if (doc.exists && doc.data().store) {
+          store = doc.data().store;
+          localStorage.setItem('sf_subjects', JSON.stringify(store.subjects || []));
+          localStorage.setItem('sf_attendance', JSON.stringify(store.attendance || {}));
+          localStorage.setItem('sf_tasks', JSON.stringify(store.tasks || []));
+          renderCurrentView();
+        } else {
+          // Push initial local data to cloud
+          syncDataToCloud(false);
+        }
+      } catch (err) {
+        console.error("Cloud load error:", err);
+      }
+    }
+
+    // --- AUTO-UPDATE SYSTEM ---
+    async function checkForUpdates(isManual = false) {
+      try {
         const response = await fetch(window.location.origin + window.location.pathname + '?nocache=' + Date.now(), {
           cache: 'no-store',
           headers: { 'Cache-Control': 'no-cache' }
         });
         const text = await response.text();
-
-        // Match version string in the fetched file
         const versionMatch = text.match(/const APP_VERSION = ["']([^"']+)["']/);
 
         if (versionMatch && versionMatch[1]) {
           const remoteVersion = versionMatch[1];
-
           if (remoteVersion !== APP_VERSION) {
-            // New version detected!
             document.getElementById('updateBanner').style.display = 'flex';
             document.getElementById('updateBadge').style.display = 'block';
             document.getElementById('forceUpdateBtn').style.display = 'flex';
-            if (statusEl) statusEl.innerHTML = `<span style="color:var(--accent-green); font-weight:700;">New version ${remoteVersion} available!</span>`;
-            
-            if (isManual) alert(`New update available (${remoteVersion})! Tap 'Apply New Version' to install.`);
-          } else {
-            if (statusEl) statusEl.textContent = `App is up to date (${APP_VERSION}).`;
-            if (isManual) alert(`You are running the latest version (v${APP_VERSION}).`);
+            if (isManual) alert(`New update available (${remoteVersion})!`);
+          } else if (isManual) {
+            alert(`You are running the latest version (v${APP_VERSION}).`);
           }
-        } else {
-          if (statusEl) statusEl.textContent = 'Could not verify server version.';
         }
-      } catch (err) {
-        console.error('Update check failed:', err);
-        if (statusEl) statusEl.textContent = 'Unable to check updates (Offline).';
-      }
+      } catch (err) { console.error('Update check failed:', err); }
     }
 
     function applyUpdate() {
-      if ('caches' in window) {
-        caches.keys().then(names => {
-          for (let name of names) caches.delete(name);
-        });
-      }
-      // Force reload ignoring cache
+      if ('caches' in window) caches.keys().then(names => { for (let n of names) caches.delete(n); });
       window.location.reload(true);
     }
 
     function forceReloadApp() {
-      if (confirm("Force refresh app and clear web cache? Your saved tasks and subjects will NOT be deleted.")) {
-        applyUpdate();
-      }
+      if (confirm("Force refresh app and clear web cache?")) applyUpdate();
     }
 
     // --- NAVIGATION ---
@@ -780,14 +874,11 @@
       document.getElementById(`view${viewName}`).classList.add('active');
       activeView = viewName;
 
-      // Dynamic Header Title
       if (viewName === 'Lessons') document.getElementById('appHeading').textContent = 'Subjects & Grades';
       else if (viewName === 'Updates') document.getElementById('appHeading').textContent = 'Settings & Updates';
       else document.getElementById('appHeading').textContent = viewName;
 
-      // Hide FAB on Updates screen
       document.getElementById('fab').style.display = viewName === 'Updates' ? 'none' : 'flex';
-
       renderCurrentView();
     }
 
@@ -848,10 +939,7 @@
             let max = parseFloat(sub.maxScore) || 0;
             let pct = max > 0 ? Math.round((score / max) * 100) : 0;
 
-            if (max > 0) {
-              totalPct += pct;
-              gradedSubjectsCount++;
-            }
+            if (max > 0) { totalPct += pct; gradedSubjectsCount++; }
 
             return `
               <div class="subject-item">
@@ -875,11 +963,7 @@
       document.getElementById('totalSubjectsDisplay').textContent = store.subjects.length;
     }
 
-    function deleteSubject(idx) {
-      store.subjects.splice(idx, 1);
-      saveStore();
-    }
-
+    function deleteSubject(idx) { store.subjects.splice(idx, 1); saveStore(); }
     function editGrade(idx) {
       let sub = store.subjects[idx];
       let score = prompt(`Enter score earned for ${sub.name}:`, sub.score || 0);
@@ -923,10 +1007,7 @@
 
     function toggleTask(id) {
       let task = store.tasks.find(t => t.id === id);
-      if (task) {
-        task.completed = !task.completed;
-        saveStore();
-      }
+      if (task) { task.completed = !task.completed; saveStore(); }
     }
 
     function deleteTask(id) {
@@ -936,11 +1017,7 @@
 
     // --- ATTENDANCE LOGIC ---
     let calViewDate = new Date();
-
-    function changeMonth(dir) {
-      calViewDate.setMonth(calViewDate.getMonth() + dir);
-      renderAttendanceView();
-    }
+    function changeMonth(dir) { calViewDate.setMonth(calViewDate.getMonth() + dir); renderAttendanceView(); }
 
     function renderAttendanceView() {
       const year = calViewDate.getFullYear();
@@ -951,16 +1028,12 @@
 
       const firstDay = new Date(year, month, 1).getDay();
       const totalDays = new Date(year, month + 1, 0).getDate();
-
       const grid = document.getElementById('calDaysGrid');
       grid.innerHTML = '';
 
-      for (let i = 0; i < firstDay; i++) {
-        grid.appendChild(document.createElement('div')).className = 'cal-day empty';
-      }
+      for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div')).className = 'cal-day empty';
 
-      let presentCount = 0;
-      let absentCount = 0;
+      let presentCount = 0, absentCount = 0;
 
       for (let day = 1; day <= totalDays; day++) {
         let dKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -1023,9 +1096,7 @@
       overlay.style.display = 'flex';
     }
 
-    function closeModal() {
-      document.getElementById('modalOverlay').style.display = 'none';
-    }
+    function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
 
     function submitModal() {
       if (activeView === 'Lessons') {
@@ -1047,7 +1118,7 @@
     }
 
     function clearAllData() {
-      if (confirm("Reset all data back to 0?")) {
+      if (confirm("Reset all local data back to 0?")) {
         localStorage.clear();
         store = { subjects: [], attendance: {}, tasks: [] };
         saveStore();
@@ -1056,10 +1127,7 @@
 
     // Initialize App
     document.getElementById('headerSub').textContent = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-    document.getElementById('versionText').textContent = `Current Version: v${APP_VERSION}`;
     renderCurrentView();
-
-    // Check for updates automatically on startup
     checkForUpdates();
   </script>
 </body>
