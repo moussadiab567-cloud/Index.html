@@ -346,6 +346,9 @@
       cursor: pointer;
       font-size: 1.1rem;
       font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       transition: transform 0.15s var(--ease-ios);
     }
 
@@ -653,7 +656,7 @@
       <div class="grade-grid" style="margin-bottom: 1.25rem;">
         <div class="grade-card" style="border-color: var(--accent-green)">
           <div class="grade-val" id="overallGradeDisplay" style="color: var(--accent-green)">0.0%</div>
-          <div class="grade-lbl">Overall Average</div>
+          <div class="grade-lbl">Overall Combined Average</div>
         </div>
         <div class="grade-card">
           <div class="grade-val" id="totalSubjectsDisplay">0</div>
@@ -662,7 +665,7 @@
       </div>
 
       <div style="display:flex; justify-content:space-between; align-items:center; margin: 1.25rem 0 0.75rem;">
-        <p class="section-title" style="margin:0;">Your Subjects</p>
+        <p class="section-title" style="margin:0;">Your Subjects & Grades</p>
         <button onclick="addSubjectPrompt()" style="background:var(--accent-blue); border:none; color:#fff; padding:0.35rem 0.75rem; border-radius:10px; font-weight:600; font-size:0.78rem; cursor:pointer;">+ Add Subject</button>
       </div>
       <div id="subjectList"></div>
@@ -977,7 +980,7 @@
     const db = firebase.firestore();
     let currentUser = null;
 
-    const APP_VERSION = "1.3.7";
+    const APP_VERSION = "1.4.0";
 
     let activeView = 'Timetable';
     let currentTaskTab = 'homework';
@@ -996,10 +999,10 @@
 
     let store = {
       subjects: JSON.parse(localStorage.getItem('sf_subjects')) || [
-        { name: 'Programming', color: '#0a84ff', score: 0, maxScore: 100, lessons: 0 },
-        { name: 'Arabic', color: '#30d158', score: 0, maxScore: 100, lessons: 0 },
-        { name: 'History', color: '#ff9f0a', score: 0, maxScore: 100, lessons: 0 },
-        { name: 'English', color: '#ff375f', score: 0, maxScore: 100, lessons: 0 }
+        { name: 'Programming', color: '#0a84ff', grades: [] },
+        { name: 'Arabic', color: '#30d158', grades: [] },
+        { name: 'History', color: '#ff9f0a', grades: [] },
+        { name: 'English', color: '#ff375f', grades: [] }
       ],
       attendance: JSON.parse(localStorage.getItem('sf_attendance')) || {},
       tasks: JSON.parse(localStorage.getItem('sf_tasks')) || [],
@@ -1328,7 +1331,7 @@
       if (activeView === 'Attendance') renderAttendanceView();
     }
 
-    // --- TIMETABLE & CHORE LOGIC ---
+    // --- TIMETABLE LOGIC ---
     function renderTimetable() {
       const scroller = document.getElementById('weekScroller');
       scroller.innerHTML = '';
@@ -1356,7 +1359,7 @@
       let html = '';
 
       if (dayTasks.length === 0) {
-        html += `<p style="color:var(--subtext); font-size:0.85rem; margin: 0.8rem 0;">No classes or chores scheduled for this day.</p>`;
+        html += `<p style="color:var(--subtext); font-size:0.85rem; margin: 0.8rem 0;">No classes or tasks scheduled for this day.</p>`;
       } else {
         html += dayTasks.map(t => {
           const subColor = getSubjectColor(t.subject);
@@ -1437,45 +1440,114 @@
       container.innerHTML = html;
     }
 
-    // --- SUBJECTS LOGIC ---
+    // --- SUBJECTS & GRADE CALCULATION ENGINE ---
+    function getSubjectGradeData(sub) {
+      if (!sub.grades) sub.grades = [];
+      
+      // Backward compatibility for legacy score/maxScore fields
+      if (sub.grades.length === 0 && sub.maxScore > 0) {
+        sub.grades.push({ title: 'Overall Score', score: sub.score || 0, maxScore: sub.maxScore || 100 });
+      }
+
+      if (sub.grades.length === 0) return null;
+
+      let totalEarned = 0;
+      let totalMax = 0;
+      sub.grades.forEach(g => {
+        totalEarned += parseFloat(g.score) || 0;
+        totalMax += parseFloat(g.maxScore) || 0;
+      });
+
+      let pct = totalMax > 0 ? (totalEarned / totalMax) * 100 : 0;
+      return { pct, totalEarned, totalMax };
+    }
+
     function renderSubjectsView() {
       const list = document.getElementById('subjectList');
-      let totalPct = 0;
-      let gradedSubjectsCount = 0;
+      let grandTotalEarned = 0;
+      let grandTotalMax = 0;
 
       list.innerHTML = store.subjects.length === 0
         ? `<p style="color:var(--subtext); text-align:center; padding: 2rem 0;">No subjects added yet. Tap "+ Add Subject" above to start!</p>`
         : store.subjects.map((sub, i) => {
-            let score = parseFloat(sub.score) || 0;
-            let max = parseFloat(sub.maxScore) || 0;
-            let pct = max > 0 ? Math.round((score / max) * 100) : 0;
+            const gradeData = getSubjectGradeData(sub);
+            let pctDisplay = "No grades logged";
 
-            if (max > 0) { totalPct += pct; gradedSubjectsCount++; }
+            if (gradeData !== null) {
+              pctDisplay = `${gradeData.pct.toFixed(1)}% (${gradeData.totalEarned}/${gradeData.totalMax})`;
+              grandTotalEarned += gradeData.totalEarned;
+              grandTotalMax += gradeData.totalMax;
+            }
+
+            let gradesListHtml = (sub.grades && sub.grades.length > 0) ? sub.grades.map((g, gIdx) => {
+              let gPct = g.maxScore > 0 ? ((g.score / g.maxScore) * 100).toFixed(1) : 0;
+              return `
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.78rem; background:var(--input-bg); padding:6px 10px; border-radius:8px; margin-top:4px;">
+                  <span><strong>${g.title || 'Exam/Quiz'}</strong>: ${g.score} / ${g.maxScore} (<span style="color:var(--accent-green); font-weight:700;">${gPct}%</span>)</span>
+                  <button onclick="deleteGrade(${i}, ${gIdx})" style="background:none; border:none; color:var(--accent-pink); cursor:pointer; font-size:0.85rem;" title="Delete Grade">✕</button>
+                </div>`;
+            }).join('') : '';
 
             return `
-              <div class="subject-item" style="border-left: 5px solid ${sub.color || '#0a84ff'};">
-                <div class="subject-left">
-                  <div class="subject-dot" style="background-color: ${sub.color || '#0a84ff'}"></div>
-                  <div>
-                    <div class="subject-title">${sub.name}</div>
-                    <div class="subject-meta">Score: ${score}/${max} (${pct}%) • ${sub.lessons || 0} lessons left</div>
+              <div class="subject-item" style="border-left: 5px solid ${sub.color || '#0a84ff'}; flex-direction:column; align-items:stretch; gap:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <div class="subject-left">
+                    <div class="subject-dot" style="background-color: ${sub.color || '#0a84ff'}"></div>
+                    <div>
+                      <div class="subject-title">${sub.name}</div>
+                      <div class="subject-meta">Average: <strong style="color:var(--text);">${pctDisplay}</strong></div>
+                    </div>
+                  </div>
+                  <div style="display:flex; gap:6px;">
+                    <button class="counter-btn" title="Add Grade / Score" onclick="addGradePrompt(${i})" style="background:var(--accent-blue); color:#fff;"><span class="material-icons-round" style="font-size:1rem">add</span> Grade</button>
+                    <button class="counter-btn" title="Edit Subject & Color" onclick="editSubject(${i})"><span class="material-icons-round" style="font-size:1rem">palette</span></button>
+                    <button class="counter-btn" title="Delete Subject" onclick="deleteSubject(${i})"><span class="material-icons-round" style="font-size:1rem">delete</span></button>
                   </div>
                 </div>
-                <div style="display:flex; gap:6px;">
-                  <button class="counter-btn" title="Edit Subject & Color" onclick="editSubject(${i})"><span class="material-icons-round" style="font-size:1rem">palette</span></button>
-                  <button class="counter-btn" title="Edit Score" onclick="editGrade(${i})"><span class="material-icons-round" style="font-size:1rem">edit</span></button>
-                  <button class="counter-btn" title="Delete" onclick="deleteSubject(${i})"><span class="material-icons-round" style="font-size:1rem">delete</span></button>
-                </div>
+                ${gradesListHtml ? `<div style="display:flex; flex-direction:column; gap:2px; border-top:1px dashed var(--card-border); padding-top:6px;">${gradesListHtml}</div>` : ''}
               </div>
             `;
           }).join('');
 
-      let avg = gradedSubjectsCount > 0 ? (totalPct / gradedSubjectsCount).toFixed(1) : "0.0";
-      document.getElementById('overallGradeDisplay').textContent = `${avg}%`;
+      let overallAvg = grandTotalMax > 0 ? ((grandTotalEarned / grandTotalMax) * 100).toFixed(1) : "0.0";
+      document.getElementById('overallGradeDisplay').textContent = `${overallAvg}%`;
       document.getElementById('totalSubjectsDisplay').textContent = store.subjects.length;
     }
 
-    // --- NEW SUBJECT COLOR MODAL ENGINE ---
+    // --- GRADE ENTRY PROMPTS ---
+    function addGradePrompt(subjectIdx) {
+      const sub = store.subjects[subjectIdx];
+      let title = prompt(`Enter test/quiz/assignment name for ${sub.name}:`, "Midterm Exam");
+      if (!title) return;
+
+      let scoreEarnedStr = prompt(`Enter the score you got on "${title}":`, "18");
+      if (scoreEarnedStr === null) return;
+
+      let maxScoreStr = prompt(`Enter the maximum total score possible for "${title}":`, "20");
+      if (maxScoreStr === null) return;
+
+      let scoreEarned = parseFloat(scoreEarnedStr) || 0;
+      let maxScore = parseFloat(maxScoreStr) || 100;
+
+      if (maxScore <= 0) return alert("Total score must be greater than 0.");
+
+      let pct = ((scoreEarned / maxScore) * 100).toFixed(1);
+
+      if (!sub.grades) sub.grades = [];
+      sub.grades.push({ title, score: scoreEarned, maxScore });
+      
+      saveStore();
+      alert(`Score saved!\nPercentage: ${pct}%\nCombined subject average updated.`);
+    }
+
+    function deleteGrade(subIdx, gradeIdx) {
+      if (confirm("Delete this grade record?")) {
+        store.subjects[subIdx].grades.splice(gradeIdx, 1);
+        saveStore();
+      }
+    }
+
+    // --- COLOR & SUBJECT MODAL ENGINE ---
     function renderColorSwatches() {
       const container = document.getElementById('subjectColorSwatches');
       container.innerHTML = PRESET_COLORS.map(c => `
@@ -1532,9 +1604,7 @@
         store.subjects.push({
           name: nameInput,
           color: selectedSubjectColor,
-          score: 0,
-          maxScore: 100,
-          lessons: 0
+          grades: []
         });
       } else {
         store.subjects[editingSubjectIndex].name = nameInput;
@@ -1546,24 +1616,13 @@
     }
 
     function deleteSubject(idx) { 
-      if (confirm(`Delete subject "${store.subjects[idx].name}"?`)) {
+      if (confirm(`Delete subject "${store.subjects[idx].name}" and all its grades?`)) {
         store.subjects.splice(idx, 1); 
         saveStore(); 
       }
     }
 
-    function editGrade(idx) {
-      let sub = store.subjects[idx];
-      let score = prompt(`Enter score earned for ${sub.name}:`, sub.score || 0);
-      let max = prompt(`Enter max possible score for ${sub.name}:`, sub.maxScore || 100);
-      if (score !== null && max !== null) {
-        sub.score = parseFloat(score) || 0;
-        sub.maxScore = parseFloat(max) || 0;
-        saveStore();
-      }
-    }
-
-    // --- TASKS & CHORES LOGIC ---
+    // --- TASKS LOGIC ---
     function switchTaskTab(btn, category) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
@@ -1604,7 +1663,31 @@
     function toggleTask(id) {
       let task = store.tasks.find(t => t.id === id);
       if (task) { 
-        task.completed = !task.completed; 
+        task.completed = !task.completed;
+
+        // Prompt for score if completing an exam or task
+        if (task.completed && (task.category === 'exam' || task.category === 'homework')) {
+          let promptGrade = confirm(`Did you receive a grade for "${task.title}" that you want to add to your average calculation?`);
+          if (promptGrade) {
+            let scoreStr = prompt(`Enter score earned for "${task.title}":`, "18");
+            let maxStr = prompt(`Enter maximum possible score for "${task.title}":`, "20");
+            if (scoreStr !== null && maxStr !== null) {
+              let scoreEarned = parseFloat(scoreStr) || 0;
+              let maxScore = parseFloat(maxStr) || 100;
+
+              let sub = store.subjects.find(s => s.name.toLowerCase() === (task.subject || '').toLowerCase());
+              if (!sub && store.subjects.length > 0) sub = store.subjects[0];
+
+              if (sub) {
+                if (!sub.grades) sub.grades = [];
+                sub.grades.push({ title: task.title, score: scoreEarned, maxScore });
+                let pct = maxScore > 0 ? ((scoreEarned / maxScore) * 100).toFixed(1) : 0;
+                alert(`Grade added to ${sub.name}! (${pct}%)\nOverall average updated.`);
+              }
+            }
+          }
+        }
+
         saveStore(); 
       }
     }
@@ -1830,10 +1913,10 @@
         localStorage.clear();
         store = {
           subjects: [
-            { name: 'Programming', color: '#0a84ff', score: 0, maxScore: 100, lessons: 0 },
-            { name: 'Arabic', color: '#30d158', score: 0, maxScore: 100, lessons: 0 },
-            { name: 'History', color: '#ff9f0a', score: 0, maxScore: 100, lessons: 0 },
-            { name: 'English', color: '#ff375f', score: 0, maxScore: 100, lessons: 0 }
+            { name: 'Programming', color: '#0a84ff', grades: [] },
+            { name: 'Arabic', color: '#30d158', grades: [] },
+            { name: 'History', color: '#ff9f0a', grades: [] },
+            { name: 'English', color: '#ff375f', grades: [] }
           ],
           attendance: {},
           tasks: [],
