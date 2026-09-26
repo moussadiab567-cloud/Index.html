@@ -2,10 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <!-- iOS & Mobile Viewport Configuration -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  
+  <!-- iOS Standalone App Settings -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="StudyFlow" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Embedded Apple Touch Icon for Home Screen -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' style='background:%23000000'><rect width='512' height='512' fill='%23000000'/><path fill='%23ff375f' d='M256 120c-70 0-128 58-128 128s58 128 128 128 128-58 128-128-58-128-128-128zm0 216c-48.5 0-88-39.5-88-88s39.5-88 88-88 88 39.5 88 88-39.5 88-88 88z'/><circle cx='256' cy='248' r='48' fill='%230a84ff'/></svg>" />
+
   <title>StudyFlow - Student Tracker</title>
+  
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+  
   <style>
     :root {
       --bg: #000000;
@@ -18,15 +31,16 @@
       --accent-green: #30d158;
       --accent-orange: #ff9f0a;
       --accent-purple: #bf5af2;
-      --nav-bg: rgba(18, 18, 20, 0.85);
+      --nav-bg: rgba(18, 18, 20, 0.88);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
 
     body {
@@ -38,9 +52,9 @@
       overflow: hidden;
     }
 
-    /* --- App Header --- */
+    /* --- App Header with Notch Support --- */
     header {
-      padding: 1rem 1rem 0.5rem;
+      padding: calc(0.8rem + env(safe-area-inset-top)) 1rem 0.5rem;
       background-color: var(--bg);
       position: sticky;
       top: 0;
@@ -86,8 +100,9 @@
     /* --- Scrollable Content --- */
     main {
       flex: 1;
-      padding: 0.5rem 1rem 6rem;
+      padding: 0.5rem 1rem calc(6rem + env(safe-area-inset-bottom));
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .view {
@@ -122,7 +137,7 @@
       margin-bottom: 1rem;
     }
 
-    /* --- Bottom Navigation --- */
+    /* --- Bottom Navigation with Home Indicator Support --- */
     nav {
       position: fixed;
       bottom: 0;
@@ -132,7 +147,7 @@
       border-top: 1px solid var(--card-border);
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      padding: 0.6rem 0 1.2rem;
+      padding: 0.6rem 0 calc(0.6rem + env(safe-area-inset-bottom));
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       z-index: 100;
@@ -165,7 +180,7 @@
     /* --- Floating Action Button --- */
     #fab {
       position: fixed;
-      bottom: 5rem;
+      bottom: calc(5rem + env(safe-area-inset-bottom));
       right: 1.25rem;
       background-color: #ffffff;
       color: #000000;
@@ -511,7 +526,7 @@
         </div>
         <div class="calendar-grid" id="calDaysGrid" style="margin-top: 6px;"></div>
       </div>
-      <p style="text-align: center; font-size: 0.75rem; color: var(--subtext);">Tap a day to toggle: Present $\rightarrow$ Absent $\rightarrow$ Holiday $\rightarrow$ Clear</p>
+      <p style="text-align: center; font-size: 0.75rem; color: var(--subtext);">Tap a day to toggle: Present → Absent → Holiday → Clear</p>
     </div>
 
   </main>
@@ -552,15 +567,18 @@
   </div>
 
   <script>
+    // Prevent internal iOS links from opening in Safari
+    (function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^http/;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.href)&&d.parentNode)d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone");
+
     // --- STATE & LOCAL STORAGE ---
     let activeView = 'Timetable';
     let currentTaskTab = 'homework';
-    let currentDate = new Date(); // Live Date
+    let currentDate = new Date();
     let selectedDayKey = dateToKey(currentDate);
 
     let store = {
       subjects: JSON.parse(localStorage.getItem('sf_subjects')) || [],
-      attendance: JSON.parse(localStorage.getItem('sf_attendance')) || {}, // Format: "YYYY-MM-DD": "present"|"absent"|"holiday"
+      attendance: JSON.parse(localStorage.getItem('sf_attendance')) || {},
       tasks: JSON.parse(localStorage.getItem('sf_tasks')) || []
     };
 
@@ -624,7 +642,7 @@
       const container = document.getElementById('timetableList');
       container.innerHTML = dayTasks.length === 0 
         ? `<p style="color:var(--subtext); font-size:0.85rem; margin-top:0.5rem">No classes or events scheduled for this day.</p>`
-        : dayTasks.map((t, idx) => `
+        : dayTasks.map(t => `
             <div class="task-card">
               <div>
                 <strong>${t.title}</strong>
@@ -755,7 +773,6 @@
       const grid = document.getElementById('calDaysGrid');
       grid.innerHTML = '';
 
-      // Blank spaces for offset
       for (let i = 0; i < firstDay; i++) {
         grid.appendChild(document.createElement('div')).className = 'cal-day empty';
       }
