@@ -333,7 +333,7 @@
     }
 
     .subject-left { display: flex; align-items: center; gap: 12px; }
-    .subject-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .subject-dot { width: 14px; height: 14px; border-radius: 50%; }
     .subject-title { font-size: 1rem; font-weight: 600; }
     .subject-meta { font-size: 0.75rem; color: var(--subtext); }
 
@@ -357,7 +357,7 @@
     .grade-val { font-size: 1.6rem; font-weight: 700; margin-bottom: 2px; }
     .grade-lbl { font-size: 0.7rem; color: var(--subtext); text-transform: uppercase; font-weight: 600; }
 
-    /* --- Tasks View --- */
+    /* --- Tasks & Chores View --- */
     .tab-bar { display: flex; border-bottom: 1px solid var(--card-border); margin-bottom: 1.25rem; }
     .tab-btn { flex: 1; text-align: center; padding: 0.75rem 0; font-size: 0.9rem; font-weight: 600; color: var(--subtext); background: none; border: none; cursor: pointer; position: relative; transition: color 0.2s ease; }
     .tab-btn.active { color: var(--text); }
@@ -372,9 +372,22 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      transition: background-color 0.3s var(--ease-ios), opacity 0.2s ease;
+      cursor: pointer;
+      transition: background-color 0.2s var(--ease-ios), opacity 0.2s ease, transform 0.15s ease;
     }
-    .task-card.completed { opacity: 0.5; text-decoration: line-through; }
+    .task-card:active { transform: scale(0.98); }
+    .task-card.completed { opacity: 0.55; }
+    .task-card.completed strong { text-decoration: line-through; color: var(--subtext); }
+
+    .subject-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
 
     /* --- Attendance View --- */
     .attendance-header { display: flex; align-items: center; gap: 20px; }
@@ -486,7 +499,7 @@
     .divider-line::before { margin-right: .5em; }
     .divider-line::after { margin-left: .5em; }
 
-    /* --- ENHANCED ADD MODAL STYLES (MATCHING IMAGE DESIGN) --- */
+    /* --- ADD MODAL STYLES --- */
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background-color: var(--modal-overlay);
@@ -516,7 +529,6 @@
     .modal-header h3 { font-size: 1.1rem; font-weight: 700; color: #ffffff; }
     .modal-header button.close-btn { background: none; border: none; color: #0a84ff; font-weight: 600; font-size: 0.95rem; cursor: pointer; }
 
-    /* Add Type Switcher Tabs (Lesson, Homework, Exam, Reminder, Note) */
     .add-type-tabs {
       display: flex; gap: 6px; background-color: #2c2c2e; padding: 4px;
       border-radius: 14px; margin-bottom: 1.2rem; overflow-x: auto;
@@ -531,7 +543,6 @@
     .add-type-btn span.emoji-icon { font-size: 1.2rem; }
     .add-type-btn.active { background-color: #3a3a3c; color: #ffffff; }
 
-    /* Modal Form Controls */
     .form-row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 0.8rem; }
     .form-row-grid-full { margin-bottom: 0.8rem; }
 
@@ -605,12 +616,12 @@
           <h2 id="selectedDayTitle">Schedule</h2>
           <button onclick="handleFabClick()" style="background:var(--card-border); border:none; color:var(--text); padding:0.4rem 0.8rem; border-radius:10px; font-weight:600; font-size:0.8rem; cursor:pointer;">+ Class</button>
         </div>
-        <p class="section-title" style="margin-top:0.5rem">Classes & Events</p>
+        <p class="section-title" style="margin-top:0.5rem">Classes & Tasks</p>
         <div id="timetableList"></div>
       </div>
     </div>
 
-    <!-- 2. Lessons & Grades View -->
+    <!-- 2. Lessons & Subjects View -->
     <div id="viewLessons" class="view">
       <div class="grade-grid" style="margin-bottom: 1.25rem;">
         <div class="grade-card" style="border-color: var(--accent-green)">
@@ -623,7 +634,10 @@
         </div>
       </div>
 
-      <p class="section-title">Your Subjects</p>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin: 1.25rem 0 0.75rem;">
+        <p class="section-title" style="margin:0;">Your Subjects</p>
+        <button onclick="addSubjectPrompt()" style="background:var(--accent-blue); border:none; color:#fff; padding:0.35rem 0.75rem; border-radius:10px; font-weight:600; font-size:0.78rem; cursor:pointer;">+ Add Subject</button>
+      </div>
       <div id="subjectList"></div>
     </div>
 
@@ -820,11 +834,11 @@
   <!-- FAB -->
   <button id="fab" onclick="handleFabClick()"><span class="material-icons-round">add</span></button>
 
-  <!-- REFACTORED MODAL: MULTI-OPTION DYNAMIC BOTTOM SHEET -->
+  <!-- ADD MODAL -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
       <div class="modal-header">
-        <h3 id="modalTitleDisplay">Add · Sun 27 Sep</h3>
+        <h3 id="modalTitleDisplay">Add · Schedule</h3>
         <button class="close-btn" onclick="closeModal()">Cancel</button>
       </div>
 
@@ -907,13 +921,13 @@
     const db = firebase.firestore();
     let currentUser = null;
 
-    const APP_VERSION = "1.3.5";
+    const APP_VERSION = "1.3.6";
 
     let activeView = 'Timetable';
     let currentTaskTab = 'homework';
     let currentDate = new Date();
     let selectedDayKey = dateToKey(currentDate);
-    let activeModalTab = 'lesson'; // 'lesson' | 'homework' | 'exam' | 'reminder' | 'note'
+    let activeModalTab = 'lesson';
     let selectedNoteSubject = '';
 
     let store = {
@@ -951,6 +965,12 @@
       const mo = String(d.getMonth() + 1).padStart(2, '0');
       const da = String(d.getDate()).padStart(2, '0');
       return `${yr}-${mo}-${da}`;
+    }
+
+    function getSubjectColor(subjectName) {
+      if (!subjectName) return '#0a84ff';
+      const sub = store.subjects.find(s => s && s.name && s.name.toLowerCase() === subjectName.toLowerCase());
+      return sub ? sub.color : '#0a84ff';
     }
 
     // --- APPEARANCE & THEME ---
@@ -1244,7 +1264,7 @@
       if (activeView === 'Attendance') renderAttendanceView();
     }
 
-    // --- TIMETABLE LOGIC ---
+    // --- TIMETABLE & CHORE LOGIC ---
     function renderTimetable() {
       const scroller = document.getElementById('weekScroller');
       scroller.innerHTML = '';
@@ -1268,17 +1288,90 @@
       
       const dayTasks = store.tasks.filter(t => t.dayKey === selectedDayKey || t.dueDate === selectedDayKey);
       const container = document.getElementById('timetableList');
-      container.innerHTML = dayTasks.length === 0 
-        ? `<p style="color:var(--subtext); font-size:0.85rem; margin-top:0.5rem">No classes or events scheduled for this day.</p>`
-        : dayTasks.map(t => `
-            <div class="task-card">
-              <div>
-                <strong>${t.title}</strong>
-                <div style="font-size:0.75rem; color:var(--subtext)">${t.subject || 'General'} • ${t.category.toUpperCase()}</div>
+
+      let html = '';
+
+      if (dayTasks.length === 0) {
+        html += `<p style="color:var(--subtext); font-size:0.85rem; margin: 0.8rem 0;">No classes or chores scheduled for this day.</p>`;
+      } else {
+        html += dayTasks.map(t => {
+          const subColor = getSubjectColor(t.subject);
+          return `
+            <div class="task-card ${t.completed ? 'completed' : ''}" style="border-left: 4px solid ${subColor};" onclick="toggleTask('${t.id}')">
+              <div style="display:flex; align-items:center; gap:12px; flex:1;">
+                <span class="material-icons-round" style="color:${t.completed ? 'var(--accent-green)' : subColor}; font-size: 1.4rem;">
+                  ${t.completed ? 'check_circle' : 'radio_button_unchecked'}
+                </span>
+                <div>
+                  <strong>${t.title}</strong>
+                  <div style="display:flex; align-items:center; gap:6px; font-size:0.75rem; color:var(--subtext); margin-top:2px;">
+                    <span class="subject-badge" style="background:${subColor}22; color:${subColor}; font-weight:700;">
+                      ${t.subject || 'General'}
+                    </span>
+                    • ${(t.category || 'task').toUpperCase()}
+                  </div>
+                </div>
               </div>
-              <button class="icon-btn" onclick="deleteTask('${t.id}')"><span class="material-icons-round">delete_outline</span></button>
+              <button class="icon-btn" onclick="event.stopPropagation(); deleteTask('${t.id}')">
+                <span class="material-icons-round">delete_outline</span>
+              </button>
             </div>
-          `).join('');
+          `;
+        }).join('');
+      }
+
+      // Check if Today's tasks are completed -> Show Tomorrow's Tasks Preview
+      const completedCount = dayTasks.filter(t => t.completed).length;
+      const isAllDone = dayTasks.length > 0 && completedCount === dayTasks.length;
+
+      if (isAllDone) {
+        let curDateObj = new Date(selectedDayKey + 'T00:00:00');
+        let tomorrowObj = new Date(curDateObj);
+        tomorrowObj.setDate(tomorrowObj.getDate() + 1);
+        let tomorrowKey = dateToKey(tomorrowObj);
+        let tomorrowFormatted = tomorrowObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+        let tomorrowTasks = store.tasks.filter(t => t.dayKey === tomorrowKey || t.dueDate === tomorrowKey);
+
+        html += `
+          <div style="margin-top: 1.25rem; padding: 1rem; background: rgba(48, 209, 88, 0.12); border: 1px solid var(--accent-green); border-radius: 14px; text-align: center;">
+            <div style="font-size: 1.5rem; margin-bottom: 2px;">🎉</div>
+            <strong style="color: var(--accent-green); font-size: 0.95rem;">All done for today! Great job!</strong>
+            <p style="font-size: 0.8rem; color: var(--subtext); margin-top: 4px;">Here is what's coming up tomorrow (${tomorrowFormatted}):</p>
+          </div>
+
+          <div style="margin-top: 1rem;">
+            <p class="section-title" style="margin-bottom:0.5rem;">Tomorrow's Tasks (${tomorrowFormatted})</p>
+        `;
+
+        if (tomorrowTasks.length === 0) {
+          html += `<p style="color:var(--subtext); font-size:0.85rem;">No tasks or classes scheduled for tomorrow yet. Take a break!</p></div>`;
+        } else {
+          html += tomorrowTasks.map(t => {
+            const subColor = getSubjectColor(t.subject);
+            return `
+              <div class="task-card ${t.completed ? 'completed' : ''}" style="border-left: 4px solid ${subColor}; opacity: 0.9;" onclick="toggleTask('${t.id}')">
+                <div style="display:flex; align-items:center; gap:12px; flex:1;">
+                  <span class="material-icons-round" style="color:${subColor}; font-size: 1.2rem;">
+                    ${t.completed ? 'check_circle' : 'schedule'}
+                  </span>
+                  <div>
+                    <strong>${t.title}</strong>
+                    <div style="display:flex; align-items:center; gap:6px; font-size:0.75rem; color:var(--subtext); margin-top:2px;">
+                      <span class="subject-badge" style="background:${subColor}22; color:${subColor}; font-weight:700;">
+                        ${t.subject || 'General'}
+                      </span>
+                      • ${(t.category || 'task').toUpperCase()}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('') + `</div>`;
+        }
+      }
+
+      container.innerHTML = html;
     }
 
     // --- SUBJECTS LOGIC ---
@@ -1288,7 +1381,7 @@
       let gradedSubjectsCount = 0;
 
       list.innerHTML = store.subjects.length === 0
-        ? `<p style="color:var(--subtext); text-align:center; padding: 2rem 0;">No subjects added yet. Tap + to add one!</p>`
+        ? `<p style="color:var(--subtext); text-align:center; padding: 2rem 0;">No subjects added yet. Tap "+ Add Subject" above to start!</p>`
         : store.subjects.map((sub, i) => {
             let score = parseFloat(sub.score) || 0;
             let max = parseFloat(sub.maxScore) || 0;
@@ -1297,17 +1390,18 @@
             if (max > 0) { totalPct += pct; gradedSubjectsCount++; }
 
             return `
-              <div class="subject-item">
+              <div class="subject-item" style="border-left: 5px solid ${sub.color || '#0a84ff'};">
                 <div class="subject-left">
-                  <div class="subject-dot" style="background-color: ${sub.color}"></div>
+                  <div class="subject-dot" style="background-color: ${sub.color || '#0a84ff'}"></div>
                   <div>
                     <div class="subject-title">${sub.name}</div>
                     <div class="subject-meta">Score: ${score}/${max} (${pct}%) • ${sub.lessons || 0} lessons left</div>
                   </div>
                 </div>
                 <div style="display:flex; gap:6px;">
-                  <button class="counter-btn" onclick="editGrade(${i})"><span class="material-icons-round" style="font-size:1rem">edit</span></button>
-                  <button class="counter-btn" onclick="deleteSubject(${i})"><span class="material-icons-round" style="font-size:1rem">delete</span></button>
+                  <button class="counter-btn" title="Edit Subject Color" onclick="editSubject(${i})"><span class="material-icons-round" style="font-size:1rem">palette</span></button>
+                  <button class="counter-btn" title="Edit Score" onclick="editGrade(${i})"><span class="material-icons-round" style="font-size:1rem">edit</span></button>
+                  <button class="counter-btn" title="Delete" onclick="deleteSubject(${i})"><span class="material-icons-round" style="font-size:1rem">delete</span></button>
                 </div>
               </div>
             `;
@@ -1318,7 +1412,47 @@
       document.getElementById('totalSubjectsDisplay').textContent = store.subjects.length;
     }
 
-    function deleteSubject(idx) { store.subjects.splice(idx, 1); saveStore(); }
+    function addSubjectPrompt() {
+      let name = prompt("Enter Subject Name (e.g., Physics, Math, Biology):");
+      if (!name || !name.trim()) return;
+      name = name.trim();
+
+      if (store.subjects.some(s => s.name.toLowerCase() === name.toLowerCase())) {
+        alert("A subject with this name already exists!");
+        return;
+      }
+
+      let color = prompt("Enter Color Hex (e.g., #0a84ff, #30d158, #ff375f, #bf5af2, #ff9f0a, #ffd60a):", "#0a84ff");
+      if (!color || !color.startsWith('#')) color = '#0a84ff';
+
+      store.subjects.push({
+        name: name,
+        color: color,
+        score: 0,
+        maxScore: 100,
+        lessons: 0
+      });
+      saveStore();
+    }
+
+    function editSubject(idx) {
+      let sub = store.subjects[idx];
+      let newName = prompt(`Edit name for ${sub.name}:`, sub.name);
+      if (newName === null) return;
+      let newColor = prompt(`Edit color hex for ${sub.name}:`, sub.color || '#0a84ff');
+      
+      if (newName.trim()) sub.name = newName.trim();
+      if (newColor && newColor.startsWith('#')) sub.color = newColor;
+      saveStore();
+    }
+
+    function deleteSubject(idx) { 
+      if (confirm(`Delete subject "${store.subjects[idx].name}"?`)) {
+        store.subjects.splice(idx, 1); 
+        saveStore(); 
+      }
+    }
+
     function editGrade(idx) {
       let sub = store.subjects[idx];
       let score = prompt(`Enter score earned for ${sub.name}:`, sub.score || 0);
@@ -1330,7 +1464,7 @@
       }
     }
 
-    // --- TASKS LOGIC ---
+    // --- TASKS & CHORES LOGIC ---
     function switchTaskTab(btn, category) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
@@ -1343,26 +1477,37 @@
       const filtered = store.tasks.filter(t => t.category === currentTaskTab);
 
       container.innerHTML = filtered.length === 0
-        ? `<p style="color:var(--subtext); text-align:center; padding: 2rem 0;">No ${currentTaskTab} tasks added.</p>`
-        : filtered.map(t => `
-            <div class="task-card ${t.completed ? 'completed' : ''}">
-              <div style="display:flex; align-items:center; gap:10px;" onclick="toggleTask('${t.id}')">
-                <span class="material-icons-round" style="color:var(--accent-pink); cursor:pointer">
-                  ${t.completed ? 'check_circle' : 'radio_button_unchecked'}
-                </span>
-                <div>
-                  <strong>${t.title}</strong>
-                  <div style="font-size:0.75rem; color:var(--subtext)">${t.subject ? t.subject + ' • ' : ''}Due: ${t.dueDate || 'No date'}</div>
+        ? `<p style="color:var(--subtext); text-align:center; padding: 2rem 0;">No ${currentTaskTab} tasks added yet.</p>`
+        : filtered.map(t => {
+            const subColor = getSubjectColor(t.subject);
+            return `
+              <div class="task-card ${t.completed ? 'completed' : ''}" style="border-left: 4px solid ${subColor};" onclick="toggleTask('${t.id}')">
+                <div style="display:flex; align-items:center; gap:10px; flex:1;">
+                  <span class="material-icons-round" style="color:${t.completed ? 'var(--accent-green)' : subColor}; font-size:1.3rem;">
+                    ${t.completed ? 'check_circle' : 'radio_button_unchecked'}
+                  </span>
+                  <div>
+                    <strong>${t.title}</strong>
+                    <div style="display:flex; align-items:center; gap:6px; font-size:0.75rem; color:var(--subtext); margin-top:2px;">
+                      ${t.subject ? `<span class="subject-badge" style="background:${subColor}22; color:${subColor}; font-weight:700;">${t.subject}</span> • ` : ''}
+                      Due: ${t.dueDate || 'No date'}
+                    </div>
+                  </div>
                 </div>
+                <button class="icon-btn" onclick="event.stopPropagation(); deleteTask('${t.id}')">
+                  <span class="material-icons-round">delete_outline</span>
+                </button>
               </div>
-              <button class="icon-btn" onclick="deleteTask('${t.id}')"><span class="material-icons-round">delete_outline</span></button>
-            </div>
-          `).join('');
+            `;
+          }).join('');
     }
 
     function toggleTask(id) {
       let task = store.tasks.find(t => t.id === id);
-      if (task) { task.completed = !task.completed; saveStore(); }
+      if (task) { 
+        task.completed = !task.completed; 
+        saveStore(); 
+      }
     }
 
     function deleteTask(id) {
@@ -1422,7 +1567,7 @@
       saveStore();
     }
 
-    // --- REFACTORED ENHANCED DYNAMIC MODAL ENGINE ---
+    // --- MODAL ENGINE ---
     function handleFabClick() {
       const formattedDate = new Date(selectedDayKey + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
       document.getElementById('modalTitleDisplay').textContent = `Add · ${formattedDate}`;
@@ -1437,7 +1582,6 @@
     function setModalTab(tabType) {
       activeModalTab = tabType;
 
-      // Update Tab Buttons UI
       ['lesson', 'homework', 'exam', 'reminder', 'note'].forEach(t => {
         const btn = document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
         if (btn) {
@@ -1450,7 +1594,6 @@
       const submitBtn = document.getElementById('btnSubmitMain');
       const formattedDate = selectedDayKey;
 
-      // Build Dynamic Subject Options
       let subjectOpts = store.subjects.length > 0 
         ? store.subjects.map(s => `<option value="${s.name}">${s.name}</option>`).join('')
         : `<option value="General">General</option>`;
@@ -1463,7 +1606,7 @@
             <select id="mLessonType"><option value="Lessons">Lessons</option><option value="Lecture">Lecture</option></select>
           </div>
           <div class="form-row-grid-full">
-            <input type="text" id="mLessonTitle" placeholder="Title (optional), e.g. Unit 3" />
+            <input type="text" id="mLessonTitle" placeholder="Title (e.g. Unit 3 Review)" />
           </div>
           <div class="form-row-grid-full">
             <input type="date" id="mLessonDate" value="${formattedDate}" />
@@ -1477,7 +1620,7 @@
         submitBtn.textContent = 'Add homework';
         container.innerHTML = `
           <div class="form-row-grid-full">
-            <input type="text" id="mHwTitle" placeholder="Homework, e.g. Essay page 40" />
+            <input type="text" id="mHwTitle" placeholder="Homework (e.g. Essay page 40)" />
           </div>
           <div class="form-row-grid">
             <select id="mHwSubject">${subjectOpts}</select>
@@ -1487,16 +1630,12 @@
             <button class="chip-btn" onclick="quickSetDate('mHwDate', 0)">Today</button>
             <button class="chip-btn" onclick="quickSetDate('mHwDate', 1)">Tomorrow</button>
           </div>
-          <div class="checkbox-row">
-            <input type="checkbox" id="mHwPriority" />
-            <label for="mHwPriority">🚩 High priority</label>
-          </div>
         `;
       } else if (tabType === 'exam') {
         submitBtn.textContent = 'Add exam';
         container.innerHTML = `
           <div class="form-row-grid-full">
-            <input type="text" id="mExamTitle" placeholder="Exam name, e.g. Arabic midterm" />
+            <input type="text" id="mExamTitle" placeholder="Exam name (e.g. Arabic midterm)" />
           </div>
           <div class="form-row-grid">
             <select id="mExamSubject">${subjectOpts}</select>
@@ -1522,8 +1661,8 @@
       } else if (tabType === 'note') {
         submitBtn.textContent = 'Save note';
         let pillsHtml = store.subjects.map((s, idx) => `
-          <div class="subject-pill ${idx === 0 ? 'selected' : ''}" onclick="selectNotePill(this, '${s.name}')">
-            <div style="width:10px; height:10px; border-radius:50%; background:${s.color}"></div>
+          <div class="subject-pill ${idx === 0 ? 'selected' : ''}" style="border-left: 3px solid ${s.color}" onclick="selectNotePill(this, '${s.name}')">
+            <div style="width:12px; height:12px; border-radius:50%; background:${s.color}"></div>
             <span>${s.name}</span>
           </div>
         `).join('');
@@ -1556,31 +1695,30 @@
         let title = document.getElementById('mLessonTitle').value || 'Lesson';
         let subject = document.getElementById('mLessonSubject').value;
         let dateVal = document.getElementById('mLessonDate').value;
-        store.tasks.push({ id: Date.now().toString(), dayKey: dateVal, title, subject, category: 'timetable' });
+        store.tasks.push({ id: Date.now().toString(), dayKey: dateVal, dueDate: dateVal, title, subject, category: 'timetable', completed: false });
       } else if (activeModalTab === 'homework') {
         let title = document.getElementById('mHwTitle').value;
         let subject = document.getElementById('mHwSubject').value;
         let dueDate = document.getElementById('mHwDate').value;
-        if (title) store.tasks.push({ id: Date.now().toString(), category: 'homework', title, subject, dueDate, completed: false });
+        if (title) store.tasks.push({ id: Date.now().toString(), category: 'homework', dayKey: dueDate, title, subject, dueDate, completed: false });
       } else if (activeModalTab === 'exam') {
         let title = document.getElementById('mExamTitle').value;
         let subject = document.getElementById('mExamSubject').value;
         let dueDate = document.getElementById('mExamDate').value;
-        if (title) store.tasks.push({ id: Date.now().toString(), category: 'exam', title, subject, dueDate, completed: false });
+        if (title) store.tasks.push({ id: Date.now().toString(), category: 'exam', dayKey: dueDate, title, subject, dueDate, completed: false });
       } else if (activeModalTab === 'reminder') {
         let title = document.getElementById('mRemTitle').value;
         let dueDate = document.getElementById('mRemDate').value;
         let timeVal = document.getElementById('mRemTime').value;
-        if (title) store.tasks.push({ id: Date.now().toString(), category: 'general', title: `🔔 ${title} (${timeVal})`, dueDate, completed: false });
+        if (title) store.tasks.push({ id: Date.now().toString(), category: 'general', dayKey: dueDate, title: `🔔 ${title} (${timeVal})`, dueDate, completed: false });
       } else if (activeModalTab === 'note') {
         let text = document.getElementById('mNoteText').value;
-        if (text) store.tasks.push({ id: Date.now().toString(), category: 'general', title: `📓 Note: ${text}`, subject: selectedNoteSubject, dueDate: selectedDayKey, completed: false });
+        if (text) store.tasks.push({ id: Date.now().toString(), category: 'general', title: `📓 Note: ${text}`, subject: selectedNoteSubject, dayKey: selectedDayKey, dueDate: selectedDayKey, completed: false });
       }
 
       saveStore();
 
       if (keepOpen) {
-        // Clear input field for quick consecutive entry
         const inputs = document.querySelectorAll('#modalFormContainer input[type="text"], #modalFormContainer textarea');
         inputs.forEach(i => i.value = '');
       } else {
@@ -1592,7 +1730,12 @@
       if (confirm("Reset all local data back to initial state?")) {
         localStorage.clear();
         store = {
-          subjects: [],
+          subjects: [
+            { name: 'Programming', color: '#0a84ff', score: 0, maxScore: 100, lessons: 0 },
+            { name: 'Arabic', color: '#30d158', score: 0, maxScore: 100, lessons: 0 },
+            { name: 'History', color: '#ff9f0a', score: 0, maxScore: 100, lessons: 0 },
+            { name: 'English', color: '#ff375f', score: 0, maxScore: 100, lessons: 0 }
+          ],
           attendance: {},
           tasks: [],
           settings: {
