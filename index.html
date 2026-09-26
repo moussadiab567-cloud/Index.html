@@ -72,36 +72,7 @@
       transition: background-color 0.3s var(--ease-ios), color 0.3s var(--ease-ios);
     }
 
-    .smooth-transition {
-      transition: all 0.25s var(--ease-ios);
-      will-change: transform, opacity;
-    }
-
-    /* --- Update Banner --- */
-    #updateBanner {
-      display: none;
-      background-color: var(--accent-blue);
-      color: #ffffff;
-      padding: calc(0.6rem + env(safe-area-inset-top)) 1rem 0.6rem;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      font-weight: 600;
-      z-index: 300;
-    }
-
-    #updateBanner button {
-      background-color: #ffffff;
-      color: #000000;
-      border: none;
-      padding: 0.35rem 0.8rem;
-      border-radius: 20px;
-      font-weight: 700;
-      font-size: 0.75rem;
-      cursor: pointer;
-    }
-
-    /* --- App Header --- */
+    /* --- Header & Subject Dot Indicators --- */
     header {
       padding: calc(0.8rem + env(safe-area-inset-top)) 1rem 0.5rem;
       background-color: var(--bg);
@@ -129,6 +100,34 @@
       align-items: center;
       gap: 12px;
       color: var(--subtext);
+    }
+
+    .date-subtitle-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .date-subtitle {
+      font-size: 0.85rem;
+      color: var(--subtext);
+      font-weight: 500;
+    }
+
+    .subject-dots-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-subject-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 6px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease;
     }
 
     .user-avatar-btn {
@@ -170,10 +169,28 @@
 
     .icon-btn:active { transform: scale(0.88); }
 
-    .date-subtitle {
+    /* --- Update Banner --- */
+    #updateBanner {
+      display: none;
+      background-color: var(--accent-blue);
+      color: #ffffff;
+      padding: calc(0.6rem + env(safe-area-inset-top)) 1rem 0.6rem;
+      align-items: center;
+      justify-content: space-between;
       font-size: 0.85rem;
-      color: var(--subtext);
-      font-weight: 500;
+      font-weight: 600;
+      z-index: 300;
+    }
+
+    #updateBanner button {
+      background-color: #ffffff;
+      color: #000000;
+      border: none;
+      padding: 0.35rem 0.8rem;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.75rem;
+      cursor: pointer;
     }
 
     /* --- Main Scroll Area --- */
@@ -449,7 +466,7 @@
     .grade-val { font-size: 1.6rem; font-weight: 700; margin-bottom: 2px; }
     .grade-lbl { font-size: 0.7rem; color: var(--subtext); text-transform: uppercase; font-weight: 600; }
 
-    /* --- Tasks & Chores View --- */
+    /* --- Tasks View --- */
     .tab-bar { display: flex; border-bottom: 1px solid var(--card-border); margin-bottom: 1.25rem; }
     .tab-btn { flex: 1; text-align: center; padding: 0.75rem 0; font-size: 0.9rem; font-weight: 600; color: var(--subtext); background: none; border: none; cursor: pointer; position: relative; transition: color 0.2s ease; }
     .tab-btn.active { color: var(--text); }
@@ -591,7 +608,7 @@
     .divider-line::before { margin-right: .5em; }
     .divider-line::after { margin-left: .5em; }
 
-    /* --- ADD & SUBJECT MODAL STYLES --- */
+    /* --- MODALS --- */
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background-color: var(--modal-overlay);
@@ -621,7 +638,6 @@
     .modal-header h3 { font-size: 1.1rem; font-weight: 700; color: #ffffff; }
     .modal-header button.close-btn { background: none; border: none; color: #0a84ff; font-weight: 600; font-size: 0.95rem; cursor: pointer; }
 
-    /* Color Swatches Grid */
     .color-palette-grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
@@ -701,11 +717,13 @@
     }
     .btn-add-next { flex: 1; background-color: #2c2c2e; color: #ffffff; border: none; padding: 0.9rem; border-radius: 14px; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
     .btn-submit-main { flex: 2; background-color: #ffffff; color: #000000; border: none; padding: 0.9rem; border-radius: 14px; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
+    .btn-cancel { background-color: #2c2c2e; color: #ffffff; border: none; padding: 0.8rem; border-radius: 12px; font-weight: 600; cursor: pointer; }
+    .btn-primary { background-color: var(--accent-blue); color: #ffffff; border: none; padding: 0.8rem; border-radius: 12px; font-weight: 600; cursor: pointer; }
   </style>
 </head>
 <body>
 
-  <!-- Top Notification Banner for New Updates -->
+  <!-- Top Notification Banner for Updates -->
   <div id="updateBanner">
     <span>🚀 New version available!</span>
     <button onclick="applyUpdate()">Update Now</button>
@@ -716,13 +734,21 @@
     <div class="header-top">
       <h1 id="appHeading">Timetable</h1>
       <div class="icons">
+        <button class="icon-btn" onclick="openFocusModal()" title="Focus Timer">
+          <span class="material-icons-round">timer</span>
+        </button>
         <button class="user-avatar-btn" id="headerUserAvatar" onclick="openAuthModal()">
           <span class="material-icons-round" style="font-size:1.1rem">person</span>
         </button>
         <button class="icon-btn" onclick="clearAllData()"><span class="material-icons-round">restart_alt</span></button>
       </div>
     </div>
-    <div class="date-subtitle" id="headerSub">Today</div>
+    
+    <!-- Dynamic Date Subtitle & Dynamic Subject Colors Circle Indicators -->
+    <div class="date-subtitle-wrapper">
+      <div class="date-subtitle" id="headerSub">Saturday, 26 September 2026</div>
+      <div id="headerSubjectDots" class="subject-dots-container"></div>
+    </div>
   </header>
 
   <!-- Main Views Container -->
@@ -732,7 +758,7 @@
     <div id="viewTimetable" class="view active">
       <div class="week-scroller" id="weekScroller"></div>
       <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; justify-space-between; align-items:center;">
           <h2 id="selectedDayTitle">Schedule</h2>
           <button onclick="handleFabClick()" style="background:var(--card-border); border:none; color:var(--text); padding:0.4rem 0.8rem; border-radius:10px; font-weight:600; font-size:0.8rem; cursor:pointer;">+ Class</button>
         </div>
@@ -802,8 +828,6 @@
 
     <!-- 5. Settings View -->
     <div id="viewUpdates" class="view">
-      
-      <!-- Account Card -->
       <div class="card" id="accountCard">
         <div style="display:flex; align-items:center; gap:12px; margin-bottom: 0.8rem;">
           <div class="user-avatar-btn" id="settingsUserAvatar" style="width:44px; height:44px; font-size:1.2rem;">
@@ -820,7 +844,6 @@
         </div>
       </div>
 
-      <!-- Appearance -->
       <p class="section-title">Appearance Options</p>
       <div class="theme-grid">
         <div class="theme-option" id="themeDarkBtn" onclick="setThemeMode('dark')">
@@ -845,9 +868,7 @@
         <div class="accent-swatch" style="background-color: #ff9f0a;" onclick="setAccentColor('#ff9f0a')" id="accentOrange"></div>
       </div>
 
-      <!-- Notifications -->
       <p class="section-title">Notification Options</p>
-
       <div class="switch-row">
         <span class="label-text">Enable Notifications</span>
         <label class="switch">
@@ -885,31 +906,6 @@
         <div style="display:flex; align-items:center; gap:10px;">
           <span class="material-icons-round" style="color: var(--accent-green);">cloud_upload</span>
           <span>Sync & Backup Data Now</span>
-        </div>
-        <span class="material-icons-round" style="color: var(--subtext);">chevron_right</span>
-      </button>
-
-      <p class="section-title">App Updates & Maintenance</p>
-      <button class="settings-btn" onclick="checkForUpdates(true)">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span class="material-icons-round" style="color: var(--accent-blue);">refresh</span>
-          <span>Check for Updates Now</span>
-        </div>
-        <span class="material-icons-round" style="color: var(--subtext);">chevron_right</span>
-      </button>
-
-      <button class="settings-btn" id="forceUpdateBtn" onclick="applyUpdate()" style="display: none; border-color: var(--accent-blue);">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span class="material-icons-round" style="color: var(--accent-blue);">download_for_offline</span>
-          <span>Apply New Version</span>
-        </div>
-        <span class="material-icons-round" style="color: var(--accent-blue);">chevron_right</span>
-      </button>
-
-      <button class="settings-btn" onclick="forceReloadApp()">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span class="material-icons-round" style="color: var(--accent-orange);">cached</span>
-          <span>Force Refresh App Cache</span>
         </div>
         <span class="material-icons-round" style="color: var(--subtext);">chevron_right</span>
       </button>
@@ -954,6 +950,40 @@
   <!-- FAB -->
   <button id="fab" onclick="handleFabClick()"><span class="material-icons-round">add</span></button>
 
+  <!-- FOCUS TIMER MODAL -->
+  <div class="modal-overlay" id="focusModalOverlay" style="align-items: center;">
+    <div class="modal" style="border-radius: 20px; max-width: 380px; text-align: center;">
+      <div class="modal-header">
+        <h3>Focus Timer</h3>
+        <button class="close-btn" onclick="closeFocusModal()">Close</button>
+      </div>
+      
+      <div style="margin: 1.5rem 0;">
+        <div id="focusTimerDisplay" style="font-size: 3.5rem; font-weight: 800; font-family: monospace; color: var(--accent-pink); margin-bottom: 0.3rem;">25:00</div>
+        <p id="focusTimerState" style="font-size: 0.85rem; color: var(--subtext);">Ready to focus</p>
+      </div>
+
+      <!-- Quick Preset Chips & Custom Duration Field -->
+      <div style="margin-bottom: 1.2rem;">
+        <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 12px;">
+          <button class="chip-btn" onclick="setFocusMinutes(15)">15m</button>
+          <button class="chip-btn active" onclick="setFocusMinutes(25)">25m</button>
+          <button class="chip-btn" onclick="setFocusMinutes(45)">45m</button>
+          <button class="chip-btn" onclick="setFocusMinutes(60)">60m</button>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <label style="font-size: 0.8rem; color: var(--subtext);">Custom Minutes:</label>
+          <input type="number" id="customFocusInput" value="25" min="1" max="240" style="width: 80px; padding: 6px; border-radius: 8px; text-align: center;" onchange="setFocusMinutes(this.value)" />
+        </div>
+      </div>
+
+      <div class="modal-action-btns">
+        <button class="btn-add-next" id="btnResetFocus" onclick="resetFocusTimer()">Reset</button>
+        <button class="btn-submit-main" id="btnToggleFocus" onclick="toggleFocusTimer()" style="background: var(--accent-pink); color: #ffffff;">Start Focus</button>
+      </div>
+    </div>
+  </div>
+
   <!-- STREAMLINED GRADE ENTRY MODAL -->
   <div class="modal-overlay" id="gradeModalOverlay" style="align-items: center;">
     <div class="modal" style="border-radius: 20px; max-width: 400px;">
@@ -961,7 +991,7 @@
         <h3 id="gradeModalTitle">Log Grade</h3>
         <button class="close-btn" onclick="closeGradeModal()">Cancel</button>
       </div>
-      <p id="gradeModalSub" style="font-size: 0.8rem; color: var(--subtext); margin-bottom: 1rem;">Record your score to update your average</p>
+      <p id="gradeModalSub" style="font-size: 0.8rem; color: var(--subtext); margin-bottom: 1rem;">Record score to update average</p>
       
       <div style="margin-bottom: 1rem;">
         <label style="font-size: 0.75rem; font-weight:700; color: var(--subtext); display: block; margin-bottom: 6px; text-transform: uppercase;">Assessment Title</label>
@@ -1004,13 +1034,9 @@
       </div>
       <div style="margin-bottom: 1rem;">
         <label style="font-size: 0.75rem; font-weight:700; color: var(--subtext); display: block; margin-bottom: 8px; text-transform: uppercase;">Color Options</label>
-        
-        <!-- Preset Swatches Grid -->
         <div class="color-palette-grid" id="subjectColorSwatches"></div>
-
-        <!-- Spectrum / Grid Color Input -->
         <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 12px; background: #2c2c2e; padding: 10px 14px; border-radius: 12px;">
-          <span style="font-size: 0.85rem; font-weight: 600; color: #fff;">Custom Color (Spectrum / Grid)</span>
+          <span style="font-size: 0.85rem; font-weight: 600; color: #fff;">Custom Color</span>
           <input type="color" id="customColorPicker" value="#0a84ff" onchange="selectCustomColor(this.value)" style="width: 36px; height: 36px; border: none; border-radius: 50%; cursor: pointer; background: transparent; -webkit-appearance: none;" />
         </div>
       </div>
@@ -1028,7 +1054,6 @@
         <button class="close-btn" onclick="closeModal()">Cancel</button>
       </div>
 
-      <!-- Add Type Selector Bar -->
       <div class="add-type-tabs">
         <button class="add-type-btn active" id="tabBtnLesson" onclick="setModalTab('lesson')">
           <span class="emoji-icon">📚</span>
@@ -1052,10 +1077,8 @@
         </button>
       </div>
 
-      <!-- Dynamic Form Container -->
       <div id="modalFormContainer"></div>
 
-      <!-- Modal Action Buttons -->
       <div class="modal-action-btns">
         <button class="btn-add-next" onclick="submitModal(true)">Add & next</button>
         <button class="btn-submit-main" id="btnSubmitMain" onclick="submitModal(false)">Add lesson</button>
@@ -1063,7 +1086,7 @@
     </div>
   </div>
 
-  <!-- Modal for Authentication (Sign In / Sign Up) -->
+  <!-- AUTHENTICATION MODAL -->
   <div class="modal-overlay" id="authModalOverlay" style="align-items: center;">
     <div class="modal" style="border-radius: 18px; max-width: 400px;">
       <h3 style="text-align: center; margin-bottom: 0.5rem;">Sign In to StudyFlow</h3>
@@ -1088,7 +1111,7 @@
   </div>
 
   <script>
-    // --- 1. FIREBASE CONFIGURATION ---
+    // --- FIREBASE CONFIGURATION ---
     const firebaseConfig = {
       apiKey: "AIzaSyDydPYiSo9dag5ZAvgec1eeKd0kH2DHhyE",
       authDomain: "study-flow-1e186.firebaseapp.com",
@@ -1142,14 +1165,12 @@
       }
     };
 
-    // Helper for physical haptic vibration
     function triggerHaptic(pattern = [20, 30, 20]) {
       if ('vibrate' in navigator) {
         try { navigator.vibrate(pattern); } catch (e) {}
       }
     }
 
-    // iOS/Safari safe date parser
     function parseKeyToDate(keyStr) {
       if (!keyStr) return new Date();
       const parts = keyStr.split('-');
@@ -1179,6 +1200,123 @@
       if (!subjectName) return '#0a84ff';
       const sub = store.subjects.find(s => s && s.name && s.name.toLowerCase() === subjectName.toLowerCase());
       return sub ? sub.color : '#0a84ff';
+    }
+
+    function clearAllData() {
+      if (confirm("Are you sure you want to clear all local data? This action cannot be undone.")) {
+        localStorage.clear();
+        location.reload();
+      }
+    }
+
+    // --- FOCUS TIMER MODULE ---
+    let focusInterval = null;
+    let focusTotalSeconds = 25 * 60;
+    let focusRemainingSeconds = 25 * 60;
+    let focusIsRunning = false;
+
+    function openFocusModal() {
+      document.getElementById('focusModalOverlay').style.display = 'flex';
+      updateFocusTimerDisplay();
+    }
+
+    function closeFocusModal() {
+      document.getElementById('focusModalOverlay').style.display = 'none';
+    }
+
+    function setFocusMinutes(mins) {
+      mins = parseInt(mins) || 25;
+      if (mins < 1) mins = 1;
+      focusTotalSeconds = mins * 60;
+      focusRemainingSeconds = focusTotalSeconds;
+      document.getElementById('customFocusInput').value = mins;
+
+      document.querySelectorAll('#focusModalOverlay .chip-btn').forEach(btn => {
+        if (btn.textContent === mins + 'm') btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+
+      if (focusIsRunning) pauseFocusTimer();
+      updateFocusTimerDisplay();
+    }
+
+    function updateFocusTimerDisplay() {
+      const m = Math.floor(focusRemainingSeconds / 60);
+      const s = focusRemainingSeconds % 60;
+      document.getElementById('focusTimerDisplay').textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function toggleFocusTimer() {
+      if (focusIsRunning) pauseFocusTimer();
+      else startFocusTimer();
+    }
+
+    function startFocusTimer() {
+      if (focusRemainingSeconds <= 0) focusRemainingSeconds = focusTotalSeconds;
+      focusIsRunning = true;
+      document.getElementById('btnToggleFocus').textContent = 'Pause';
+      document.getElementById('focusTimerState').textContent = 'Focus session in progress...';
+
+      focusInterval = setInterval(() => {
+        if (focusRemainingSeconds > 0) {
+          focusRemainingSeconds--;
+          updateFocusTimerDisplay();
+        } else {
+          pauseFocusTimer();
+          triggerHaptic([100, 50, 100, 50, 100]);
+          alert('⏰ Focus Session Complete! Great job!');
+          document.getElementById('focusTimerState').textContent = 'Session completed!';
+        }
+      }, 1000);
+    }
+
+    function pauseFocusTimer() {
+      focusIsRunning = false;
+      clearInterval(focusInterval);
+      document.getElementById('btnToggleFocus').textContent = 'Resume';
+      document.getElementById('focusTimerState').textContent = 'Timer paused';
+    }
+
+    function resetFocusTimer() {
+      pauseFocusTimer();
+      focusRemainingSeconds = focusTotalSeconds;
+      updateFocusTimerDisplay();
+      document.getElementById('btnToggleFocus').textContent = 'Start Focus';
+      document.getElementById('focusTimerState').textContent = 'Ready to focus';
+    }
+
+    // --- DYNAMIC HEADER & SUBJECT COLOR INDICATOR DOTS ---
+    function updateHeaderDateAndDots() {
+      const selectedDateObj = parseKeyToDate(selectedDayKey);
+      const formattedDate = selectedDateObj.toLocaleDateString('en-US', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+      document.getElementById('headerSub').textContent = formattedDate;
+
+      const dayTasks = store.tasks.filter(t => (t.dayKey === selectedDayKey || t.dueDate === selectedDayKey));
+      const dotsContainer = document.getElementById('headerSubjectDots');
+      if (!dotsContainer) return;
+
+      const subjectColors = [];
+      dayTasks.forEach(task => {
+        if (task.subject) {
+          const col = getSubjectColor(task.subject);
+          if (!subjectColors.includes(col)) subjectColors.push(col);
+        }
+      });
+
+      if (subjectColors.length > 0) {
+        dotsContainer.innerHTML = subjectColors.map(color => 
+          `<span class="header-subject-dot" style="background-color: ${color};" title="Class active today"></span>`
+        ).join('');
+        dotsContainer.style.display = 'inline-flex';
+      } else {
+        dotsContainer.innerHTML = '';
+        dotsContainer.style.display = 'none';
+      }
     }
 
     // --- APPEARANCE & THEME ---
@@ -1247,7 +1385,7 @@
       });
     }
 
-    // --- NOTIFICATIONS SYSTEM ---
+    // --- NOTIFICATIONS ---
     function initNotificationsUI() {
       const masterToggle = document.getElementById('notifMasterToggle');
       const reminderToggle = document.getElementById('notifReminderToggle');
@@ -1295,8 +1433,8 @@
     }
 
     function sendTestNotification() {
-      if (!store.settings.notifications) return alert("Please turn on 'Enable Notifications' first!");
-      sendWebNotification('StudyFlow Test Notification 📚', 'Everything is working smoothly!');
+      if (!store.settings.notifications) return alert("Please enable notifications first!");
+      sendWebNotification('StudyFlow Test Notification 📚', 'Notification system operating correctly!');
     }
 
     // --- AUTHENTICATION & CLOUD SYNC ---
@@ -1419,33 +1557,10 @@
       } catch (err) { console.error(err); }
     }
 
-    // --- AUTO-UPDATE ---
-    async function checkForUpdates(isManual = false) {
-      try {
-        const response = await fetch(window.location.origin + window.location.pathname + '?nocache=' + Date.now(), { cache: 'no-store' });
-        const text = await response.text();
-        const versionMatch = text.match(/const APP_VERSION = ["']([^"']+)["']/);
-
-        if (versionMatch && versionMatch[1]) {
-          const remoteVersion = versionMatch[1];
-          if (remoteVersion !== APP_VERSION) {
-            document.getElementById('updateBanner').style.display = 'flex';
-            document.getElementById('updateBadge').style.display = 'block';
-            document.getElementById('forceUpdateBtn').style.display = 'flex';
-            if (isManual) alert(`New update available (${remoteVersion})!`);
-          } else if (isManual) {
-            alert(`You are running the latest version (v${APP_VERSION}).`);
-          }
-        }
-      } catch (err) { console.error('Update check failed:', err); }
-    }
-
     function applyUpdate() {
       if ('caches' in window) caches.keys().then(names => { for (let n of names) caches.delete(n); });
       window.location.reload(true);
     }
-
-    function forceReloadApp() { if (confirm("Force refresh app and clear web cache?")) applyUpdate(); }
 
     // --- NAVIGATION ---
     function switchMainView(btn, viewName) {
@@ -1466,6 +1581,7 @@
     }
 
     function renderCurrentView() {
+      updateHeaderDateAndDots();
       if (activeView === 'Timetable') renderTimetable();
       if (activeView === 'Lessons') renderSubjectsView();
       if (activeView === 'Tasks') renderTasksView();
@@ -1484,7 +1600,11 @@
 
         let chip = document.createElement('div');
         chip.className = `day-chip ${key === selectedDayKey ? 'active' : ''}`;
-        chip.onclick = () => { selectedDayKey = key; renderTimetable(); };
+        chip.onclick = () => { 
+          selectedDayKey = key; 
+          renderTimetable(); 
+          updateHeaderDateAndDots();
+        };
         chip.innerHTML = `
           <div class="day-name">${i === 0 ? 'Today' : d.toLocaleDateString('en-US', {weekday:'short'})}</div>
           <div class="day-date">${d.getDate()} ${d.toLocaleDateString('en-US', {month:'short'})}</div>
@@ -1528,67 +1648,12 @@
         }).join('');
       }
 
-      const completedCount = dayTasks.filter(t => t.completed).length;
-      const isAllDone = dayTasks.length > 0 && completedCount === dayTasks.length;
-
-      if (isAllDone) {
-        let curDateObj = parseKeyToDate(selectedDayKey);
-        let tomorrowObj = new Date(curDateObj);
-        tomorrowObj.setDate(tomorrowObj.getDate() + 1);
-        let tomorrowKey = dateToKey(tomorrowObj);
-        let tomorrowFormatted = tomorrowObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-
-        let tomorrowTasks = store.tasks.filter(t => t.dayKey === tomorrowKey || t.dueDate === tomorrowKey);
-
-        html += `
-          <div style="margin-top: 1.25rem; padding: 1rem; background: rgba(48, 209, 88, 0.12); border: 1px solid var(--accent-green); border-radius: 14px; text-align: center;">
-            <div style="font-size: 1.5rem; margin-bottom: 2px;">🎉</div>
-            <strong style="color: var(--accent-green); font-size: 0.95rem;">All done for today! Great job!</strong>
-            <p style="font-size: 0.8rem; color: var(--subtext); margin-top: 4px;">Here is what's coming up tomorrow (${tomorrowFormatted}):</p>
-          </div>
-
-          <div style="margin-top: 1rem;">
-            <p class="section-title" style="margin-bottom:0.5rem;">Tomorrow's Tasks (${tomorrowFormatted})</p>
-        `;
-
-        if (tomorrowTasks.length === 0) {
-          html += `<p style="color:var(--subtext); font-size:0.85rem;">No tasks or classes scheduled for tomorrow yet. Take a break!</p></div>`;
-        } else {
-          html += tomorrowTasks.map(t => {
-            const subColor = getSubjectColor(t.subject);
-            return `
-              <div class="task-card ${t.completed ? 'completed' : ''}" style="border-left: 4px solid ${subColor}; opacity: 0.9;" onclick="toggleTask('${t.id}')">
-                <div style="display:flex; align-items:center; gap:12px; flex:1;">
-                  <span class="material-icons-round" style="color:${subColor}; font-size: 1.2rem;">
-                    ${t.completed ? 'check_circle' : 'schedule'}
-                  </span>
-                  <div>
-                    <strong>${t.title}</strong>
-                    <div style="display:flex; align-items:center; gap:6px; font-size:0.75rem; color:var(--subtext); margin-top:2px;">
-                      <span class="subject-badge" style="background:${subColor}22; color:${subColor}; font-weight:700;">
-                        ${t.subject || 'General'}
-                      </span>
-                      • ${(t.category || 'task').toUpperCase()}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            `;
-          }).join('') + `</div>`;
-        }
-      }
-
       container.innerHTML = html;
     }
 
-    // --- SUBJECTS & GRADE CALCULATION ENGINE ---
+    // --- SUBJECTS & GRADES LOGIC ---
     function getSubjectGradeData(sub) {
       if (!sub.grades) sub.grades = [];
-      
-      if (sub.grades.length === 0 && sub.maxScore > 0) {
-        sub.grades.push({ title: 'Overall Score', score: sub.score || 0, maxScore: sub.maxScore || 100 });
-      }
-
       if (sub.grades.length === 0) return null;
 
       let totalEarned = 0;
@@ -1673,7 +1738,6 @@
       document.getElementById('totalSubjectsDisplay').textContent = store.subjects.length;
     }
 
-    // --- GRADE MODAL SYSTEM (REPLACES NATIVE PROMPTS) ---
     let pendingGradeTask = null;
 
     function openGradeModalForTask(task) {
@@ -1748,7 +1812,6 @@
       }
     }
 
-    // --- COLOR & SUBJECT MODAL ENGINE ---
     function renderColorSwatches() {
       const container = document.getElementById('subjectColorSwatches');
       container.innerHTML = PRESET_COLORS.map(c => `
@@ -1867,10 +1930,7 @@
         task.completed = !task.completed;
 
         if (task.completed) {
-          // Trigger Haptic Vibration when marking lesson/task as completed
           triggerHaptic([20, 30, 20]);
-
-          // Seamless Grade Prompt via Modal for Exams and Homework
           if (task.category === 'exam' || task.category === 'homework') {
             openGradeModalForTask(task);
           }
@@ -1937,7 +1997,7 @@
       saveStore();
     }
 
-    // --- MODAL ENGINE ---
+    // --- MODAL & SCHEDULING SYSTEM ---
     function handleFabClick() {
       const formattedDate = parseKeyToDate(selectedDayKey).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
       document.getElementById('modalTitleDisplay').textContent = `Add · ${formattedDate}`;
@@ -2083,51 +2143,20 @@
         if (title) store.tasks.push({ id: Date.now().toString(), category: 'general', dayKey: dueDate, title: `🔔 ${title} (${timeVal})`, dueDate, completed: false });
       } else if (activeModalTab === 'note') {
         let text = document.getElementById('mNoteText').value;
-        if (text) store.tasks.push({ id: Date.now().toString(), category: 'general', title: `📓 Note: ${text}`, subject: selectedNoteSubject, dayKey: selectedDayKey, dueDate: selectedDayKey, completed: false });
+        if (text) store.tasks.push({ id: Date.now().toString(), category: 'general', title: `📓 ${text}`, subject: selectedNoteSubject, dayKey: selectedDayKey, dueDate: selectedDayKey, completed: false });
       }
 
       saveStore();
-
-      if (keepOpen) {
-        const inputs = document.querySelectorAll('#modalFormContainer input[type="text"], #modalFormContainer textarea');
-        inputs.forEach(i => i.value = '');
-      } else {
-        closeModal();
-      }
+      if (!keepOpen) closeModal();
     }
 
-    function clearAllData() {
-      if (confirm("Reset all local data back to initial state?")) {
-        localStorage.clear();
-        store = {
-          subjects: [
-            { name: 'Programming', color: '#0a84ff', grades: [] },
-            { name: 'Arabic', color: '#30d158', grades: [] },
-            { name: 'History', color: '#ff9f0a', grades: [] },
-            { name: 'English', color: '#ff375f', grades: [] }
-          ],
-          attendance: {},
-          tasks: [],
-          settings: {
-            themeMode: 'dark',
-            accentColor: '#ff375f',
-            notifications: false,
-            reminders: true,
-            dueDateAlerts: true
-          }
-        };
-        initAppearance();
-        initNotificationsUI();
-        saveStore();
-      }
-    }
-
-    // Initialize Application
-    document.getElementById('headerSub').textContent = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-    initAppearance();
-    initNotificationsUI();
-    renderCurrentView();
-    checkForUpdates();
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      initAppearance();
+      initNotificationsUI();
+      renderColorSwatches();
+      renderCurrentView();
+    });
   </script>
 </body>
 </html>
