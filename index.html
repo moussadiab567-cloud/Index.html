@@ -1,1134 +1,504 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <!-- iOS & Mobile Viewport Configuration -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+// --- 1. FIREBASE CONFIGURATION ---
+const firebaseConfig = {
+  apiKey: "AIzaSyDydPYiSo9dag5ZAvgec1eeKd0kH2DHhyE",
+  authDomain: "study-flow-1e186.firebaseapp.com",
+  projectId: "study-flow-1e186",
+  storageBucket: "study-flow-1e186.firebasestorage.app",
+  messagingSenderId: "188417044848",
+  appId: "1:188417044848:web:0ead93c0a9d6748039dfb5",
+  measurementId: "G-RZQPYGKFE6"
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+let currentUser = null;
+
+const APP_VERSION = "1.2.0";
+
+// iOS standalone link handler
+(function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^http/;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.href)&&d.parentNode)d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone");
+
+// --- STATE & LOCAL STORAGE ---
+let activeView = 'Timetable';
+let currentTaskTab = 'homework';
+let currentDate = new Date();
+let selectedDayKey = dateToKey(currentDate);
+
+let store = {
+  subjects: JSON.parse(localStorage.getItem('sf_subjects')) || [],
+  attendance: JSON.parse(localStorage.getItem('sf_attendance')) || {},
+  tasks: JSON.parse(localStorage.getItem('sf_tasks')) || []
+};
+
+function saveStore() {
+  localStorage.setItem('sf_subjects', JSON.stringify(store.subjects));
+  localStorage.setItem('sf_attendance', JSON.stringify(store.attendance));
+  localStorage.setItem('sf_tasks', JSON.stringify(store.tasks));
+  renderCurrentView();
+
+  if (currentUser && db) {
+    syncDataToCloud(false);
+  }
+}
+
+function dateToKey(d) {
+  const yr = d.getFullYear();
+  const mo = String(d.getMonth() + 1).padStart(2, '0');
+  const da = String(d.getDate()).padStart(2, '0');
+  return `${yr}-${mo}-${da}`;
+}
+
+function getLocalDateFromKey(key) {
+  const [year, month, day] = key.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
+// --- AUTHENTICATION & CLOUD SYNC ---
+if (auth) {
+  auth.onAuthStateChanged(user => {
+    currentUser = user;
+    updateUserUI();
+    if (user) {
+      loadDataFromCloud();
+    }
+  });
+}
+
+function updateUserUI() {
+  const headerAvatar = document.getElementById('headerUserAvatar');
+  const settingsAvatar = document.getElementById('settingsUserAvatar');
+  const accountName = document.getElementById('accountName');
+  const accountEmail = document.getElementById('accountEmail');
+  const authBtn = document.getElementById('accountAuthBtn');
+  const signOutBtn = document.getElementById('accountSignOutBtn');
+
+  if (currentUser) {
+    let name = currentUser.displayName || currentUser.email.split('@')[0];
+    let photo = currentUser.photoURL;
+
+    if (photo) {
+      headerAvatar.innerHTML = `<img src="${photo}" alt="Avatar">`;
+      settingsAvatar.innerHTML = `<img src="${photo}" alt="Avatar">`;
+    } else {
+      let initial = name.charAt(0).toUpperCase();
+      headerAvatar.innerHTML = initial;
+      settingsAvatar.innerHTML = initial;
+    }
+
+    accountName.textContent = name;
+    accountEmail.textContent = currentUser.email;
+    authBtn.style.display = 'none';
+    signOutBtn.style.display = 'block';
+  } else {
+    headerAvatar.innerHTML = `<span class="material-icons-round" style="font-size:1.1rem">person</span>`;
+    settingsAvatar.innerHTML = `<span class="material-icons-round">person</span>`;
+    accountName.textContent = 'Guest User';
+    accountEmail.textContent = 'Not logged in (Local storage only)';
+    authBtn.style.display = 'block';
+    signOutBtn.style.display = 'none';
+  }
+}
+
+function openAuthModal() {
+  if (!auth) return alert("Firebase initialisation error.");
+  document.getElementById('authModalOverlay').style.display = 'flex';
+}
+
+function closeAuthModal() {
+  document.getElementById('authModalOverlay').style.display = 'none';
+}
+
+async function loginWithGoogle() {
+  try {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    await auth.signInWithPopup(provider);
+    closeAuthModal();
+  } catch (err) { alert(err.message); }
+}
+
+async function loginWithEmail() {
+  const email = document.getElementById('authEmail').value;
+  const pass = document.getElementById('authPassword').value;
+  if (!email || !pass) return alert('Please enter email and password.');
+  try {
+    await auth.signInWithEmailAndPassword(email, pass);
+    closeAuthModal();
+  } catch (err) { alert(err.message); }
+}
+
+async function signUpWithEmail() {
+  const email = document.getElementById('authEmail').value;
+  const pass = document.getElementById('authPassword').value;
+  if (!email || !pass) return alert('Please enter email and password.');
+  try {
+    await auth.createUserWithEmailAndPassword(email, pass);
+    closeAuthModal();
+  } catch (err) { alert(err.message); }
+}
+
+function signOutUser() {
+  if (confirm("Are you sure you want to sign out?")) {
+    auth.signOut();
+  }
+}
+
+async function syncDataToCloud(showToast = true) {
+  if (!currentUser || !db) {
+    if (showToast) alert("Please sign in to sync your data.");
+    return;
+  }
+  try {
+    await db.collection('users').doc(currentUser.uid).set({
+      store: store,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    if (showToast) alert("✨ Cloud Backup Successful!");
+  } catch (err) {
+    console.error("Cloud backup error:", err);
+    if (showToast) alert("Backup failed: " + err.message);
+  }
+}
+
+async function loadDataFromCloud() {
+  if (!currentUser || !db) return;
+  try {
+    const doc = await db.collection('users').doc(currentUser.uid).get();
+    if (doc.exists && doc.data().store) {
+      store = doc.data().store;
+      localStorage.setItem('sf_subjects', JSON.stringify(store.subjects || []));
+      localStorage.setItem('sf_attendance', JSON.stringify(store.attendance || {}));
+      localStorage.setItem('sf_tasks', JSON.stringify(store.tasks || []));
+      renderCurrentView();
+    } else {
+      syncDataToCloud(false);
+    }
+  } catch (err) { console.error("Cloud load error:", err); }
+}
+
+// --- UPDATES ---
+async function checkForUpdates(isManual = false) {
+  try {
+    const response = await fetch(window.location.origin + window.location.pathname + '?nocache=' + Date.now(), {
+      cache: 'no-store',
+      headers: { 'Cache-Control': 'no-cache' }
+    });
+    const text = await response.text();
+    const versionMatch = text.match(/const APP_VERSION = ["']([^"']+)["']/);
+
+    if (versionMatch && versionMatch[1]) {
+      const remoteVersion = versionMatch[1];
+      if (remoteVersion !== APP_VERSION) {
+        document.getElementById('updateBanner').style.display = 'flex';
+        document.getElementById('updateBadge').style.display = 'block';
+        document.getElementById('forceUpdateBtn').style.display = 'flex';
+        if (isManual) alert(`New update available (${remoteVersion})!`);
+      } else if (isManual) {
+        alert(`You are running the latest version (v${APP_VERSION}).`);
+      }
+    }
+  } catch (err) { console.error('Update check failed:', err); }
+}
+
+function applyUpdate() {
+  if ('caches' in window) caches.keys().then(names => { for (let n of names) caches.delete(n); });
+  window.location.reload(true);
+}
+
+function forceReloadApp() {
+  if (confirm("Force refresh app and clear web cache?")) applyUpdate();
+}
+
+// --- NAVIGATION ---
+function switchMainView(btn, viewName) {
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+
+  btn.classList.add('active');
+  document.getElementById(`view${viewName}`).classList.add('active');
+  activeView = viewName;
+
+  if (viewName === 'Lessons') document.getElementById('appHeading').textContent = 'Subjects & Grades';
+  else if (viewName === 'Updates') document.getElementById('appHeading').textContent = 'Settings & Updates';
+  else document.getElementById('appHeading').textContent = viewName;
+
+  // Hide FAB on Updates and Attendance
+  document.getElementById('fab').style.display = (viewName === 'Updates' || viewName === 'Attendance') ? 'none' : 'flex';
+  renderCurrentView();
+}
+
+function renderCurrentView() {
+  if (activeView === 'Timetable') renderTimetable();
+  if (activeView === 'Lessons') renderSubjectsView();
+  if (activeView === 'Tasks') renderTasksView();
+  if (activeView === 'Attendance') renderAttendanceView();
+}
+
+// --- TIMETABLE ---
+function renderTimetable() {
+  const scroller = document.getElementById('weekScroller');
+  scroller.innerHTML = '';
+
+  for (let i = -2; i <= 4; i++) {
+    let d = new Date();
+    d.setDate(currentDate.getDate() + i);
+    let key = dateToKey(d);
+
+    let chip = document.createElement('div');
+    chip.className = `day-chip ${key === selectedDayKey ? 'active' : ''}`;
+    chip.onclick = () => { selectedDayKey = key; renderTimetable(); };
+    chip.innerHTML = `
+      <div class="day-name">${i === 0 ? 'Today' : d.toLocaleDateString('en-US', {weekday:'short'})}</div>
+      <div class="day-date">${d.getDate()} ${d.toLocaleDateString('en-US', {month:'short'})}</div>
+    `;
+    scroller.appendChild(chip);
+  }
+
+  document.getElementById('selectedDayTitle').textContent = getLocalDateFromKey(selectedDayKey).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
   
-  <!-- iOS Standalone App Settings -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="StudyFlow" />
-  <meta name="theme-color" content="#000000" />
-
-  <!-- Embedded Apple Touch Icon for Home Screen -->
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' style='background:%23000000'><rect width='512' height='512' fill='%23000000'/><path fill='%23ff375f' d='M256 120c-70 0-128 58-128 128s58 128 128 128 128-58 128-128-58-128-128-128zm0 216c-48.5 0-88-39.5-88-88s39.5-88 88-88 88 39.5 88 88-39.5 88-88 88z'/><circle cx='256' cy='248' r='48' fill='%230a84ff'/></svg>" />
-
-  <title>StudyFlow - Student Tracker</title>
-  
-  <!-- Material Icons -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
-  
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-  <style>
-    :root {
-      --bg: #000000;
-      --card-bg: #121214;
-      --card-border: #222226;
-      --text: #ffffff;
-      --subtext: #8e8e93;
-      --accent-blue: #0a84ff;
-      --accent-pink: #ff375f;
-      --accent-green: #30d158;
-      --accent-orange: #ff9f0a;
-      --accent-purple: #bf5af2;
-      --nav-bg: rgba(18, 18, 20, 0.88);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-    }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    /* --- Update Banner --- */
-    #updateBanner {
-      display: none;
-      background-color: var(--accent-blue);
-      color: #ffffff;
-      padding: calc(0.6rem + env(safe-area-inset-top)) 1rem 0.6rem;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      font-weight: 600;
-      z-index: 300;
-    }
-
-    #updateBanner button {
-      background-color: #ffffff;
-      color: #000000;
-      border: none;
-      padding: 0.35rem 0.8rem;
-      border-radius: 20px;
-      font-weight: 700;
-      font-size: 0.75rem;
-      cursor: pointer;
-    }
-
-    /* --- App Header --- */
-    header {
-      padding: calc(0.8rem + env(safe-area-inset-top)) 1rem 0.5rem;
-      background-color: var(--bg);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.25rem;
-    }
-
-    .header-top h1 {
-      font-size: 1.6rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-    }
-
-    .header-top .icons {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: var(--subtext);
-    }
-
-    .user-avatar-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background-color: #222226;
-      border: 1px solid var(--card-border);
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 0.85rem;
-      cursor: pointer;
-      overflow: hidden;
-    }
-
-    .user-avatar-btn img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .icon-btn {
-      background: none;
-      border: none;
-      color: var(--subtext);
-      cursor: pointer;
-      font-size: 1.2rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .date-subtitle {
-      font-size: 0.85rem;
-      color: var(--subtext);
-      font-weight: 500;
-    }
-
-    /* --- Main Scroll Area --- */
-    main {
-      flex: 1;
-      padding: 0.5rem 1rem calc(6rem + env(safe-area-inset-bottom));
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .view { display: none; }
-    .view.active { display: block; animation: fadeIn 0.25s ease-out; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .section-title {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--subtext);
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      margin: 1.25rem 0 0.75rem;
-    }
-
-    .card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 1.25rem;
-      margin-bottom: 1rem;
-    }
-
-    /* --- Bottom Navigation --- */
-    nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background-color: var(--nav-bg);
-      border-top: 1px solid var(--card-border);
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      padding: 0.6rem 0 calc(0.6rem + env(safe-area-inset-bottom));
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      z-index: 100;
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: var(--subtext);
-      background: none;
-      border: none;
-      cursor: pointer;
-      gap: 4px;
-      position: relative;
-    }
-
-    .nav-item.active { color: var(--accent-pink); }
-    .nav-item .material-icons-round { font-size: 1.3rem; }
-    .nav-item span.label { font-size: 0.6rem; font-weight: 600; }
-
-    .nav-badge {
-      position: absolute;
-      top: 0;
-      right: 22%;
-      width: 8px;
-      height: 8px;
-      background-color: var(--accent-blue);
-      border-radius: 50%;
-      display: none;
-    }
-
-    /* --- FAB --- */
-    #fab {
-      position: fixed;
-      bottom: calc(5rem + env(safe-area-inset-bottom));
-      right: 1.25rem;
-      background-color: #ffffff;
-      color: #000000;
-      border: none;
-      width: 54px;
-      height: 54px;
-      border-radius: 27px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      cursor: pointer;
-      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.25);
-      z-index: 90;
-      transition: transform 0.15s ease;
-    }
-
-    #fab:active { transform: scale(0.92); }
-
-    /* --- Timetable View --- */
-    .week-scroller {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      padding-bottom: 1rem;
-    }
-    .week-scroller::-webkit-scrollbar { display: none; }
-
-    .day-chip {
-      background-color: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 0.8rem 0.6rem;
-      text-align: center;
-      min-width: 58px;
-      cursor: pointer;
-    }
-
-    .day-chip.active {
-      background-color: #ffffff;
-      border-color: #ffffff;
-      color: #000000;
-    }
-
-    .day-chip .day-name { font-size: 0.8rem; font-weight: 700; }
-    .day-chip .day-date { font-size: 0.7rem; opacity: 0.8; }
-
-    /* --- Subjects View --- */
-    .subject-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 1rem 1.25rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .subject-left { display: flex; align-items: center; gap: 12px; }
-    .subject-dot { width: 12px; height: 12px; border-radius: 50%; }
-    .subject-title { font-size: 1rem; font-weight: 600; }
-    .subject-meta { font-size: 0.75rem; color: var(--subtext); }
-
-    .counter-btn {
-      background-color: #222226;
-      border: none;
-      color: var(--text);
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
-
-    .grade-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .grade-card { background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 1rem; text-align: center; }
-    .grade-val { font-size: 1.6rem; font-weight: 700; margin-bottom: 2px; }
-    .grade-lbl { font-size: 0.7rem; color: var(--subtext); text-transform: uppercase; font-weight: 600; }
-
-    /* --- Tasks View --- */
-    .tab-bar { display: flex; border-bottom: 1px solid var(--card-border); margin-bottom: 1.25rem; }
-    .tab-btn { flex: 1; text-align: center; padding: 0.75rem 0; font-size: 0.9rem; font-weight: 600; color: var(--subtext); background: none; border: none; cursor: pointer; position: relative; }
-    .tab-btn.active { color: var(--text); }
-    .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 20%; width: 60%; height: 2px; background-color: var(--accent-pink); }
-
-    .task-card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 1rem;
-      margin-bottom: 0.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .task-card.completed { opacity: 0.5; text-decoration: line-through; }
-
-    /* --- Attendance View --- */
-    .attendance-header { display: flex; align-items: center; gap: 20px; }
-    .progress-circle {
-      width: 80px; height: 80px; border-radius: 50%;
-      background: conic-gradient(var(--accent-pink) var(--progress, 0%), #222226 var(--progress, 0%));
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .inner-circle { width: 64px; height: 64px; border-radius: 50%; background-color: var(--card-bg); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; }
-    .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-    .day-header { text-align: center; font-size: 0.7rem; color: var(--subtext); font-weight: 600; padding-bottom: 4px; }
-    .cal-day { aspect-ratio: 1; background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; cursor: pointer; color: var(--text); }
-    .cal-day.empty { background: none; border: none; cursor: default; }
-    .cal-day.present { background-color: rgba(48, 209, 88, 0.2); color: var(--accent-green); border-color: var(--accent-green); }
-    .cal-day.absent { background-color: rgba(255, 55, 95, 0.2); color: var(--accent-pink); border-color: var(--accent-pink); }
-    .cal-day.holiday { background-color: rgba(255, 159, 10, 0.2); color: var(--accent-orange); border-color: var(--accent-orange); }
-
-    /* --- Settings / Updates View --- */
-    .settings-btn {
-      width: 100%; background-color: var(--card-bg); border: 1px solid var(--card-border);
-      color: var(--text); padding: 1rem; border-radius: 14px; font-size: 0.95rem; font-weight: 600;
-      display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-bottom: 0.75rem;
-    }
-    .settings-btn:active { background-color: #1a1a1e; }
-
-    /* --- Google & Auth Custom Styling --- */
-    .google-btn {
-      width: 100%;
-      background-color: #ffffff;
-      color: #000000;
-      border: none;
-      padding: 0.8rem;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      cursor: pointer;
-      margin-bottom: 1rem;
-    }
-    
-    .divider-line {
-      display: flex;
-      align-items: center;
-      text-align: center;
-      color: var(--subtext);
-      font-size: 0.75rem;
-      margin: 1rem 0;
-    }
-    .divider-line::before, .divider-line::after {
-      content: '';
-      flex: 1;
-      border-bottom: 1px solid var(--card-border);
-    }
-    .divider-line::before { margin-right: .5em; }
-    .divider-line::after { margin-left: .5em; }
-
-    /* --- Modals --- */
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(0, 0, 0, 0.8);
-      display: none; align-items: center; justify-content: center;
-      z-index: 200; padding: 1rem;
-    }
-    .modal {
-      background-color: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 18px; width: 100%; max-width: 400px; padding: 1.5rem;
-    }
-    .modal h3 { margin-bottom: 1rem; font-size: 1.2rem; }
-    .modal input, .modal select {
-      width: 100%; padding: 0.75rem; background-color: #000000;
-      border: 1px solid var(--card-border); border-radius: 10px;
-      color: var(--text); font-size: 0.95rem; margin-bottom: 0.8rem;
-    }
-    .modal-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 0.5rem; }
-    .btn { padding: 0.6rem 1.2rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; }
-    .btn-primary { background-color: #ffffff; color: #000000; }
-    .btn-cancel { background-color: #222226; color: var(--subtext); }
-  </style>
-</head>
-<body>
-
-  <!-- Top Notification Banner for New Updates -->
-  <div id="updateBanner">
-    <span>🚀 New version available!</span>
-    <button onclick="applyUpdate()">Update Now</button>
-  </div>
-
-  <!-- App Header -->
-  <header>
-    <div class="header-top">
-      <h1 id="appHeading">Timetable</h1>
-      <div class="icons">
-        <button class="user-avatar-btn" id="headerUserAvatar" onclick="openAuthModal()">
-          <span class="material-icons-round" style="font-size:1.1rem">person</span>
-        </button>
-        <button class="icon-btn" onclick="clearAllData()"><span class="material-icons-round">restart_alt</span></button>
-      </div>
-    </div>
-    <div class="date-subtitle" id="headerSub">Today</div>
-  </header>
-
-  <!-- Main Views Container -->
-  <main>
-
-    <!-- 1. Timetable View -->
-    <div id="viewTimetable" class="view active">
-      <div class="week-scroller" id="weekScroller"></div>
-      <div class="card">
-        <h2 id="selectedDayTitle">Schedule</h2>
-        <p class="section-title" style="margin-top:0.5rem">Classes & Events</p>
-        <div id="timetableList"></div>
-      </div>
-    </div>
-
-    <!-- 2. Lessons & Grades View -->
-    <div id="viewLessons" class="view">
-      <div class="grade-grid" style="margin-bottom: 1.25rem;">
-        <div class="grade-card" style="border-color: var(--accent-green)">
-          <div class="grade-val" id="overallGradeDisplay" style="color: var(--accent-green)">0.0%</div>
-          <div class="grade-lbl">Overall Average</div>
-        </div>
-        <div class="grade-card">
-          <div class="grade-val" id="totalSubjectsDisplay">0</div>
-          <div class="grade-lbl">Total Subjects</div>
-        </div>
-      </div>
-
-      <p class="section-title">Your Subjects</p>
-      <div id="subjectList"></div>
-    </div>
-
-    <!-- 3. Tasks View -->
-    <div id="viewTasks" class="view">
-      <div class="tab-bar">
-        <button class="tab-btn active" onclick="switchTaskTab(this, 'homework')">Homework</button>
-        <button class="tab-btn" onclick="switchTaskTab(this, 'exam')">Exams</button>
-        <button class="tab-btn" onclick="switchTaskTab(this, 'general')">General</button>
-      </div>
-      <div id="taskList"></div>
-    </div>
-
-    <!-- 4. Attendance View -->
-    <div id="viewAttendance" class="view">
-      <div class="card attendance-header">
-        <div class="progress-circle" id="attCircle" style="--progress: 0%;">
-          <div class="inner-circle" id="attPercentText">0.0%</div>
-        </div>
-        <div>
-          <h3 id="attMonthTitle">Attendance</h3>
-          <p class="date-subtitle" id="attStatText">0 present, 0 absent</p>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="calendar-controls">
-          <button class="icon-btn" onclick="changeMonth(-1)"><span class="material-icons-round">chevron_left</span></button>
-          <strong id="calMonthYear">September 2026</strong>
-          <button class="icon-btn" onclick="changeMonth(1)"><span class="material-icons-round">chevron_right</span></button>
-        </div>
-
-        <div class="calendar-grid">
-          <div class="day-header">S</div><div class="day-header">M</div><div class="day-header">T</div>
-          <div class="day-header">W</div><div class="day-header">T</div><div class="day-header">F</div>
-          <div class="day-header">S</div>
-        </div>
-        <div class="calendar-grid" id="calDaysGrid" style="margin-top: 6px;"></div>
-      </div>
-      <p style="text-align: center; font-size: 0.75rem; color: var(--subtext);">Tap a day to toggle: Present → Absent → Holiday → Clear</p>
-    </div>
-
-    <!-- 5. Settings & Updates View -->
-    <div id="viewUpdates" class="view">
-      
-      <!-- Account & Cloud Backup Card -->
-      <div class="card" id="accountCard">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom: 0.8rem;">
-          <div class="user-avatar-btn" id="settingsUserAvatar" style="width:44px; height:44px; font-size:1.2rem;">
-            <span class="material-icons-round">person</span>
-          </div>
+  const dayTasks = store.tasks.filter(t => t.dayKey === selectedDayKey);
+  const container = document.getElementById('timetableList');
+  container.innerHTML = dayTasks.length === 0 
+    ? `<p style="color:var(--subtext); font-size:0.85rem; margin-top:0.5rem">No classes or events scheduled for this day.</p>`
+    : dayTasks.map(t => `
+        <div class="task-card">
           <div>
-            <h3 id="accountName" style="font-size:1rem;">Guest User</h3>
-            <p id="accountEmail" style="font-size:0.75rem; color:var(--subtext);">Not logged in (Local storage only)</p>
+            <strong>${t.title}</strong>
+            <div style="font-size:0.75rem; color:var(--subtext)">${t.subject || 'General'}</div>
           </div>
+          <button class="icon-btn" onclick="deleteTask('${t.id}')"><span class="material-icons-round">delete_outline</span></button>
         </div>
-        <div style="display:flex; gap:10px;">
-          <button class="btn btn-primary" id="accountAuthBtn" onclick="openAuthModal()" style="flex:1;">Sign In / Cloud Sync</button>
-          <button class="btn btn-cancel" id="accountSignOutBtn" onclick="signOutUser()" style="display:none;">Sign Out</button>
-        </div>
-      </div>
+      `).join('');
+}
 
-      <p class="section-title">Cloud Backup & Sync</p>
+// --- SUBJECTS & GRADES ---
+function renderSubjectsView() {
+  const list = document.getElementById('subjectList');
+  let totalPct = 0;
+  let gradedSubjectsCount = 0;
 
-      <button class="settings-btn" onclick="syncDataToCloud(true)">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span class="material-icons-round" style="color: var(--accent-green);">cloud_upload</span>
-          <span>Sync & Backup Data Now</span>
-        </div>
-        <span class="material-icons-round" style="color: var(--subtext);">chevron_right</span>
-      </button>
+  list.innerHTML = store.subjects.length === 0
+    ? `<p style="color:var(--subtext); text-align:center; padding: 2rem 0;">No subjects added yet. Tap + to add one!</p>`
+    : store.subjects.map((sub, i) => {
+        let score = parseFloat(sub.score) || 0;
+        let max = parseFloat(sub.maxScore) || 0;
+        let pct = max > 0 ? Math.round((score / max) * 100) : 0;
 
-      <p class="section-title">App Updates & Maintenance</p>
+        if (max > 0) { totalPct += pct; gradedSubjectsCount++; }
 
-      <button class="settings-btn" onclick="checkForUpdates(true)">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span class="material-icons-round" style="color: var(--accent-blue);">refresh</span>
-          <span>Check for Updates Now</span>
-        </div>
-        <span class="material-icons-round" style="color: var(--subtext);">chevron_right</span>
-      </button>
-
-      <button class="settings-btn" id="forceUpdateBtn" onclick="applyUpdate()" style="display: none; border-color: var(--accent-blue);">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span class="material-icons-round" style="color: var(--accent-blue);">download_for_offline</span>
-          <span>Apply New Version</span>
-        </div>
-        <span class="material-icons-round" style="color: var(--accent-blue);">chevron_right</span>
-      </button>
-
-      <button class="settings-btn" onclick="forceReloadApp()">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span class="material-icons-round" style="color: var(--accent-orange);">cached</span>
-          <span>Force Refresh App Cache</span>
-        </div>
-        <span class="material-icons-round" style="color: var(--subtext);">chevron_right</span>
-      </button>
-
-      <p class="section-title">Storage & Reset</p>
-
-      <button class="settings-btn" onclick="clearAllData()">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span class="material-icons-round" style="color: var(--accent-pink);">delete_forever</span>
-          <span style="color: var(--accent-pink);">Clear All Local Data</span>
-        </div>
-        <span class="material-icons-round" style="color: var(--subtext);">chevron_right</span>
-      </button>
-    </div>
-
-  </main>
-
-  <!-- Bottom Navigation -->
-  <nav>
-    <button class="nav-item active" onclick="switchMainView(this, 'Timetable')">
-      <span class="material-icons-round">calendar_today</span>
-      <span class="label">Timetable</span>
-    </button>
-    <button class="nav-item" onclick="switchMainView(this, 'Lessons')">
-      <span class="material-icons-round">book</span>
-      <span class="label">Subjects</span>
-    </button>
-    <button class="nav-item" onclick="switchMainView(this, 'Tasks')">
-      <span class="material-icons-round">task_alt</span>
-      <span class="label">Tasks</span>
-    </button>
-    <button class="nav-item" onclick="switchMainView(this, 'Attendance')">
-      <span class="material-icons-round">rule</span>
-      <span class="label">Attendance</span>
-    </button>
-    <button class="nav-item" onclick="switchMainView(this, 'Updates')">
-      <div class="nav-badge" id="updateBadge"></div>
-      <span class="material-icons-round">system_update</span>
-      <span class="label">Updates</span>
-    </button>
-  </nav>
-
-  <!-- FAB -->
-  <button id="fab" onclick="handleFabClick()"><span class="material-icons-round">add</span></button>
-
-  <!-- Modal for Item Creation -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <h3 id="modalTitle">Add Item</h3>
-      <div id="modalBody"></div>
-      <div class="modal-btns">
-        <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
-        <button class="btn btn-primary" onclick="submitModal()">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal for Authentication (Sign In / Sign Up) -->
-  <div class="modal-overlay" id="authModalOverlay">
-    <div class="modal">
-      <h3 id="authTitle" style="text-align: center;">Sign In to StudyFlow</h3>
-      <p style="font-size:0.8rem; color:var(--subtext); text-align:center; margin-bottom:1.2rem;">Back up your timetable, subjects, and tasks across all devices.</p>
-      
-      <!-- Google Sign In Button -->
-      <button class="google-btn" onclick="loginWithGoogle()">
-        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#EA4335" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#FBBC05" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-        Continue with Google
-      </button>
-
-      <div class="divider-line">OR WITH EMAIL</div>
-
-      <input type="email" id="authEmail" placeholder="Email address" />
-      <input type="password" id="authPassword" placeholder="Password" />
-
-      <div class="modal-btns" style="flex-direction: column;">
-        <button class="btn btn-primary" style="width:100%" onclick="loginWithEmail()">Sign In</button>
-        <button class="btn btn-cancel" style="width:100%; margin-top:6px;" onclick="signUpWithEmail()">Create New Account</button>
-        <button class="btn btn-cancel" style="width:100%; margin-top:6px; background:none; color:var(--subtext)" onclick="closeAuthModal()">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // --- 1. FIREBASE CONFIGURATION ---
-    const firebaseConfig = {
-      apiKey: "AIzaSyDydPYiSo9dag5ZAvgec1eeKd0kH2DHhyE",
-      authDomain: "study-flow-1e186.firebaseapp.com",
-      projectId: "study-flow-1e186",
-      storageBucket: "study-flow-1e186.firebasestorage.app",
-      messagingSenderId: "188417044848",
-      appId: "1:188417044848:web:0ead93c0a9d6748039dfb5",
-      measurementId: "G-RZQPYGKFE6"
-    };
-
-    // Initialize Firebase
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    let currentUser = null;
-
-    // --- APP VERSION CONTROL ---
-    const APP_VERSION = "1.2.0";
-
-    // Prevent internal iOS standalone links from opening in browser Safari
-    (function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^http/;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.href)&&d.parentNode)d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone");
-
-    // --- STATE & LOCAL STORAGE ---
-    let activeView = 'Timetable';
-    let currentTaskTab = 'homework';
-    let currentDate = new Date();
-    let selectedDayKey = dateToKey(currentDate);
-
-    let store = {
-      subjects: JSON.parse(localStorage.getItem('sf_subjects')) || [],
-      attendance: JSON.parse(localStorage.getItem('sf_attendance')) || {},
-      tasks: JSON.parse(localStorage.getItem('sf_tasks')) || []
-    };
-
-    function saveStore() {
-      localStorage.setItem('sf_subjects', JSON.stringify(store.subjects));
-      localStorage.setItem('sf_attendance', JSON.stringify(store.attendance));
-      localStorage.setItem('sf_tasks', JSON.stringify(store.tasks));
-      renderCurrentView();
-
-      // Automatically sync to Firebase Cloud if user is logged in
-      if (currentUser && db) {
-        syncDataToCloud(false);
-      }
-    }
-
-    function dateToKey(d) {
-      const yr = d.getFullYear();
-      const mo = String(d.getMonth() + 1).padStart(2, '0');
-      const da = String(d.getDate()).padStart(2, '0');
-      return `${yr}-${mo}-${da}`;
-    }
-
-    // --- AUTHENTICATION & CLOUD SYNC LOGIC ---
-    if (auth) {
-      auth.onAuthStateChanged(user => {
-        currentUser = user;
-        updateUserUI();
-        if (user) {
-          loadDataFromCloud();
-        }
-      });
-    }
-
-    function updateUserUI() {
-      const headerAvatar = document.getElementById('headerUserAvatar');
-      const settingsAvatar = document.getElementById('settingsUserAvatar');
-      const accountName = document.getElementById('accountName');
-      const accountEmail = document.getElementById('accountEmail');
-      const authBtn = document.getElementById('accountAuthBtn');
-      const signOutBtn = document.getElementById('accountSignOutBtn');
-
-      if (currentUser) {
-        let name = currentUser.displayName || currentUser.email.split('@')[0];
-        let photo = currentUser.photoURL;
-
-        if (photo) {
-          headerAvatar.innerHTML = `<img src="${photo}" alt="Avatar">`;
-          settingsAvatar.innerHTML = `<img src="${photo}" alt="Avatar">`;
-        } else {
-          let initial = name.charAt(0).toUpperCase();
-          headerAvatar.innerHTML = initial;
-          settingsAvatar.innerHTML = initial;
-        }
-
-        accountName.textContent = name;
-        accountEmail.textContent = currentUser.email;
-        authBtn.style.display = 'none';
-        signOutBtn.style.display = 'block';
-      } else {
-        headerAvatar.innerHTML = `<span class="material-icons-round" style="font-size:1.1rem">person</span>`;
-        settingsAvatar.innerHTML = `<span class="material-icons-round">person</span>`;
-        accountName.textContent = 'Guest User';
-        accountEmail.textContent = 'Not logged in (Local storage only)';
-        authBtn.style.display = 'block';
-        signOutBtn.style.display = 'none';
-      }
-    }
-
-    function openAuthModal() {
-      if (!auth) {
-        alert("Firebase Config required! Please insert your Firebase keys inside index.html to activate authentication.");
-        return;
-      }
-      document.getElementById('authModalOverlay').style.display = 'flex';
-    }
-
-    function closeAuthModal() {
-      document.getElementById('authModalOverlay').style.display = 'none';
-    }
-
-    async function loginWithGoogle() {
-      try {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        await auth.signInWithPopup(provider);
-        closeAuthModal();
-      } catch (err) {
-        alert(err.message);
-      }
-    }
-
-    async function loginWithEmail() {
-      const email = document.getElementById('authEmail').value;
-      const pass = document.getElementById('authPassword').value;
-      if (!email || !pass) return alert('Please enter email and password.');
-
-      try {
-        await auth.signInWithEmailAndPassword(email, pass);
-        closeAuthModal();
-      } catch (err) {
-        alert(err.message);
-      }
-    }
-
-    async function signUpWithEmail() {
-      const email = document.getElementById('authEmail').value;
-      const pass = document.getElementById('authPassword').value;
-      if (!email || !pass) return alert('Please enter email and password.');
-
-      try {
-        await auth.createUserWithEmailAndPassword(email, pass);
-        closeAuthModal();
-      } catch (err) {
-        alert(err.message);
-      }
-    }
-
-    function signOutUser() {
-      if (confirm("Are you sure you want to sign out?")) {
-        auth.signOut();
-      }
-    }
-
-    async function syncDataToCloud(showToast = true) {
-      if (!currentUser || !db) {
-        if (showToast) alert("Please sign in to sync your data to the cloud.");
-        return;
-      }
-
-      try {
-        await db.collection('users').doc(currentUser.uid).set({
-          store: store,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        if (showToast) alert("✨ Cloud Backup Successful!");
-      } catch (err) {
-        console.error("Cloud backup error:", err);
-        if (showToast) alert("Backup failed: " + err.message);
-      }
-    }
-
-    async function loadDataFromCloud() {
-      if (!currentUser || !db) return;
-
-      try {
-        const doc = await db.collection('users').doc(currentUser.uid).get();
-        if (doc.exists && doc.data().store) {
-          store = doc.data().store;
-          localStorage.setItem('sf_subjects', JSON.stringify(store.subjects || []));
-          localStorage.setItem('sf_attendance', JSON.stringify(store.attendance || {}));
-          localStorage.setItem('sf_tasks', JSON.stringify(store.tasks || []));
-          renderCurrentView();
-        } else {
-          // Push initial local data to cloud
-          syncDataToCloud(false);
-        }
-      } catch (err) {
-        console.error("Cloud load error:", err);
-      }
-    }
-
-    // --- AUTO-UPDATE SYSTEM ---
-    async function checkForUpdates(isManual = false) {
-      try {
-        const response = await fetch(window.location.origin + window.location.pathname + '?nocache=' + Date.now(), {
-          cache: 'no-store',
-          headers: { 'Cache-Control': 'no-cache' }
-        });
-        const text = await response.text();
-        const versionMatch = text.match(/const APP_VERSION = ["']([^"']+)["']/);
-
-        if (versionMatch && versionMatch[1]) {
-          const remoteVersion = versionMatch[1];
-          if (remoteVersion !== APP_VERSION) {
-            document.getElementById('updateBanner').style.display = 'flex';
-            document.getElementById('updateBadge').style.display = 'block';
-            document.getElementById('forceUpdateBtn').style.display = 'flex';
-            if (isManual) alert(`New update available (${remoteVersion})!`);
-          } else if (isManual) {
-            alert(`You are running the latest version (v${APP_VERSION}).`);
-          }
-        }
-      } catch (err) { console.error('Update check failed:', err); }
-    }
-
-    function applyUpdate() {
-      if ('caches' in window) caches.keys().then(names => { for (let n of names) caches.delete(n); });
-      window.location.reload(true);
-    }
-
-    function forceReloadApp() {
-      if (confirm("Force refresh app and clear web cache?")) applyUpdate();
-    }
-
-    // --- NAVIGATION ---
-    function switchMainView(btn, viewName) {
-      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-
-      btn.classList.add('active');
-      document.getElementById(`view${viewName}`).classList.add('active');
-      activeView = viewName;
-
-      if (viewName === 'Lessons') document.getElementById('appHeading').textContent = 'Subjects & Grades';
-      else if (viewName === 'Updates') document.getElementById('appHeading').textContent = 'Settings & Updates';
-      else document.getElementById('appHeading').textContent = viewName;
-
-      document.getElementById('fab').style.display = viewName === 'Updates' ? 'none' : 'flex';
-      renderCurrentView();
-    }
-
-    function renderCurrentView() {
-      if (activeView === 'Timetable') renderTimetable();
-      if (activeView === 'Lessons') renderSubjectsView();
-      if (activeView === 'Tasks') renderTasksView();
-      if (activeView === 'Attendance') renderAttendanceView();
-    }
-
-    // --- TIMETABLE LOGIC ---
-    function renderTimetable() {
-      const scroller = document.getElementById('weekScroller');
-      scroller.innerHTML = '';
-
-      for (let i = -2; i <= 4; i++) {
-        let d = new Date();
-        d.setDate(currentDate.getDate() + i);
-        let key = dateToKey(d);
-
-        let chip = document.createElement('div');
-        chip.className = `day-chip ${key === selectedDayKey ? 'active' : ''}`;
-        chip.onclick = () => { selectedDayKey = key; renderTimetable(); };
-        chip.innerHTML = `
-          <div class="day-name">${i === 0 ? 'Today' : d.toLocaleDateString('en-US', {weekday:'short'})}</div>
-          <div class="day-date">${d.getDate()} ${d.toLocaleDateString('en-US', {month:'short'})}</div>
-        `;
-        scroller.appendChild(chip);
-      }
-
-      document.getElementById('selectedDayTitle').textContent = new Date(selectedDayKey + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-      
-      const dayTasks = store.tasks.filter(t => t.dayKey === selectedDayKey);
-      const container = document.getElementById('timetableList');
-      container.innerHTML = dayTasks.length === 0 
-        ? `<p style="color:var(--subtext); font-size:0.85rem; margin-top:0.5rem">No classes or events scheduled for this day.</p>`
-        : dayTasks.map(t => `
-            <div class="task-card">
+        return `
+          <div class="subject-item">
+            <div class="subject-left">
+              <div class="subject-dot" style="background-color: ${sub.color}"></div>
               <div>
-                <strong>${t.title}</strong>
-                <div style="font-size:0.75rem; color:var(--subtext)">${t.subject || 'General'}</div>
+                <div class="subject-title">${sub.name}</div>
+                <div class="subject-meta">Score: ${score}/${max} (${pct}%)</div>
               </div>
-              <button class="icon-btn" onclick="deleteTask('${t.id}')"><span class="material-icons-round">delete_outline</span></button>
             </div>
-          `).join('');
-    }
-
-    // --- SUBJECTS & GRADES LOGIC ---
-    function renderSubjectsView() {
-      const list = document.getElementById('subjectList');
-      let totalPct = 0;
-      let gradedSubjectsCount = 0;
-
-      list.innerHTML = store.subjects.length === 0
-        ? `<p style="color:var(--subtext); text-align:center; padding: 2rem 0;">No subjects added yet. Tap + to add one!</p>`
-        : store.subjects.map((sub, i) => {
-            let score = parseFloat(sub.score) || 0;
-            let max = parseFloat(sub.maxScore) || 0;
-            let pct = max > 0 ? Math.round((score / max) * 100) : 0;
-
-            if (max > 0) { totalPct += pct; gradedSubjectsCount++; }
-
-            return `
-              <div class="subject-item">
-                <div class="subject-left">
-                  <div class="subject-dot" style="background-color: ${sub.color}"></div>
-                  <div>
-                    <div class="subject-title">${sub.name}</div>
-                    <div class="subject-meta">Score: ${score}/${max} (${pct}%) • ${sub.lessons || 0} lessons left</div>
-                  </div>
-                </div>
-                <div style="display:flex; gap:6px;">
-                  <button class="counter-btn" onclick="editGrade(${i})"><span class="material-icons-round" style="font-size:1rem">edit</span></button>
-                  <button class="counter-btn" onclick="deleteSubject(${i})"><span class="material-icons-round" style="font-size:1rem">delete</span></button>
-                </div>
-              </div>
-            `;
-          }).join('');
-
-      let avg = gradedSubjectsCount > 0 ? (totalPct / gradedSubjectsCount).toFixed(1) : "0.0";
-      document.getElementById('overallGradeDisplay').textContent = `${avg}%`;
-      document.getElementById('totalSubjectsDisplay').textContent = store.subjects.length;
-    }
-
-    function deleteSubject(idx) { store.subjects.splice(idx, 1); saveStore(); }
-    function editGrade(idx) {
-      let sub = store.subjects[idx];
-      let score = prompt(`Enter score earned for ${sub.name}:`, sub.score || 0);
-      let max = prompt(`Enter max possible score for ${sub.name}:`, sub.maxScore || 100);
-      if (score !== null && max !== null) {
-        sub.score = parseFloat(score) || 0;
-        sub.maxScore = parseFloat(max) || 0;
-        saveStore();
-      }
-    }
-
-    // --- TASKS LOGIC ---
-    function switchTaskTab(btn, category) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentTaskTab = category;
-      renderTasksView();
-    }
-
-    function renderTasksView() {
-      const container = document.getElementById('taskList');
-      const filtered = store.tasks.filter(t => t.category === currentTaskTab);
-
-      container.innerHTML = filtered.length === 0
-        ? `<p style="color:var(--subtext); text-align:center; padding: 2rem 0;">No ${currentTaskTab} tasks added.</p>`
-        : filtered.map(t => `
-            <div class="task-card ${t.completed ? 'completed' : ''}">
-              <div style="display:flex; align-items:center; gap:10px;" onclick="toggleTask('${t.id}')">
-                <span class="material-icons-round" style="color:var(--accent-pink); cursor:pointer">
-                  ${t.completed ? 'check_circle' : 'radio_button_unchecked'}
-                </span>
-                <div>
-                  <strong>${t.title}</strong>
-                  <div style="font-size:0.75rem; color:var(--subtext)">Due: ${t.dueDate || 'No date'}</div>
-                </div>
-              </div>
-              <button class="icon-btn" onclick="deleteTask('${t.id}')"><span class="material-icons-round">delete_outline</span></button>
+            <div style="display:flex; gap:6px;">
+              <button class="counter-btn" onclick="editGrade(${i})"><span class="material-icons-round" style="font-size:1rem">edit</span></button>
+              <button class="counter-btn" onclick="deleteSubject(${i})"><span class="material-icons-round" style="font-size:1rem">delete</span></button>
             </div>
-          `).join('');
-    }
+          </div>
+        `;
+      }).join('');
 
-    function toggleTask(id) {
-      let task = store.tasks.find(t => t.id === id);
-      if (task) { task.completed = !task.completed; saveStore(); }
-    }
+  let avg = gradedSubjectsCount > 0 ? (totalPct / gradedSubjectsCount).toFixed(1) : "0.0";
+  document.getElementById('overallGradeDisplay').textContent = `${avg}%`;
+  document.getElementById('totalSubjectsDisplay').textContent = store.subjects.length;
+}
 
-    function deleteTask(id) {
-      store.tasks = store.tasks.filter(t => t.id !== id);
+function deleteSubject(idx) { store.subjects.splice(idx, 1); saveStore(); }
+
+function editGrade(idx) {
+  let sub = store.subjects[idx];
+  const overlay = document.getElementById('modalOverlay');
+  const body = document.getElementById('modalBody');
+  const title = document.getElementById('modalTitle');
+
+  title.textContent = `Edit Score: ${sub.name}`;
+  body.innerHTML = `
+    <input type="number" id="mScore" placeholder="Score Earned" value="${sub.score || 0}" step="0.5" />
+    <input type="number" id="mMaxScore" placeholder="Max Score" value="${sub.maxScore || 100}" step="0.5" />
+  `;
+
+  window.customModalSubmit = function() {
+    let score = parseFloat(document.getElementById('mScore').value);
+    let max = parseFloat(document.getElementById('mMaxScore').value);
+    if (!isNaN(score) && !isNaN(max) && max > 0) {
+      sub.score = score;
+      sub.maxScore = max;
       saveStore();
     }
+    closeModal();
+  };
 
-    // --- ATTENDANCE LOGIC ---
-    let calViewDate = new Date();
-    function changeMonth(dir) { calViewDate.setMonth(calViewDate.getMonth() + dir); renderAttendanceView(); }
+  overlay.style.display = 'flex';
+}
 
-    function renderAttendanceView() {
-      const year = calViewDate.getFullYear();
-      const month = calViewDate.getMonth();
-      
-      document.getElementById('calMonthYear').textContent = calViewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-      document.getElementById('attMonthTitle').textContent = `${calViewDate.toLocaleDateString('en-US', { month: 'long' })} Attendance`;
+// --- TASKS ---
+function switchTaskTab(btn, category) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentTaskTab = category;
+  renderTasksView();
+}
 
-      const firstDay = new Date(year, month, 1).getDay();
-      const totalDays = new Date(year, month + 1, 0).getDate();
-      const grid = document.getElementById('calDaysGrid');
-      grid.innerHTML = '';
+function renderTasksView() {
+  const container = document.getElementById('taskList');
+  const filtered = store.tasks.filter(t => t.category === currentTaskTab);
 
-      for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div')).className = 'cal-day empty';
+  container.innerHTML = filtered.length === 0
+    ? `<p style="color:var(--subtext); text-align:center; padding: 2rem 0;">No ${currentTaskTab} tasks added.</p>`
+    : filtered.map(t => `
+        <div class="task-card ${t.completed ? 'completed' : ''}">
+          <div style="display:flex; align-items:center; gap:10px;" onclick="toggleTask('${t.id}')">
+            <span class="material-icons-round" style="color:var(--accent-pink); cursor:pointer">
+              ${t.completed ? 'check_circle' : 'radio_button_unchecked'}
+            </span>
+            <div>
+              <strong>${t.title}</strong>
+              <div style="font-size:0.75rem; color:var(--subtext)">Due: ${t.dueDate || 'No date'}</div>
+            </div>
+          </div>
+          <button class="icon-btn" onclick="deleteTask('${t.id}')"><span class="material-icons-round">delete_outline</span></button>
+        </div>
+      `).join('');
+}
 
-      let presentCount = 0, absentCount = 0;
+function toggleTask(id) {
+  let task = store.tasks.find(t => t.id === id);
+  if (task) { task.completed = !task.completed; saveStore(); }
+}
 
-      for (let day = 1; day <= totalDays; day++) {
-        let dKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        let status = store.attendance[dKey] || '';
+function deleteTask(id) {
+  store.tasks = store.tasks.filter(t => t.id !== id);
+  saveStore();
+}
 
-        if (status === 'present') presentCount++;
-        if (status === 'absent') absentCount++;
+// --- ATTENDANCE ---
+let calViewDate = new Date();
+function changeMonth(dir) { calViewDate.setMonth(calViewDate.getMonth() + dir); renderAttendanceView(); }
 
-        let dayEl = document.createElement('div');
-        dayEl.className = `cal-day ${status}`;
-        dayEl.textContent = day;
-        dayEl.onclick = () => cycleAttendance(dKey);
-        grid.appendChild(dayEl);
-      }
+function renderAttendanceView() {
+  const year = calViewDate.getFullYear();
+  const month = calViewDate.getMonth();
+  
+  document.getElementById('calMonthYear').textContent = calViewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  document.getElementById('attMonthTitle').textContent = `${calViewDate.toLocaleDateString('en-US', { month: 'long' })} Attendance`;
 
-      let totalLogged = presentCount + absentCount;
-      let pct = totalLogged > 0 ? ((presentCount / totalLogged) * 100).toFixed(1) : "0.0";
+  const firstDay = new Date(year, month, 1).getDay();
+  const totalDays = new Date(year, month + 1, 0).getDate();
+  const grid = document.getElementById('calDaysGrid');
+  grid.innerHTML = '';
 
-      document.getElementById('attCircle').style.setProperty('--progress', `${pct}%`);
-      document.getElementById('attPercentText').textContent = `${pct}%`;
-      document.getElementById('attStatText').textContent = `${presentCount} present, ${absentCount} absent`;
-    }
+  for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div')).className = 'cal-day empty';
 
-    function cycleAttendance(dKey) {
-      const current = store.attendance[dKey];
-      if (!current) store.attendance[dKey] = 'present';
-      else if (current === 'present') store.attendance[dKey] = 'absent';
-      else if (current === 'absent') store.attendance[dKey] = 'holiday';
-      else delete store.attendance[dKey];
+  let presentCount = 0, absentCount = 0;
 
-      saveStore();
-    }
+  for (let day = 1; day <= totalDays; day++) {
+    let dKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    let status = store.attendance[dKey] || '';
 
-    // --- MODALS & FAB ACTIONS ---
-    function handleFabClick() {
-      const overlay = document.getElementById('modalOverlay');
-      const body = document.getElementById('modalBody');
-      const title = document.getElementById('modalTitle');
+    if (status === 'present') presentCount++;
+    if (status === 'absent') absentCount++;
 
-      if (activeView === 'Lessons') {
-        title.textContent = "Add Subject";
-        body.innerHTML = `
-          <input type="text" id="mSubName" placeholder="Subject Name (e.g. History)" />
-          <input type="color" id="mSubColor" value="#0a84ff" style="height:40px; padding:2px" />
-        `;
-      } else if (activeView === 'Tasks') {
-        title.textContent = `Add ${currentTaskTab.toUpperCase()}`;
-        body.innerHTML = `
-          <input type="text" id="mTaskTitle" placeholder="Task Title" />
-          <input type="date" id="mTaskDate" />
-        `;
-      } else {
-        title.textContent = "Add Class / Event";
-        body.innerHTML = `
-          <input type="text" id="mClassTitle" placeholder="Class Title (e.g. Math Lecture)" />
-          <input type="text" id="mClassSub" placeholder="Subject Name" />
-        `;
-      }
+    let dayEl = document.createElement('div');
+    dayEl.className = `cal-day ${status}`;
+    dayEl.textContent = day;
+    dayEl.onclick = () => cycleAttendance(dKey);
+    grid.appendChild(dayEl);
+  }
 
-      overlay.style.display = 'flex';
-    }
+  let totalLogged = presentCount + absentCount;
+  let pct = totalLogged > 0 ? ((presentCount / totalLogged) * 100).toFixed(1) : "0.0";
 
-    function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
+  document.getElementById('attCircle').style.setProperty('--progress', `${pct}%`);
+  document.getElementById('attPercentText').textContent = `${pct}%`;
+  document.getElementById('attStatText').textContent = `${presentCount} present, ${absentCount} absent`;
+}
 
-    function submitModal() {
-      if (activeView === 'Lessons') {
-        let name = document.getElementById('mSubName').value;
-        let color = document.getElementById('mSubColor').value;
-        if (name) store.subjects.push({ name, color, score: 0, maxScore: 100, lessons: 0 });
-      } else if (activeView === 'Tasks') {
-        let title = document.getElementById('mTaskTitle').value;
-        let dueDate = document.getElementById('mTaskDate').value;
-        if (title) store.tasks.push({ id: Date.now().toString(), category: currentTaskTab, title, dueDate, completed: false });
-      } else {
-        let title = document.getElementById('mClassTitle').value;
-        let subject = document.getElementById('mClassSub').value;
-        if (title) store.tasks.push({ id: Date.now().toString(), dayKey: selectedDayKey, title, subject, category: 'timetable' });
-      }
+function cycleAttendance(dKey) {
+  const current = store.attendance[dKey];
+  if (!current) store.attendance[dKey] = 'present';
+  else if (current === 'present') store.attendance[dKey] = 'absent';
+  else if (current === 'absent') store.attendance[dKey] = 'holiday';
+  else delete store.attendance[dKey];
 
-      saveStore();
-      closeModal();
-    }
+  saveStore();
+}
 
-    function clearAllData() {
-      if (confirm("Reset all local data back to 0?")) {
-        localStorage.clear();
-        store = { subjects: [], attendance: {}, tasks: [] };
-        saveStore();
-      }
-    }
+// --- MODALS ---
+function handleFabClick() {
+  const overlay = document.getElementById('modalOverlay');
+  const body = document.getElementById('modalBody');
+  const title = document.getElementById('modalTitle');
+  window.customModalSubmit = null;
 
-    // Initialize App
-    document.getElementById('headerSub').textContent = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-    renderCurrentView();
-    checkForUpdates();
-  </script>
-</body>
-</html>
+  if (activeView === 'Lessons') {
+    title.textContent = "Add Subject";
+    body.innerHTML = `
+      <input type="text" id="mSubName" placeholder="Subject Name (e.g. Physics)" />
+      <input type="color" id="mSubColor" value="#0a84ff" style="height:40px; padding:2px" />
+    `;
+  } else if (activeView === 'Tasks') {
+    title.textContent = `Add ${currentTaskTab.toUpperCase()}`;
+    body.innerHTML = `
+      <input type="text" id="mTaskTitle" placeholder="Task Title" />
+      <input type="date" id="mTaskDate" />
+    `;
+  } else {
+    title.textContent = "Add Class / Event";
+    body.innerHTML = `
+      <input type="text" id="mClassTitle" placeholder="Class Title (e.g. Math Lecture)" />
+      <input type="text" id="mClassSub" placeholder="Subject Name" />
+    `;
+  }
+
+  overlay.style.display = 'flex';
+}
+
+function closeModal() { 
+  document.getElementById('modalOverlay').style.display = 'none'; 
+  window.customModalSubmit = null;
+}
+
+function submitModal() {
+  if (window.customModalSubmit) {
+    window.customModalSubmit();
+    return;
+  }
+
+  if (activeView === 'Lessons') {
+    let name = document.getElementById('mSubName').value;
+    let color = document.getElementById('mSubColor').value;
+    if (name) store.subjects.push({ name, color, score: 0, maxScore: 100 });
+  } else if (activeView === 'Tasks') {
+    let title = document.getElementById('mTaskTitle').value;
+    let dueDate = document.getElementById('mTaskDate').value;
+    if (title) store.tasks.push({ id: Date.now().toString(), category: currentTaskTab, title, dueDate, completed: false });
+  } else {
+    let title = document.getElementById('mClassTitle').value;
+    let subject = document.getElementById('mClassSub').value;
+    if (title) store.tasks.push({ id: Date.now().toString(), dayKey: selectedDayKey, title, subject, category: 'timetable' });
+  }
+
+  saveStore();
+  closeModal();
+}
+
+function clearAllData() {
+  if (confirm("Reset all local data back to 0?")) {
+    localStorage.clear();
+    store = { subjects: [], attendance: {}, tasks: [] };
+    saveStore();
+  }
+}
+
+// Initialize App
+document.getElementById('headerSub').textContent = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+renderCurrentView();
+checkForUpdates();
