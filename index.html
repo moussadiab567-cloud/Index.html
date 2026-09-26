@@ -1,466 +1,758 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Study Hub & Tracker</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyFlow - Modern Student Hub</title>
+  <!-- Material Icons for sleek look -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <style>
+    /* --- Modern Neon Dark Theme --- */
     :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --accent-blue: #38bdf8;
-      --accent-green: #34d399;
-      --accent-purple: #a78bfa;
-      --text: #f8fafc;
-      --subtext: #94a3b8;
-      --border: #334155;
+      --bg: #000000;
+      --card-bg: #111111;
+      --card-border: #222222;
+      --text: #ffffff;
+      --subtext: #aaaaaa;
+      --accent-blue: #007bff; /* Vibrant Blue */
+      --accent-pink: #ff4d88; /* Pop Pink */
+      --accent-green: #00e676; /* Bright Green */
+      --accent-orange: #ff9100; /* Warm Orange */
+      --nav-bg: rgba(0, 0, 0, 0.9); /* Frosted Glass effect */
+      --easing: cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+    /* --- Base Styles --- */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      -webkit-tap-highlight-color: transparent; /* Clean mobile interactions */
     }
 
     body {
       background-color: var(--bg);
       color: var(--text);
-      line-height: 1.5;
-      padding: 1.5rem 1rem;
-      display: flex;
-      justify-content: center;
-    }
-
-    .container {
-      max-width: 900px;
-      width: 100%;
-    }
-
-    header {
-      margin-bottom: 2rem;
-      text-align: center;
-    }
-
-    h1 {
-      font-size: 2.2rem;
-      color: var(--accent-blue);
-      margin-bottom: 0.5rem;
-    }
-
-    /* Daily Quote Box */
-    .quote-card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--border);
-      border-left: 4px solid var(--accent-purple);
-      padding: 1.25rem;
-      border-radius: 12px;
-      margin-bottom: 2rem;
-    }
-
-    .quote-text {
-      font-size: 1.05rem;
-      font-style: italic;
-      color: var(--text);
-      margin-bottom: 0.5rem;
-    }
-
-    .quote-author {
-      font-size: 0.85rem;
-      color: var(--subtext);
-      text-align: right;
-      font-weight: 600;
-    }
-
-    /* Trackers Section */
-    .section-title {
-      font-size: 1.4rem;
-      margin-bottom: 1rem;
-      color: var(--text);
-      border-bottom: 2px solid var(--border);
-      padding-bottom: 0.5rem;
-    }
-
-    .tracker-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.25rem;
-      margin-bottom: 2.5rem;
-    }
-
-    .tracker-card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .tracker-card h3 {
-      font-size: 1.1rem;
-      margin-bottom: 1rem;
-      color: var(--accent-blue);
-    }
-
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-
-    label {
-      font-size: 0.85rem;
-      color: var(--subtext);
-    }
-
-    input[type="number"] {
-      background-color: #0f172a;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.6rem;
-      border-radius: 6px;
-      font-size: 1rem;
-      width: 100%;
-    }
-
-    input[type="number"]:focus {
-      outline: none;
-      border-color: var(--accent-blue);
-    }
-
-    .percentage-display {
-      font-size: 1.8rem;
-      font-weight: bold;
-      text-align: center;
-      color: var(--accent-green);
-      margin-top: 0.5rem;
-    }
-
-    .progress-bar-bg {
-      background-color: #0f172a;
-      height: 8px;
-      border-radius: 4px;
+      height: 100vh;
       overflow: hidden;
-      margin-top: 0.5rem;
     }
 
-    .progress-bar-fill {
-      height: 100%;
-      background-color: var(--accent-green);
-      width: 0%;
-      transition: width 0.3s ease;
+    /* --- App Header --- */
+    header {
+      padding: 1rem 1rem 0.5rem;
+      background-color: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
-    /* Weekly Planner Section */
-    .planner-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
     }
 
-    .day-card {
+    .header-top h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .header-top .icons {
+      display: flex;
+      gap: 12px;
+      color: var(--subtext);
+    }
+
+    .header-top .icon-btn {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      font-size: 1.25rem;
+    }
+
+    .date-summary {
+      font-size: 0.85rem;
+      color: var(--subtext);
+      font-weight: 500;
+    }
+
+    /* --- Main Content Area (Scrollable) --- */
+    main {
+      flex: 1;
+      padding: 0.5rem 1rem 5rem; /* Large bottom padding for the nav */
+      overflow-y: auto;
+      transition: opacity 0.3s ease;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+      animation: fadeIn 0.4s var(--easing);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- General UI Components --- */
+    .section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--subtext);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 1.25rem 0 0.75rem;
+    }
+
+    .card {
       background-color: var(--card-bg);
-      border: 1px solid var(--border);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .card:active {
+      transform: scale(0.98);
+    }
+
+    .card h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat {
+      font-size: 0.9rem;
+      color: var(--subtext);
+      margin-bottom: 0.25rem;
+    }
+
+    .action-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.75rem;
+    }
+
+    /* --- Bottom Navigation --- */
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: var(--nav-bg);
+      border-top: 1px solid var(--card-border);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      padding: 0.6rem 0.25rem;
+      backdrop-filter: blur(10px); /* Frosted effect */
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--subtext);
+      text-decoration: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.3s ease;
+      position: relative;
+    }
+
+    .nav-item.active {
+      color: var(--accent-pink);
+    }
+
+    .nav-item .icon {
+      font-size: 1.4rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .nav-item span {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    /* Red dot notification */
+    .nav-item .notification-dot {
+      position: absolute;
+      top: 0;
+      right: calc(50% - 14px);
+      width: 6px;
+      height: 6px;
+      background-color: var(--accent-pink);
+      border-radius: 50%;
+      display: none;
+    }
+
+    .nav-item.active .notification-dot {
+      display: block;
+    }
+
+    /* --- Floating Action Button --- */
+    #floatingAddBtn {
+      position: fixed;
+      bottom: 5.5rem;
+      right: 1.5rem;
+      background-color: var(--accent-blue);
+      color: var(--bg);
+      border: none;
+      width: 56px;
+      height: 56px;
+      border-radius: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+      transition: transform 0.2s ease;
+      z-index: 90;
+    }
+
+    #floatingAddBtn:active {
+      transform: scale(0.92);
+    }
+
+    /* =========================================
+       SPECIFIC VIEW STYLES
+       ========================================= */
+
+    /* --- Timetable View --- */
+    .week-scroller {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 0.5rem 0 1rem;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .week-scroller::-webkit-scrollbar { display: none; }
+
+    .day-chip {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 1rem 0.75rem;
+      text-align: center;
+      min-width: 60px;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .day-chip.active {
+      background-color: var(--accent-pink);
+      border-color: var(--accent-pink);
+      color: var(--bg);
+    }
+
+    .day-chip .day-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .day-chip .day-date {
+      font-size: 0.7rem;
+      opacity: 0.8;
+    }
+
+    .task-list { list-style: none; margin-top: 1rem; }
+    .task-item {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
       border-radius: 10px;
       padding: 1rem;
-    }
-
-    .day-title {
-      font-weight: bold;
-      color: var(--accent-blue);
       margin-bottom: 0.75rem;
-      font-size: 1.05rem;
-    }
-
-    .task-input-container {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .task-input-container input {
-      flex: 1;
-      background-color: #0f172a;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.4rem 0.6rem;
-      border-radius: 6px;
-      font-size: 0.9rem;
-    }
-
-    .task-input-container button {
-      background-color: var(--accent-blue);
-      color: #0f172a;
-      border: none;
-      padding: 0.4rem 0.8rem;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .task-list {
-      list-style: none;
-    }
-
-    .task-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0.4rem 0;
-      border-bottom: 1px solid #334155;
-      font-size: 0.9rem;
     }
 
-    .task-item.completed span {
-      text-decoration: line-through;
-      color: var(--subtext);
+    .task-info { display: flex; align-items: center; gap: 12px; }
+    .task-icon { font-size: 1.25rem; color: var(--accent-blue); }
+    .task-text { font-size: 0.95rem; font-weight: 500; }
+    .task-time { font-size: 0.75rem; color: var(--subtext); }
+
+    /* --- Lessons View --- */
+    .subject-list { margin-bottom: 1.5rem; }
+    .subject-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
     }
 
-    .task-item button {
-      background: none;
+    .subject-info { display: flex; align-items: center; gap: 12px; }
+    .subject-color { width: 12px; height: 12px; border-radius: 6px; }
+    .subject-name { font-size: 1rem; font-weight: 600; }
+    .subject-lessons { font-size: 0.8rem; color: var(--subtext); }
+
+    .counter-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .counter-btn {
+      background-color: #222;
       border: none;
-      color: #ef4444;
+      color: var(--text);
+      width: 32px;
+      height: 32px;
+      border-radius: 16px;
       cursor: pointer;
-      font-size: 0.9rem;
-      margin-left: 0.5rem;
+      font-size: 1.2rem;
     }
 
-    footer {
-      text-align: center;
-      margin-top: 3rem;
-      color: var(--subtext);
-      font-size: 0.85rem;
+    .grade-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
     }
+
+    .grade-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .grade-value { font-size: 1.6rem; font-weight: 700; margin-bottom: 2px; }
+    .grade-label { font-size: 0.7rem; color: var(--subtext); text-transform: uppercase; }
+
+    /* --- Tasks View --- */
+    .tab-bar {
+      display: flex;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 1.5rem;
+    }
+
+    .tab-item {
+      flex: 1;
+      text-align: center;
+      padding: 0.8rem 0;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--subtext);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .tab-item.active {
+      color: var(--accent-pink);
+    }
+
+    .tab-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 15%;
+      width: 70%;
+      height: 2px;
+      background-color: var(--accent-pink);
+    }
+
+    /* --- Attendance View --- */
+    .attendance-summary {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .progress-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 40px;
+      background: conic-gradient(var(--accent-pink) var(--progress, 0%), #222 var(--progress, 0%));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .progress-circle .inner-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 32px;
+      background-color: var(--card-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-top: 1rem;
+    }
+
+    .calendar-day {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 0.8rem 0.2rem;
+      text-align: center;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--subtext);
+      transition: background-color 0.2s;
+    }
+
+    .calendar-day.present { background-color: rgba(0, 230, 118, 0.15); color: var(--accent-green); border-color: transparent; }
+    .calendar-day.absent { background-color: rgba(255, 77, 136, 0.15); color: var(--accent-pink); border-color: transparent; }
+    .calendar-day.holiday { background-color: rgba(255, 145, 0, 0.15); color: var(--accent-orange); border-color: transparent; }
+    .calendar-day.active { border-color: var(--accent-pink); font-weight: 700; }
+
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <header>
-      <h1>Study Hub</h1>
-      <p style="color: var(--subtext);">Organize your academic performance and weekly goals</p>
-    </header>
+  <!-- App Header -->
+  <header>
+    <div class="header-top">
+      <h1>StudyFlow</h1>
+      <div class="icons">
+        <button class="icon-btn"><span class="material-icons-round">search</span></button>
+        <button class="icon-btn"><span class="material-icons-round">notifications_none</span></button>
+        <button class="icon-btn"><span class="material-icons-round">settings</span></button>
+      </div>
+    </div>
+    <div class="date-summary" id="headerDate">Loading date...</div>
+  </header>
 
-    <!-- Daily Quote -->
-    <div class="quote-card">
-      <div class="quote-text" id="quoteText">"Loading daily motivation..."</div>
-      <div class="quote-author" id="quoteAuthor"></div>
+  <!-- Main Content Area -->
+  <main id="mainContent">
+
+    <!-- 1. Timetable View -->
+    <div id="viewTimetable" class="view active">
+      <div class="week-scroller" id="weekScroller">
+        <!-- Day Chips Generated Here by JS -->
+      </div>
+      <div class="card" style="border-color: var(--accent-pink)">
+        <h2 id="currentDayTitle">Saturday, 26 Sep</h2>
+        <div class="stat"><span class="material-icons-round" style="font-size: 0.8rem">check_circle</span> 1 earlier task • Show</div>
+        <p class="stat">Nothing else planned today. Free day!</p>
+        <div class="action-row">
+          <button class="counter-btn" style="width: auto; padding: 0.5rem 1rem; font-size: 0.8rem; background-color: #222">+ Add Class</button>
+        </div>
+      </div>
+      <ul class="task-list" id="timetableTaskList">
+        <!-- Task items for the selected day will appear here -->
+      </ul>
     </div>
 
-    <!-- Trackers -->
-    <h2 class="section-title">Academic Overview & Trackers</h2>
-    <div class="tracker-grid">
-      
-      <!-- Attendance Tracker -->
-      <div class="tracker-card">
-        <h3>School Attendance</h3>
-        <div class="input-group">
-          <label>Days Attended</label>
-          <input type="number" id="attAttended" min="0" placeholder="0" />
-          <label>Total School Days</label>
-          <input type="number" id="attTotal" min="0" placeholder="0" />
-        </div>
-        <div class="percentage-display" id="attPercentage">0%</div>
-        <div class="progress-bar-bg"><div class="progress-bar-fill" id="attBar"></div></div>
+    <!-- 2. Lessons View -->
+    <div id="viewLessons" class="view">
+      <div class="subject-list" id="subjectList">
+        <!-- Subjects Generated Here by JS -->
       </div>
-
-      <!-- Grades Tracker -->
-      <div class="tracker-card">
-        <h3>Grades Average</h3>
-        <div class="input-group">
-          <label>Total Points Earned</label>
-          <input type="number" id="gradeEarned" min="0" placeholder="0" />
-          <label>Total Max Points</label>
-          <input type="number" id="gradeTotal" min="0" placeholder="0" />
+      <button class="card" style="width: 100%; text-align: center; color: var(--subtext); border-style: dashed;" onclick="addSubject()">
+        + Add subject
+      </button>
+      <h3 class="section-title">Grade Averages</h3>
+      <div class="grade-grid">
+        <div class="grade-card" style="border-color: var(--accent-green)">
+          <div class="grade-value" style="color: var(--accent-green)">87.1%</div>
+          <div class="grade-label">Overall</div>
         </div>
-        <div class="percentage-display" id="gradePercentage">0%</div>
-        <div class="progress-bar-bg"><div class="progress-bar-fill" id="gradeBar"></div></div>
-      </div>
-
-      <!-- Homework Tracker -->
-      <div class="tracker-card">
-        <h3>Homework Completion</h3>
-        <div class="input-group">
-          <label>Homework Completed</label>
-          <input type="number" id="hwCompleted" min="0" placeholder="0" />
-          <label>Total Homework Assigned</label>
-          <input type="number" id="hwTotal" min="0" placeholder="0" />
+        <div class="grade-card">
+          <div class="grade-value">83.3%</div>
+          <div class="grade-label">Programming</div>
         </div>
-        <div class="percentage-display" id="hwPercentage">0%</div>
-        <div class="progress-bar-bg"><div class="progress-bar-fill" id="hwBar"></div></div>
       </div>
-
     </div>
 
-    <!-- Weekly Planner -->
-    <h2 class="section-title">Weekly Schedule & Tasks</h2>
-    <div class="planner-grid" id="plannerGrid"></div>
+    <!-- 3. Tasks View -->
+    <div id="viewTasks" class="view">
+      <div class="tab-bar">
+        <div class="tab-item active" onclick="switchTab('lessons')">Lessons</div>
+        <div class="tab-item" onclick="switchTab('homework')">Homework <span class="notification-dot" style="display:inline-block;position:static;margin-left:5px"></span></div>
+        <div class="tab-item" onclick="switchTab('exams')">Exams</div>
+      </div>
+      <div id="taskContent">
+        <p style="text-align: center; color: var(--subtext); margin-top: 2rem;">Select a tab above to view tasks.</p>
+      </div>
+    </div>
 
-    <footer>
-      <p>&copy; Study Hub • Data saved locally in your browser</p>
-    </footer>
-  </div>
+    <!-- 4. Attendance View -->
+    <div id="viewAttendance" class="view">
+      <div class="card attendance-summary">
+        <div class="progress-circle" id="attendanceCircle" style="--progress: 62.5%;">
+          <div class="inner-circle" id="attendancePercent">62.5%</div>
+        </div>
+        <div>
+          <h3>September 2026</h3>
+          <p class="stat">5 present, 3 absent</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="calendar-grid" id="attendanceCalendar">
+          <!-- Calendar Days Generated Here by JS -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav id="bottomNav">
+    <button class="nav-item active" onclick="switchView('Timetable')">
+      <span class="material-icons-round icon">calendar_today</span>
+      <span>Timetable</span>
+    </button>
+    <button class="nav-item" onclick="switchView('Lessons')">
+      <span class="material-icons-round icon">book</span>
+      <span>Lessons</span>
+    </button>
+    <button class="nav-item" onclick="switchView('Tasks')">
+      <span class="material-icons-round icon">task_alt</span>
+      <span>Tasks</span>
+      <div class="notification-dot"></div>
+    </button>
+    <button class="nav-item" onclick="switchView('Attendance')">
+      <span class="material-icons-round icon">rule</span>
+      <span>Attendance</span>
+    </button>
+  </nav>
+
+  <!-- Floating Add Button -->
+  <button id="floatingAddBtn"><span class="material-icons-round">add</span></button>
 
   <script>
-    // --- 1. DAILY QUOTES ---
-    const quotesList = [
-      { quote: "Success is the sum of small efforts, repeated day in and day out.", author: "Robert Collier" },
-      { quote: "The secret of getting ahead is getting started.", author: "Mark Twain" },
-      { quote: "It always seems impossible until it's done.", author: "Nelson Mandela" },
-      { quote: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
-      { quote: "Small daily improvements over time lead to stunning results.", author: "Robin Sharma" },
-      { quote: "Focus on being productive instead of busy.", author: "Tim Ferriss" },
-      { quote: "Action is the foundational key to all success.", author: "Pablo Picasso" }
-    ];
-
-    function setDailyQuote() {
-      const today = new Date();
-      const startOfYear = new Date(today.getFullYear(), 0, 0);
-      const diff = today - startOfYear;
-      const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const selected = quotesList[dayOfYear % quotesList.length];
-
-      document.getElementById('quoteText').textContent = `"${selected.quote}"`;
-      document.getElementById('quoteAuthor').textContent = `— ${selected.author}`;
-    }
-
-    // --- 2. CALCULATORS & STORAGE ---
-    const fields = ['attAttended', 'attTotal', 'gradeEarned', 'gradeTotal', 'hwCompleted', 'hwTotal'];
-
-    function calculatePercentages() {
-      // Attendance
-      calcItem('attAttended', 'attTotal', 'attPercentage', 'attBar');
-      // Grades
-      calcItem('gradeEarned', 'gradeTotal', 'gradePercentage', 'gradeBar');
-      // Homework
-      calcItem('hwCompleted', 'hwTotal', 'hwPercentage', 'hwBar');
-
-      saveData();
-    }
-
-    function calcItem(valId, totalId, displayId, barId) {
-      const val = parseFloat(document.getElementById(valId).value) || 0;
-      const total = parseFloat(document.getElementById(totalId).value) || 0;
-      let pct = 0;
-
-      if (total > 0) {
-        pct = Math.min(Math.round((val / total) * 100), 100);
+    // --- APP STATE & INITIALIZATION ---
+    const appData = {
+      greetingName: "Student",
+      currentDate: new Date(2026, 8, 26), // Mock date: Sep 26, 2026 (Saturday)
+      subjects: JSON.parse(localStorage.getItem('studyHub_subjects')) || [
+        { name: "Programming", color: "blue", lessonsLeft: 5 },
+        { name: "Arabic", color: "green", lessonsLeft: 2 },
+        { name: "History", color: "orange", lessonsLeft: 0 }
+      ],
+      attendance: JSON.parse(localStorage.getItem('studyHub_attendance')) || {
+        "2026-09-13": "present", "2026-09-14": "present", "2026-09-15": "absent", "2026-09-16": "absent",
+        "2026-09-20": "absent", "2026-09-21": "present", "2026-09-22": "present", "2026-09-23": "present",
+        "2026-09-26": "active" // Today
       }
-
-      document.getElementById(displayId).textContent = `${pct}%`;
-      document.getElementById(barId).style.width = `${pct}%`;
-    }
-
-    function saveData() {
-      const data = {};
-      fields.forEach(id => {
-        data[id] = document.getElementById(id).value;
-      });
-      localStorage.setItem('studyHubMetrics', JSON.stringify(data));
-    }
-
-    function loadData() {
-      const saved = localStorage.getItem('studyHubMetrics');
-      if (saved) {
-        const data = JSON.parse(saved);
-        fields.forEach(id => {
-          if (data[id] !== undefined) {
-            document.getElementById(id).value = data[id];
-          }
-        });
-      }
-      calculatePercentages();
-    }
-
-    fields.forEach(id => {
-      document.getElementById(id).addEventListener('input', calculatePercentages);
-    });
-
-    // --- 3. WEEKLY PLANNER ---
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    let weeklyTasks = JSON.parse(localStorage.getItem('studyHubPlanner')) || {
-      Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: []
     };
 
-    function renderPlanner() {
-      const grid = document.getElementById('plannerGrid');
-      grid.innerHTML = '';
+    function initApp() {
+      renderHeader();
+      renderWeekScroller();
+      renderSubjects();
+      renderAttendanceCalendar();
+    }
 
-      days.forEach(day => {
-        const dayCard = document.createElement('div');
-        dayCard.className = 'day-card';
+    // --- HELPER FUNCTIONS ---
+    function formatDate(date) {
+      return date.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' });
+    }
+    function dateToKey(date) { return date.toISOString().split('T')[0]; }
 
-        const title = document.createElement('div');
-        title.className = 'day-title';
-        title.textContent = day;
+    // --- UI RENDERING ---
 
-        const inputContainer = document.createElement('div');
-        inputContainer.className = 'task-input-container';
+    function renderHeader() {
+      const hours = appData.currentDate.getHours();
+      const greeting = hours < 12 ? "Good Morning" : hours < 18 ? "Good Afternoon" : "Good Evening";
+      document.getElementById('headerDate').textContent = `${greeting}, ${appData.greetingName}`;
+    }
 
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.placeholder = 'Add task...';
+    // --- Timetable Logic ---
+    function renderWeekScroller() {
+      const scroller = document.getElementById('weekScroller');
+      scroller.innerHTML = '';
+      const todayKey = dateToKey(appData.currentDate);
 
-        const addBtn = document.createElement('button');
-        addBtn.textContent = '+';
-        addBtn.onclick = () => {
-          if (input.value.trim() !== '') {
-            weeklyTasks[day].push({ text: input.value.trim(), done: false });
-            savePlanner();
-            renderPlanner();
-          }
-        };
+      for (let i = -1; i < 6; i++) { // Render 1 day before today and 5 days after
+        const day = new Date(appData.currentDate);
+        day.setDate(appData.currentDate.getDate() + i);
+        const dayKey = dateToKey(day);
 
-        inputContainer.appendChild(input);
-        inputContainer.appendChild(addBtn);
+        const chip = document.createElement('div');
+        chip.className = `day-chip ${dayKey === todayKey ? 'active' : ''}`;
+        chip.onclick = () => selectTimetableDay(dayKey, chip);
 
-        const list = document.createElement('ul');
-        list.className = 'task-list';
+        const dayName = day.toLocaleDateString('en-US', { weekday: 'short' });
+        const dayNum = day.getDate();
+        const monthName = day.toLocaleDateString('en-US', { month: 'short' });
 
-        (weeklyTasks[day] || []).forEach((task, index) => {
-          const li = document.createElement('li');
-          li.className = `task-item ${task.done ? 'completed' : ''}`;
+        chip.innerHTML = `
+          <div class="day-name">${i === 0 ? 'Today' : dayName}</div>
+          <div class="day-date">${dayNum} ${monthName}</div>
+        `;
+        scroller.appendChild(chip);
+      }
+    }
 
-          const taskSpan = document.createElement('span');
-          taskSpan.textContent = task.text;
-          taskSpan.style.cursor = 'pointer';
-          taskSpan.onclick = () => {
-            weeklyTasks[day][index].done = !weeklyTasks[day][index].done;
-            savePlanner();
-            renderPlanner();
-          };
+    function selectTimetableDay(dayKey, chipEl) {
+      document.querySelectorAll('.day-chip').forEach(c => c.classList.remove('active'));
+      chipEl.classList.add('active');
 
-          const delBtn = document.createElement('button');
-          delBtn.textContent = '✕';
-          delBtn.onclick = () => {
-            weeklyTasks[day].splice(index, 1);
-            savePlanner();
-            renderPlanner();
-          };
+      const dateObj = new Date(dayKey);
+      const title = formatDate(dateObj);
+      document.getElementById('currentDayTitle').textContent = title;
 
-          li.appendChild(taskSpan);
-          li.appendChild(delBtn);
-          list.appendChild(li);
-        });
+      // In a real app, populate tasks here. For demo, show empty state.
+      const taskList = document.getElementById('timetableTaskList');
+      taskList.innerHTML = `
+        <div class="card" style="text-align: center; color: var(--subtext); border-color: dashed;">
+          + Add first task for ${title}
+        </div>
+      `;
+    }
 
-        dayCard.appendChild(title);
-        dayCard.appendChild(inputContainer);
-        dayCard.appendChild(list);
-        grid.appendChild(dayCard);
+    // --- Lessons Logic ---
+    function renderSubjects() {
+      const list = document.getElementById('subjectList');
+      list.innerHTML = '';
+      appData.subjects.forEach((subj, index) => {
+        const item = document.createElement('div');
+        item.className = 'subject-item';
+        item.innerHTML = `
+          <div class="subject-info">
+            <div class="subject-color" style="background-color: var(--accent-${subj.color})"></div>
+            <div>
+              <div class="subject-name">${subj.name}</div>
+              <div class="subject-lessons">${subj.lessonsLeft} lessons left</div>
+            </div>
+          </div>
+          <div class="counter-group">
+            <button class="counter-btn" onclick="updateLessonCount(${index}, -1)">–</button>
+            <button class="counter-btn" onclick="updateLessonCount(${index}, 1)">+</button>
+          </div>
+        `;
+        list.appendChild(item);
       });
+      localStorage.setItem('studyHub_subjects', JSON.stringify(appData.subjects));
     }
 
-    function savePlanner() {
-      localStorage.setItem('studyHubPlanner', JSON.stringify(weeklyTasks));
+    function updateLessonCount(index, change) {
+      const subj = appData.subjects[index];
+      subj.lessonsLeft = Math.max(0, subj.lessonsLeft + change);
+      renderSubjects();
     }
 
-    // Initialize Page
-    setDailyQuote();
-    loadData();
-    renderPlanner();
+    function addSubject() {
+      const name = prompt("Enter Subject Name:");
+      if (name) {
+        appData.subjects.push({ name: name, color: "blue", lessonsLeft: 0 });
+        renderSubjects();
+      }
+    }
+
+    // --- Attendance Logic ---
+    function renderAttendanceCalendar() {
+      const grid = document.getElementById('attendanceCalendar');
+      grid.innerHTML = '';
+      
+      const year = 2026;
+      const month = 8; // September
+      const numDays = 30;
+      
+      let presentCount = 0;
+      let absentCount = 0;
+
+      for (let d = 1; d <= numDays; d++) {
+        const dateKey = `${year}-09-${d.toString().padStart(2, '0')}`;
+        const status = appData.attendance[dateKey] || 'weekend'; // basic weekend detection needed for real calendar
+
+        const dayEl = document.createElement('div');
+        dayEl.className = `calendar-day ${status}`;
+        dayEl.textContent = d;
+
+        if (status === 'present') presentCount++;
+        if (status === 'absent') absentCount++;
+
+        // Add dummy weekend styling (for Sat 26th)
+        if (d == 26) dayEl.classList.add('active');
+
+        grid.appendChild(dayEl);
+      }
+
+      // Update summary card
+      const totalLogged = presentCount + absentCount;
+      let percent = totalLogged === 0 ? 0 : Math.round((presentCount / totalLogged) * 1000) / 10;
+      
+      // Update UI elements from screenshot
+      document.getElementById('attendanceCircle').style.setProperty('--progress', `${percent}%`);
+      document.getElementById('attendancePercent').textContent = `${percent}%`;
+    }
+
+    // --- Tasks Tabs Logic ---
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+      event.target.closest('.tab-item').classList.add('active');
+      const content = document.getElementById('taskContent');
+
+      if (tabName === 'lessons') {
+        content.innerHTML = `
+          <div class="task-item">
+            <div class="task-info">
+              <span class="subject-color" style="background-color: var(--accent-blue)"></span>
+              <div class="subject-name">Programming</div>
+            </div>
+            <div class="counter-group">
+              <button class="counter-btn" style="background-color:#ef4444">–</button>
+              <button class="counter-btn" style="background-color:#10b981">+</button>
+            </div>
+          </div>
+        `;
+      } else if (tabName === 'homework') {
+        content.innerHTML = `
+          <div class="task-item">
+            <div class="task-info">
+              <span class="material-icons-round task-icon" style="color:var(--accent-pink)">radio_button_unchecked</span>
+              <div>
+                <div class="task-text">Complete History essay</div>
+                <div class="task-time">Due: Tuesday • 1h</div>
+              </div>
+            </div>
+          </div>
+        `;
+      } else {
+        content.innerHTML = `<p style="text-align: center; color: var(--subtext); margin-top: 2rem;">No upcoming exams.</p>`;
+      }
+    }
+
+    // --- GLOBAL VIEW NAVIGATION ---
+    function switchView(viewName) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      
+      const targetView = document.getElementById(`view${viewName}`);
+      const targetNav = event.target.closest('.nav-item');
+      
+      targetView.classList.add('active');
+      targetNav.classList.add('active');
+    }
+
+    // Initialize the app on load
+    window.onload = initApp;
+
   </script>
 </body>
 </html>
