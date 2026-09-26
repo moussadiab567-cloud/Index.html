@@ -638,23 +638,23 @@
 
   <script>
     // --- 1. FIREBASE CONFIGURATION ---
-    // Replace these placeholder keys with your actual Firebase Console Project Keys
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyDydPYiSo9dag5ZAvgec1eeKd0kH2DHhyE",
+      authDomain: "study-flow-1e186.firebaseapp.com",
+      projectId: "study-flow-1e186",
+      storageBucket: "study-flow-1e186.firebasestorage.app",
+      messagingSenderId: "188417044848",
+      appId: "1:188417044848:web:0ead93c0a9d6748039dfb5",
+      measurementId: "G-RZQPYGKFE6"
     };
 
     // Initialize Firebase
-    if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+    if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
 
-    const auth = firebase.apps.length ? firebase.auth() : null;
-    const db = firebase.apps.length ? firebase.firestore() : null;
+    const auth = firebase.auth();
+    const db = firebase.firestore();
     let currentUser = null;
 
     // --- APP VERSION CONTROL ---
