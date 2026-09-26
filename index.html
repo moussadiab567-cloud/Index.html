@@ -37,7 +37,7 @@
       --accent-orange: #ff9f0a;
       --accent-purple: #bf5af2;
       --nav-bg: rgba(18, 18, 20, 0.88);
-      --input-bg: #000000;
+      --input-bg: #1c1c1e;
       --modal-overlay: rgba(0, 0, 0, 0.8);
       --ease-ios: cubic-bezier(0.25, 1, 0.5, 1);
     }
@@ -183,7 +183,7 @@
       padding: 0.5rem 1rem calc(6rem + env(safe-area-inset-bottom));
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      transform: translateZ(0); /* Hardware acceleration */
+      transform: translateZ(0);
     }
 
     .view {
@@ -395,7 +395,7 @@
     .cal-day.absent { background-color: rgba(255, 55, 95, 0.2); color: var(--accent-pink); border-color: var(--accent-pink); }
     .cal-day.holiday { background-color: rgba(255, 159, 10, 0.2); color: var(--accent-orange); border-color: var(--accent-orange); }
 
-    /* --- Settings / Updates View --- */
+    /* --- Settings View --- */
     .settings-btn {
       width: 100%; background-color: var(--card-bg); border: 1px solid var(--card-border);
       color: var(--text); padding: 1rem; border-radius: 14px; font-size: 0.95rem; font-weight: 600;
@@ -404,13 +404,7 @@
     }
     .settings-btn:active { transform: scale(0.98); background-color: var(--card-border); }
 
-    /* Theme Option Selector Grid */
-    .theme-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 1rem;
-    }
+    .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1rem; }
 
     .theme-option {
       background-color: var(--card-bg);
@@ -431,7 +425,6 @@
     .theme-option:active { transform: scale(0.94); }
     .theme-option.active { border-color: var(--accent-pink); color: var(--accent-pink); }
 
-    /* Color Swatch Selection */
     .accent-grid {
       display: flex;
       justify-content: space-around;
@@ -444,143 +437,139 @@
     }
 
     .accent-swatch {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: transform 0.15s var(--ease-ios), border-color 0.2s ease;
+      width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+      border: 2px solid transparent; transition: transform 0.15s var(--ease-ios), border-color 0.2s ease;
     }
 
     .accent-swatch:active { transform: scale(0.85); }
     .accent-swatch.active { border-color: var(--text); transform: scale(1.1); }
 
-    /* Switch Rows for Notifications */
     .switch-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background-color: var(--card-bg);
-      border: 1px solid var(--card-border);
-      padding: 0.85rem 1rem;
-      border-radius: 14px;
-      margin-bottom: 0.75rem;
+      display: flex; align-items: center; justify-content: space-between;
+      background-color: var(--card-bg); border: 1px solid var(--card-border);
+      padding: 0.85rem 1rem; border-radius: 14px; margin-bottom: 0.75rem;
     }
 
-    .switch-row span.label-text {
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
+    .switch-row span.label-text { font-size: 0.9rem; font-weight: 600; }
 
-    /* iOS Style Switch */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 48px;
-      height: 28px;
-    }
-
+    .switch { position: relative; display: inline-block; width: 48px; height: 28px; }
     .switch input { opacity: 0; width: 0; height: 0; }
 
     .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: var(--card-border);
-      transition: .25s var(--ease-ios);
-      border-radius: 28px;
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--card-border); transition: .25s var(--ease-ios); border-radius: 28px;
     }
 
     .slider:before {
-      position: absolute;
-      content: "";
-      height: 22px;
-      width: 22px;
-      left: 3px;
-      bottom: 3px;
-      background-color: #ffffff;
-      transition: .25s var(--ease-ios);
-      border-radius: 50%;
+      position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px;
+      background-color: #ffffff; transition: .25s var(--ease-ios); border-radius: 50%;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
     input:checked + .slider { background-color: var(--accent-green); }
     input:checked + .slider:before { transform: translateX(20px); }
 
-    /* --- Google & Auth Custom Styling --- */
     .google-btn {
-      width: 100%;
-      background-color: #ffffff;
-      color: #000000;
-      border: none;
-      padding: 0.8rem;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      cursor: pointer;
-      margin-bottom: 1rem;
-      transition: transform 0.15s var(--ease-ios);
+      width: 100%; background-color: #ffffff; color: #000000; border: none;
+      padding: 0.8rem; border-radius: 12px; font-size: 0.95rem; font-weight: 600;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      cursor: pointer; margin-bottom: 1rem; transition: transform 0.15s var(--ease-ios);
     }
 
     .google-btn:active { transform: scale(0.97); }
     
     .divider-line {
-      display: flex;
-      align-items: center;
-      text-align: center;
-      color: var(--subtext);
-      font-size: 0.75rem;
-      margin: 1rem 0;
+      display: flex; align-items: center; text-align: center; color: var(--subtext);
+      font-size: 0.75rem; margin: 1rem 0;
     }
-    .divider-line::before, .divider-line::after {
-      content: '';
-      flex: 1;
-      border-bottom: 1px solid var(--card-border);
-    }
+    .divider-line::before, .divider-line::after { content: ''; flex: 1; border-bottom: 1px solid var(--card-border); }
     .divider-line::before { margin-right: .5em; }
     .divider-line::after { margin-left: .5em; }
 
-    /* --- Modals --- */
+    /* --- ENHANCED ADD MODAL STYLES (MATCHING IMAGE DESIGN) --- */
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background-color: var(--modal-overlay);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      display: none; align-items: center; justify-content: center;
-      z-index: 200; padding: 1rem;
-      animation: fadeIn 0.2s var(--ease-ios);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      display: none; align-items: flex-end; justify-content: center;
+      z-index: 200; animation: fadeIn 0.2s var(--ease-ios);
     }
 
     .modal {
-      background-color: var(--card-bg);
+      background-color: #1c1c1e;
       border: 1px solid var(--card-border);
-      border-radius: 18px; width: 100%; max-width: 400px; padding: 1.5rem;
-      box-shadow: 0 10px 30px var(--modal-overlay);
-      animation: scaleUp 0.25s var(--ease-ios);
+      border-top-left-radius: 24px; border-top-right-radius: 24px;
+      width: 100%; max-width: 500px; padding: 1.2rem;
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
+      animation: slideUp 0.25s var(--ease-ios);
+      max-height: 90vh; overflow-y: auto;
     }
 
-    @keyframes scaleUp {
-      from { opacity: 0; transform: scale(0.92); }
-      to { opacity: 1; transform: scale(1); }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
     }
 
-    .modal h3 { margin-bottom: 1rem; font-size: 1.2rem; }
-    .modal input, .modal select {
-      width: 100%; padding: 0.75rem; background-color: var(--input-bg);
-      border: 1px solid var(--card-border); border-radius: 10px;
-      color: var(--text); font-size: 0.95rem; margin-bottom: 0.8rem;
-      outline: none;
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;
+    }
+    .modal-header h3 { font-size: 1.1rem; font-weight: 700; color: #ffffff; }
+    .modal-header button.close-btn { background: none; border: none; color: #0a84ff; font-weight: 600; font-size: 0.95rem; cursor: pointer; }
+
+    /* Add Type Switcher Tabs (Lesson, Homework, Exam, Reminder, Note) */
+    .add-type-tabs {
+      display: flex; gap: 6px; background-color: #2c2c2e; padding: 4px;
+      border-radius: 14px; margin-bottom: 1.2rem; overflow-x: auto;
     }
 
-    .modal-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 0.5rem; }
-    .btn { padding: 0.6rem 1.2rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: transform 0.15s var(--ease-ios); }
-    .btn:active { transform: scale(0.94); }
-    .btn-primary { background-color: var(--text); color: var(--bg); }
-    .btn-cancel { background-color: var(--card-border); color: var(--subtext); }
+    .add-type-btn {
+      flex: 1; min-width: 68px; display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 0.5rem 0.2rem; border-radius: 10px; border: none; background: transparent;
+      color: var(--subtext); cursor: pointer; font-size: 0.7rem; font-weight: 600; transition: all 0.2s ease;
+    }
+
+    .add-type-btn span.emoji-icon { font-size: 1.2rem; }
+    .add-type-btn.active { background-color: #3a3a3c; color: #ffffff; }
+
+    /* Modal Form Controls */
+    .form-row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 0.8rem; }
+    .form-row-grid-full { margin-bottom: 0.8rem; }
+
+    .modal input[type="text"], .modal input[type="date"], .modal input[type="time"], .modal select, .modal textarea {
+      width: 100%; padding: 0.85rem 1rem; background-color: #2c2c2e;
+      border: 1px solid #3a3a3c; border-radius: 12px;
+      color: #ffffff; font-size: 0.95rem; outline: none; transition: border-color 0.2s ease;
+    }
+
+    .modal input:focus, .modal select:focus, .modal textarea:focus { border-color: var(--accent-blue); }
+
+    .quick-chips-row { display: flex; gap: 8px; margin-bottom: 0.8rem; overflow-x: auto; }
+    .chip-btn {
+      background-color: #2c2c2e; border: 1px solid #3a3a3c; color: #ffffff;
+      padding: 0.4rem 0.9rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+      cursor: pointer; white-space: nowrap; transition: background-color 0.2s ease;
+    }
+    .chip-btn.active { background-color: #ffffff; color: #000000; border-color: #ffffff; }
+
+    .checkbox-row {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 1.2rem; font-size: 0.85rem; color: #ffffff;
+    }
+    .checkbox-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent-pink); }
+
+    .subject-pills-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 1rem;
+    }
+    .subject-pill {
+      background-color: #2c2c2e; border: 1px solid #3a3a3c; padding: 0.75rem; border-radius: 12px;
+      display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+    }
+    .subject-pill.selected { border-color: var(--text); background-color: #3a3a3c; }
+
+    .modal-action-btns {
+      display: flex; gap: 10px; margin-top: 1rem; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+    }
+    .btn-add-next { flex: 1; background-color: #2c2c2e; color: #ffffff; border: none; padding: 0.9rem; border-radius: 14px; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
+    .btn-submit-main { flex: 2; background-color: #ffffff; color: #000000; border: none; padding: 0.9rem; border-radius: 14px; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -612,7 +601,10 @@
     <div id="viewTimetable" class="view active">
       <div class="week-scroller" id="weekScroller"></div>
       <div class="card">
-        <h2 id="selectedDayTitle">Schedule</h2>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h2 id="selectedDayTitle">Schedule</h2>
+          <button onclick="handleFabClick()" style="background:var(--card-border); border:none; color:var(--text); padding:0.4rem 0.8rem; border-radius:10px; font-weight:600; font-size:0.8rem; cursor:pointer;">+ Class</button>
+        </div>
         <p class="section-title" style="margin-top:0.5rem">Classes & Events</p>
         <div id="timetableList"></div>
       </div>
@@ -674,10 +666,10 @@
       <p style="text-align: center; font-size: 0.75rem; color: var(--subtext);">Tap a day to toggle: Present → Absent → Holiday → Clear</p>
     </div>
 
-    <!-- 5. Settings, Appearance, Notifications & Updates View -->
+    <!-- 5. Settings View -->
     <div id="viewUpdates" class="view">
       
-      <!-- Account & Cloud Backup Card -->
+      <!-- Account Card -->
       <div class="card" id="accountCard">
         <div style="display:flex; align-items:center; gap:12px; margin-bottom: 0.8rem;">
           <div class="user-avatar-btn" id="settingsUserAvatar" style="width:44px; height:44px; font-size:1.2rem;">
@@ -694,9 +686,8 @@
         </div>
       </div>
 
-      <!-- Appearance Customization Section -->
+      <!-- Appearance -->
       <p class="section-title">Appearance Options</p>
-
       <div class="theme-grid">
         <div class="theme-option" id="themeDarkBtn" onclick="setThemeMode('dark')">
           <span class="material-icons-round">dark_mode</span>
@@ -720,7 +711,7 @@
         <div class="accent-swatch" style="background-color: #ff9f0a;" onclick="setAccentColor('#ff9f0a')" id="accentOrange"></div>
       </div>
 
-      <!-- Notifications Settings Section -->
+      <!-- Notifications -->
       <p class="section-title">Notification Options</p>
 
       <div class="switch-row">
@@ -756,7 +747,6 @@
       </button>
 
       <p class="section-title">Cloud Backup & Sync</p>
-
       <button class="settings-btn" onclick="syncDataToCloud(true)">
         <div style="display:flex; align-items:center; gap:10px;">
           <span class="material-icons-round" style="color: var(--accent-green);">cloud_upload</span>
@@ -766,7 +756,6 @@
       </button>
 
       <p class="section-title">App Updates & Maintenance</p>
-
       <button class="settings-btn" onclick="checkForUpdates(true)">
         <div style="display:flex; align-items:center; gap:10px;">
           <span class="material-icons-round" style="color: var(--accent-blue);">refresh</span>
@@ -792,7 +781,6 @@
       </button>
 
       <p class="section-title">Storage & Reset</p>
-
       <button class="settings-btn" onclick="clearAllData()">
         <div style="display:flex; align-items:center; gap:10px;">
           <span class="material-icons-round" style="color: var(--accent-pink);">delete_forever</span>
@@ -832,25 +820,55 @@
   <!-- FAB -->
   <button id="fab" onclick="handleFabClick()"><span class="material-icons-round">add</span></button>
 
-  <!-- Modal for Item Creation -->
+  <!-- REFACTORED MODAL: MULTI-OPTION DYNAMIC BOTTOM SHEET -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
-      <h3 id="modalTitle">Add Item</h3>
-      <div id="modalBody"></div>
-      <div class="modal-btns">
-        <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
-        <button class="btn btn-primary" onclick="submitModal()">Save</button>
+      <div class="modal-header">
+        <h3 id="modalTitleDisplay">Add · Sun 27 Sep</h3>
+        <button class="close-btn" onclick="closeModal()">Cancel</button>
+      </div>
+
+      <!-- Add Type Selector Bar -->
+      <div class="add-type-tabs">
+        <button class="add-type-btn active" id="tabBtnLesson" onclick="setModalTab('lesson')">
+          <span class="emoji-icon">📚</span>
+          <span>Lesson</span>
+        </button>
+        <button class="add-type-btn" id="tabBtnHomework" onclick="setModalTab('homework')">
+          <span class="emoji-icon">📝</span>
+          <span>Homework</span>
+        </button>
+        <button class="add-type-btn" id="tabBtnExam" onclick="setModalTab('exam')">
+          <span class="emoji-icon">📅</span>
+          <span>Exam</span>
+        </button>
+        <button class="add-type-btn" id="tabBtnReminder" onclick="setModalTab('reminder')">
+          <span class="emoji-icon">🔔</span>
+          <span>Reminder</span>
+        </button>
+        <button class="add-type-btn" id="tabBtnNote" onclick="setModalTab('note')">
+          <span class="emoji-icon">📓</span>
+          <span>Note</span>
+        </button>
+      </div>
+
+      <!-- Dynamic Form Container -->
+      <div id="modalFormContainer"></div>
+
+      <!-- Modal Action Buttons -->
+      <div class="modal-action-btns">
+        <button class="btn-add-next" onclick="submitModal(true)">Add & next</button>
+        <button class="btn-submit-main" id="btnSubmitMain" onclick="submitModal(false)">Add lesson</button>
       </div>
     </div>
   </div>
 
   <!-- Modal for Authentication (Sign In / Sign Up) -->
-  <div class="modal-overlay" id="authModalOverlay">
-    <div class="modal">
-      <h3 id="authTitle" style="text-align: center;">Sign In to StudyFlow</h3>
+  <div class="modal-overlay" id="authModalOverlay" style="align-items: center;">
+    <div class="modal" style="border-radius: 18px; max-width: 400px;">
+      <h3 style="text-align: center; margin-bottom: 0.5rem;">Sign In to StudyFlow</h3>
       <p style="font-size:0.8rem; color:var(--subtext); text-align:center; margin-bottom:1.2rem;">Back up your timetable, subjects, and settings across all devices.</p>
       
-      <!-- Google Sign In Button -->
       <button class="google-btn" onclick="loginWithGoogle()">
         <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#EA4335" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#FBBC05" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
         Continue with Google
@@ -858,10 +876,10 @@
 
       <div class="divider-line">OR WITH EMAIL</div>
 
-      <input type="email" id="authEmail" placeholder="Email address" />
-      <input type="password" id="authPassword" placeholder="Password" />
+      <input type="email" id="authEmail" placeholder="Email address" style="margin-bottom:0.8rem;" />
+      <input type="password" id="authPassword" placeholder="Password" style="margin-bottom:0.8rem;" />
 
-      <div class="modal-btns" style="flex-direction: column;">
+      <div style="display:flex; flex-direction: column; gap:6px;">
         <button class="btn btn-primary" style="width:100%" onclick="loginWithEmail()">Sign In</button>
         <button class="btn btn-cancel" style="width:100%; margin-top:6px;" onclick="signUpWithEmail()">Create New Account</button>
         <button class="btn btn-cancel" style="width:100%; margin-top:6px; background:none; color:var(--subtext)" onclick="closeAuthModal()">Cancel</button>
@@ -881,7 +899,6 @@
       measurementId: "G-RZQPYGKFE6"
     };
 
-    // Initialize Firebase
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
@@ -890,24 +907,26 @@
     const db = firebase.firestore();
     let currentUser = null;
 
-    // --- APP VERSION CONTROL ---
-    const APP_VERSION = "1.3.0";
+    const APP_VERSION = "1.3.5";
 
-    // Prevent internal iOS standalone links from opening in browser Safari
-    (function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^http/;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.href)&&d.parentNode)d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone");
-
-    // --- STATE & LOCAL STORAGE ---
     let activeView = 'Timetable';
     let currentTaskTab = 'homework';
     let currentDate = new Date();
     let selectedDayKey = dateToKey(currentDate);
+    let activeModalTab = 'lesson'; // 'lesson' | 'homework' | 'exam' | 'reminder' | 'note'
+    let selectedNoteSubject = '';
 
     let store = {
-      subjects: JSON.parse(localStorage.getItem('sf_subjects')) || [],
+      subjects: JSON.parse(localStorage.getItem('sf_subjects')) || [
+        { name: 'Programming', color: '#0a84ff', score: 0, maxScore: 100, lessons: 0 },
+        { name: 'Arabic', color: '#30d158', score: 0, maxScore: 100, lessons: 0 },
+        { name: 'History', color: '#ff9f0a', score: 0, maxScore: 100, lessons: 0 },
+        { name: 'English', color: '#ff375f', score: 0, maxScore: 100, lessons: 0 }
+      ],
       attendance: JSON.parse(localStorage.getItem('sf_attendance')) || {},
       tasks: JSON.parse(localStorage.getItem('sf_tasks')) || [],
       settings: JSON.parse(localStorage.getItem('sf_settings')) || {
-        themeMode: 'dark', // 'dark' | 'light' | 'system'
+        themeMode: 'dark',
         accentColor: '#ff375f',
         notifications: false,
         reminders: true,
@@ -922,7 +941,6 @@
       localStorage.setItem('sf_settings', JSON.stringify(store.settings));
       renderCurrentView();
 
-      // Automatically sync to Firebase Cloud if user is logged in
       if (currentUser && db) {
         syncDataToCloud(false);
       }
@@ -935,13 +953,12 @@
       return `${yr}-${mo}-${da}`;
     }
 
-    // --- APPEARANCE & THEME ENGINE ---
+    // --- APPEARANCE & THEME ---
     function initAppearance() {
       applyThemeMode(store.settings.themeMode || 'dark');
       applyAccentColor(store.settings.accentColor || '#ff375f');
       updateAppearanceUI();
 
-      // System color scheme change listener
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
         if (store.settings.themeMode === 'system') {
           document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
@@ -977,7 +994,6 @@
     }
 
     function updateAppearanceUI() {
-      // Update Theme buttons
       ['dark', 'light', 'system'].forEach(m => {
         const el = document.getElementById(`theme${m.charAt(0).toUpperCase() + m.slice(1)}Btn`);
         if (el) {
@@ -986,7 +1002,6 @@
         }
       });
 
-      // Update Swatches
       const swatches = {
         '#ff375f': 'accentPink',
         '#0a84ff': 'accentBlue',
@@ -1018,7 +1033,7 @@
     async function handleNotificationToggle(enabled) {
       if (enabled) {
         if (!("Notification" in window)) {
-          alert("Web Notifications are not supported on this device/browser.");
+          alert("Web Notifications are not supported on this device.");
           document.getElementById('notifMasterToggle').checked = false;
           store.settings.notifications = false;
           saveStore();
@@ -1028,9 +1043,9 @@
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
           store.settings.notifications = true;
-          sendWebNotification('Notifications Activated 🔔', 'StudyFlow will keep you posted on your schedule and tasks!');
+          sendWebNotification('Notifications Activated 🔔', 'StudyFlow is ready to track your schedule!');
         } else {
-          alert("Notification permissions were denied in your browser settings.");
+          alert("Notification permissions were denied.");
           document.getElementById('notifMasterToggle').checked = false;
           store.settings.notifications = false;
         }
@@ -1047,29 +1062,21 @@
 
     function sendWebNotification(title, body) {
       if ("Notification" in window && Notification.permission === "granted" && store.settings.notifications) {
-        new Notification(title, {
-          body: body,
-          icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' style='background:%23000000'><rect width='512' height='512' fill='%23000000'/><path fill='%23ff375f' d='M256 120c-70 0-128 58-128 128s58 128 128 128 128-58 128-128-58-128-128-128zm0 216c-48.5 0-88-39.5-88-88s39.5-88 88-88 88 39.5 88 88-39.5 88-88 88z'/><circle cx='256' cy='248' r='48' fill='%230a84ff'/></svg>"
-        });
+        new Notification(title, { body: body });
       }
     }
 
     function sendTestNotification() {
-      if (!store.settings.notifications) {
-        alert("Please turn on 'Enable Notifications' first!");
-        return;
-      }
+      if (!store.settings.notifications) return alert("Please turn on 'Enable Notifications' first!");
       sendWebNotification('StudyFlow Test Notification 📚', 'Everything is working smoothly!');
     }
 
-    // --- AUTHENTICATION & CLOUD SYNC LOGIC ---
+    // --- AUTHENTICATION & CLOUD SYNC ---
     if (auth) {
       auth.onAuthStateChanged(user => {
         currentUser = user;
         updateUserUI();
-        if (user) {
-          loadDataFromCloud();
-        }
+        if (user) loadDataFromCloud();
       });
     }
 
@@ -1108,58 +1115,39 @@
       }
     }
 
-    function openAuthModal() {
-      if (!auth) {
-        alert("Firebase Config required! Please insert your Firebase keys inside index.html to activate authentication.");
-        return;
-      }
-      document.getElementById('authModalOverlay').style.display = 'flex';
-    }
-
-    function closeAuthModal() {
-      document.getElementById('authModalOverlay').style.display = 'none';
-    }
+    function openAuthModal() { document.getElementById('authModalOverlay').style.display = 'flex'; }
+    function closeAuthModal() { document.getElementById('authModalOverlay').style.display = 'none'; }
 
     async function loginWithGoogle() {
       try {
         const provider = new firebase.auth.GoogleAuthProvider();
         await auth.signInWithPopup(provider);
         closeAuthModal();
-      } catch (err) {
-        alert(err.message);
-      }
+      } catch (err) { alert(err.message); }
     }
 
     async function loginWithEmail() {
       const email = document.getElementById('authEmail').value;
       const pass = document.getElementById('authPassword').value;
       if (!email || !pass) return alert('Please enter email and password.');
-
       try {
         await auth.signInWithEmailAndPassword(email, pass);
         closeAuthModal();
-      } catch (err) {
-        alert(err.message);
-      }
+      } catch (err) { alert(err.message); }
     }
 
     async function signUpWithEmail() {
       const email = document.getElementById('authEmail').value;
       const pass = document.getElementById('authPassword').value;
       if (!email || !pass) return alert('Please enter email and password.');
-
       try {
         await auth.createUserWithEmailAndPassword(email, pass);
         closeAuthModal();
-      } catch (err) {
-        alert(err.message);
-      }
+      } catch (err) { alert(err.message); }
     }
 
     function signOutUser() {
-      if (confirm("Are you sure you want to sign out?")) {
-        auth.signOut();
-      }
+      if (confirm("Are you sure you want to sign out?")) auth.signOut();
     }
 
     async function syncDataToCloud(showToast = true) {
@@ -1167,7 +1155,6 @@
         if (showToast) alert("Please sign in to sync your data to the cloud.");
         return;
       }
-
       try {
         await db.collection('users').doc(currentUser.uid).set({
           store: store,
@@ -1175,14 +1162,12 @@
         });
         if (showToast) alert("✨ Cloud Backup Successful!");
       } catch (err) {
-        console.error("Cloud backup error:", err);
         if (showToast) alert("Backup failed: " + err.message);
       }
     }
 
     async function loadDataFromCloud() {
       if (!currentUser || !db) return;
-
       try {
         const doc = await db.collection('users').doc(currentUser.uid).get();
         if (doc.exists && doc.data().store) {
@@ -1201,21 +1186,15 @@
           initNotificationsUI();
           renderCurrentView();
         } else {
-          // Push initial local data to cloud
           syncDataToCloud(false);
         }
-      } catch (err) {
-        console.error("Cloud load error:", err);
-      }
+      } catch (err) { console.error(err); }
     }
 
-    // --- AUTO-UPDATE SYSTEM ---
+    // --- AUTO-UPDATE ---
     async function checkForUpdates(isManual = false) {
       try {
-        const response = await fetch(window.location.origin + window.location.pathname + '?nocache=' + Date.now(), {
-          cache: 'no-store',
-          headers: { 'Cache-Control': 'no-cache' }
-        });
+        const response = await fetch(window.location.origin + window.location.pathname + '?nocache=' + Date.now(), { cache: 'no-store' });
         const text = await response.text();
         const versionMatch = text.match(/const APP_VERSION = ["']([^"']+)["']/);
 
@@ -1238,9 +1217,7 @@
       window.location.reload(true);
     }
 
-    function forceReloadApp() {
-      if (confirm("Force refresh app and clear web cache?")) applyUpdate();
-    }
+    function forceReloadApp() { if (confirm("Force refresh app and clear web cache?")) applyUpdate(); }
 
     // --- NAVIGATION ---
     function switchMainView(btn, viewName) {
@@ -1289,7 +1266,7 @@
 
       document.getElementById('selectedDayTitle').textContent = new Date(selectedDayKey + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
       
-      const dayTasks = store.tasks.filter(t => t.dayKey === selectedDayKey);
+      const dayTasks = store.tasks.filter(t => t.dayKey === selectedDayKey || t.dueDate === selectedDayKey);
       const container = document.getElementById('timetableList');
       container.innerHTML = dayTasks.length === 0 
         ? `<p style="color:var(--subtext); font-size:0.85rem; margin-top:0.5rem">No classes or events scheduled for this day.</p>`
@@ -1297,14 +1274,14 @@
             <div class="task-card">
               <div>
                 <strong>${t.title}</strong>
-                <div style="font-size:0.75rem; color:var(--subtext)">${t.subject || 'General'}</div>
+                <div style="font-size:0.75rem; color:var(--subtext)">${t.subject || 'General'} • ${t.category.toUpperCase()}</div>
               </div>
               <button class="icon-btn" onclick="deleteTask('${t.id}')"><span class="material-icons-round">delete_outline</span></button>
             </div>
           `).join('');
     }
 
-    // --- SUBJECTS & GRADES LOGIC ---
+    // --- SUBJECTS LOGIC ---
     function renderSubjectsView() {
       const list = document.getElementById('subjectList');
       let totalPct = 0;
@@ -1375,7 +1352,7 @@
                 </span>
                 <div>
                   <strong>${t.title}</strong>
-                  <div style="font-size:0.75rem; color:var(--subtext)">Due: ${t.dueDate || 'No date'}</div>
+                  <div style="font-size:0.75rem; color:var(--subtext)">${t.subject ? t.subject + ' • ' : ''}Due: ${t.dueDate || 'No date'}</div>
                 </div>
               </div>
               <button class="icon-btn" onclick="deleteTask('${t.id}')"><span class="material-icons-round">delete_outline</span></button>
@@ -1445,58 +1422,174 @@
       saveStore();
     }
 
-    // --- MODALS & FAB ACTIONS ---
+    // --- REFACTORED ENHANCED DYNAMIC MODAL ENGINE ---
     function handleFabClick() {
-      const overlay = document.getElementById('modalOverlay');
-      const body = document.getElementById('modalBody');
-      const title = document.getElementById('modalTitle');
-
-      if (activeView === 'Lessons') {
-        title.textContent = "Add Subject";
-        body.innerHTML = `
-          <input type="text" id="mSubName" placeholder="Subject Name (e.g. History)" />
-          <input type="color" id="mSubColor" value="#0a84ff" style="height:40px; padding:2px" />
-        `;
-      } else if (activeView === 'Tasks') {
-        title.textContent = `Add ${currentTaskTab.toUpperCase()}`;
-        body.innerHTML = `
-          <input type="text" id="mTaskTitle" placeholder="Task Title" />
-          <input type="date" id="mTaskDate" />
-        `;
-      } else {
-        title.textContent = "Add Class / Event";
-        body.innerHTML = `
-          <input type="text" id="mClassTitle" placeholder="Class Title (e.g. Math Lecture)" />
-          <input type="text" id="mClassSub" placeholder="Subject Name" />
-        `;
-      }
-
-      overlay.style.display = 'flex';
+      const formattedDate = new Date(selectedDayKey + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      document.getElementById('modalTitleDisplay').textContent = `Add · ${formattedDate}`;
+      document.getElementById('modalOverlay').style.display = 'flex';
+      setModalTab(activeModalTab || 'lesson');
     }
 
-    function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
+    function closeModal() {
+      document.getElementById('modalOverlay').style.display = 'none';
+    }
 
-    function submitModal() {
-      if (activeView === 'Lessons') {
-        let name = document.getElementById('mSubName').value;
-        let color = document.getElementById('mSubColor').value;
-        if (name) store.subjects.push({ name, color, score: 0, maxScore: 100, lessons: 0 });
-      } else if (activeView === 'Tasks') {
-        let title = document.getElementById('mTaskTitle').value;
-        let dueDate = document.getElementById('mTaskDate').value;
-        if (title) store.tasks.push({ id: Date.now().toString(), category: currentTaskTab, title, dueDate, completed: false });
-      } else {
-        let title = document.getElementById('mClassTitle').value;
-        let subject = document.getElementById('mClassSub').value;
-        if (title) store.tasks.push({ id: Date.now().toString(), dayKey: selectedDayKey, title, subject, category: 'timetable' });
+    function setModalTab(tabType) {
+      activeModalTab = tabType;
+
+      // Update Tab Buttons UI
+      ['lesson', 'homework', 'exam', 'reminder', 'note'].forEach(t => {
+        const btn = document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
+        if (btn) {
+          if (t === tabType) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+      });
+
+      const container = document.getElementById('modalFormContainer');
+      const submitBtn = document.getElementById('btnSubmitMain');
+      const formattedDate = selectedDayKey;
+
+      // Build Dynamic Subject Options
+      let subjectOpts = store.subjects.length > 0 
+        ? store.subjects.map(s => `<option value="${s.name}">${s.name}</option>`).join('')
+        : `<option value="General">General</option>`;
+
+      if (tabType === 'lesson') {
+        submitBtn.textContent = 'Add lesson';
+        container.innerHTML = `
+          <div class="form-row-grid">
+            <select id="mLessonSubject">${subjectOpts}</select>
+            <select id="mLessonType"><option value="Lessons">Lessons</option><option value="Lecture">Lecture</option></select>
+          </div>
+          <div class="form-row-grid-full">
+            <input type="text" id="mLessonTitle" placeholder="Title (optional), e.g. Unit 3" />
+          </div>
+          <div class="form-row-grid-full">
+            <input type="date" id="mLessonDate" value="${formattedDate}" />
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" id="mLessonRepeat" />
+            <label for="mLessonRepeat">Repeat every week on this day</label>
+          </div>
+        `;
+      } else if (tabType === 'homework') {
+        submitBtn.textContent = 'Add homework';
+        container.innerHTML = `
+          <div class="form-row-grid-full">
+            <input type="text" id="mHwTitle" placeholder="Homework, e.g. Essay page 40" />
+          </div>
+          <div class="form-row-grid">
+            <select id="mHwSubject">${subjectOpts}</select>
+            <input type="date" id="mHwDate" value="${formattedDate}" />
+          </div>
+          <div class="quick-chips-row">
+            <button class="chip-btn" onclick="quickSetDate('mHwDate', 0)">Today</button>
+            <button class="chip-btn" onclick="quickSetDate('mHwDate', 1)">Tomorrow</button>
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" id="mHwPriority" />
+            <label for="mHwPriority">🚩 High priority</label>
+          </div>
+        `;
+      } else if (tabType === 'exam') {
+        submitBtn.textContent = 'Add exam';
+        container.innerHTML = `
+          <div class="form-row-grid-full">
+            <input type="text" id="mExamTitle" placeholder="Exam name, e.g. Arabic midterm" />
+          </div>
+          <div class="form-row-grid">
+            <select id="mExamSubject">${subjectOpts}</select>
+            <input type="date" id="mExamDate" value="${formattedDate}" />
+          </div>
+          <div class="quick-chips-row">
+            <button class="chip-btn" onclick="quickSetDate('mExamDate', 0)">Today</button>
+            <button class="chip-btn" onclick="quickSetDate('mExamDate', 1)">Tomorrow</button>
+            <button class="chip-btn" onclick="quickSetDate('mExamDate', 7)">In a week</button>
+          </div>
+        `;
+      } else if (tabType === 'reminder') {
+        submitBtn.textContent = 'Add reminder';
+        container.innerHTML = `
+          <div class="form-row-grid-full">
+            <input type="text" id="mRemTitle" placeholder="Remind me to..." />
+          </div>
+          <div class="form-row-grid">
+            <input type="date" id="mRemDate" value="${formattedDate}" />
+            <input type="time" id="mRemTime" value="18:00" />
+          </div>
+        `;
+      } else if (tabType === 'note') {
+        submitBtn.textContent = 'Save note';
+        let pillsHtml = store.subjects.map((s, idx) => `
+          <div class="subject-pill ${idx === 0 ? 'selected' : ''}" onclick="selectNotePill(this, '${s.name}')">
+            <div style="width:10px; height:10px; border-radius:50%; background:${s.color}"></div>
+            <span>${s.name}</span>
+          </div>
+        `).join('');
+
+        selectedNoteSubject = store.subjects[0] ? store.subjects[0].name : 'General';
+
+        container.innerHTML = `
+          <div class="subject-pills-grid">${pillsHtml}</div>
+          <div class="form-row-grid-full">
+            <textarea id="mNoteText" rows="3" placeholder="Write a note..."></textarea>
+          </div>
+        `;
+      }
+    }
+
+    function selectNotePill(el, subName) {
+      document.querySelectorAll('.subject-pill').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedNoteSubject = subName;
+    }
+
+    function quickSetDate(inputId, addDays) {
+      let d = new Date();
+      d.setDate(d.getDate() + addDays);
+      document.getElementById(inputId).value = dateToKey(d);
+    }
+
+    function submitModal(keepOpen = false) {
+      if (activeModalTab === 'lesson') {
+        let title = document.getElementById('mLessonTitle').value || 'Lesson';
+        let subject = document.getElementById('mLessonSubject').value;
+        let dateVal = document.getElementById('mLessonDate').value;
+        store.tasks.push({ id: Date.now().toString(), dayKey: dateVal, title, subject, category: 'timetable' });
+      } else if (activeModalTab === 'homework') {
+        let title = document.getElementById('mHwTitle').value;
+        let subject = document.getElementById('mHwSubject').value;
+        let dueDate = document.getElementById('mHwDate').value;
+        if (title) store.tasks.push({ id: Date.now().toString(), category: 'homework', title, subject, dueDate, completed: false });
+      } else if (activeModalTab === 'exam') {
+        let title = document.getElementById('mExamTitle').value;
+        let subject = document.getElementById('mExamSubject').value;
+        let dueDate = document.getElementById('mExamDate').value;
+        if (title) store.tasks.push({ id: Date.now().toString(), category: 'exam', title, subject, dueDate, completed: false });
+      } else if (activeModalTab === 'reminder') {
+        let title = document.getElementById('mRemTitle').value;
+        let dueDate = document.getElementById('mRemDate').value;
+        let timeVal = document.getElementById('mRemTime').value;
+        if (title) store.tasks.push({ id: Date.now().toString(), category: 'general', title: `🔔 ${title} (${timeVal})`, dueDate, completed: false });
+      } else if (activeModalTab === 'note') {
+        let text = document.getElementById('mNoteText').value;
+        if (text) store.tasks.push({ id: Date.now().toString(), category: 'general', title: `📓 Note: ${text}`, subject: selectedNoteSubject, dueDate: selectedDayKey, completed: false });
       }
 
       saveStore();
-      closeModal();
+
+      if (keepOpen) {
+        // Clear input field for quick consecutive entry
+        const inputs = document.querySelectorAll('#modalFormContainer input[type="text"], #modalFormContainer textarea');
+        inputs.forEach(i => i.value = '');
+      } else {
+        closeModal();
+      }
     }
 
     function clearAllData() {
-      if (confirm("Reset all local data back to 0?")) {
+      if (confirm("Reset all local data back to initial state?")) {
         localStorage.clear();
         store = {
           subjects: [],
@@ -1516,7 +1609,7 @@
       }
     }
 
-    // Initialize App
+    // Initialize Application
     document.getElementById('headerSub').textContent = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
     initAppearance();
     initNotificationsUI();
