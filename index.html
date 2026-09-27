@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="dark" data-template="default">
 <head>
   <meta charset="UTF-8" />
   <!-- iOS & Mobile Viewport Configuration -->
@@ -11,8 +11,8 @@
   <meta name="apple-mobile-web-app-title" content="StudyFlow" />
   <meta name="theme-color" content="#000000" />
 
-  <!-- Embedded Apple Touch Icon for Home Screen -->
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' style='background:%23000000'><rect width='512' height='512' fill='%23000000'/><path fill='%23ff375f' d='M256 120c-70 0-128 58-128 128s58 128 128 128 128-58 128-128-58-128-128-128zm0 216c-48.5 0-88-39.5-88-88s39.5-88 88-88 88 39.5 88-88-88z'/><circle cx='256' cy='248' r='48' fill='%230a84ff'/></svg>" />
+  <!-- Dynamic Apple Touch Icon -->
+  <link id="appIconLink" rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' style='background:%23000000'><rect width='512' height='512' fill='%23000000'/><path fill='%23ff375f' d='M256 120c-70 0-128 58-128 128s58 128 128 128 128-58 128-128-58-128-128-128zm0 216c-48.5 0-88-39.5-88-88s39.5-88 88-88 88 39.5 88-88-88z'/><circle cx='256' cy='248' r='48' fill='%230a84ff'/></svg>" />
 
   <title>StudyFlow - Student Tracker</title>
   
@@ -25,6 +25,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
   <style>
+    /* --- CSS THEME & TEMPLATE VARIABLES --- */
     :root {
       --bg: #000000;
       --card-bg: #121214;
@@ -40,6 +41,44 @@
       --input-bg: #1c1c1e;
       --modal-overlay: rgba(0, 0, 0, 0.8);
       --ease-ios: cubic-bezier(0.25, 1, 0.5, 1);
+      --glass-blur: blur(20px);
+    }
+
+    /* Template Presets */
+    [data-template="cyberpunk"] {
+      --bg: #07070e;
+      --card-bg: #0f0f1d;
+      --card-border: #2a2a4a;
+      --subtext: #7080b0;
+      --input-bg: #16162b;
+      --nav-bg: rgba(15, 15, 29, 0.92);
+    }
+
+    [data-template="pastels"] {
+      --bg: #14121a;
+      --card-bg: #1e1b29;
+      --card-border: #312c42;
+      --subtext: #9a92b3;
+      --input-bg: #282438;
+      --nav-bg: rgba(30, 27, 41, 0.9);
+    }
+
+    [data-template="glassmorphism"] {
+      --bg: #0d1117;
+      --card-bg: rgba(255, 255, 255, 0.07);
+      --card-border: rgba(255, 255, 255, 0.15);
+      --subtext: #a0aab8;
+      --input-bg: rgba(255, 255, 255, 0.1);
+      --nav-bg: rgba(13, 17, 23, 0.75);
+    }
+
+    [data-template="midnight"] {
+      --bg: #000000;
+      --card-bg: #080808;
+      --card-border: #1a1a1a;
+      --subtext: #666666;
+      --input-bg: #121212;
+      --nav-bg: rgba(0, 0, 0, 0.95);
     }
 
     [data-theme="light"] {
@@ -98,7 +137,7 @@
     .header-top .icons {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       color: var(--subtext);
     }
 
@@ -164,10 +203,31 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
       transition: transform 0.15s var(--ease-ios), color 0.2s ease;
     }
 
     .icon-btn:active { transform: scale(0.88); }
+
+    /* Notification Bell Badge */
+    .notif-badge {
+      position: absolute;
+      top: -2px;
+      right: -3px;
+      background-color: var(--accent-pink);
+      color: #ffffff;
+      font-size: 0.65rem;
+      font-weight: 800;
+      min-width: 16px;
+      height: 16px;
+      border-radius: 8px;
+      padding: 0 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--bg);
+      display: none;
+    }
 
     /* --- Update Banner --- */
     #updateBanner {
@@ -231,6 +291,8 @@
       border-radius: 16px;
       padding: 1.25rem;
       margin-bottom: 1rem;
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
       transition: background-color 0.3s var(--ease-ios), border-color 0.3s var(--ease-ios);
     }
 
@@ -283,7 +345,7 @@
     /* --- FAB --- */
     #fab {
       position: fixed;
-      bottom: calc(5rem + env(safe-area-inset-bottom));
+      bottom: calc(5.2rem + env(safe-area-inset-bottom));
       right: 1.25rem;
       background-color: var(--text);
       color: var(--bg);
@@ -296,7 +358,7 @@
       justify-content: center;
       font-size: 1.8rem;
       cursor: pointer;
-      box-shadow: 0 4px 20px var(--modal-overlay);
+      box-shadow: 0 6px 24px var(--modal-overlay);
       z-index: 90;
       transition: transform 0.2s var(--ease-ios), background-color 0.3s ease;
       will-change: transform;
@@ -305,11 +367,32 @@
     #fab:active { transform: scale(0.88); }
 
     /* --- Timetable View --- */
+    .week-nav-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .week-nav-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 0.35rem 0.75rem;
+      border-radius: 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
     .week-scroller {
       display: flex;
       gap: 10px;
       overflow-x: auto;
-      padding-bottom: 1rem;
+      padding-bottom: 0.8rem;
     }
     .week-scroller::-webkit-scrollbar { display: none; }
 
@@ -517,7 +600,7 @@
     .cal-day.absent { background-color: rgba(255, 55, 95, 0.2); color: var(--accent-pink); border-color: var(--accent-pink); }
     .cal-day.holiday { background-color: rgba(255, 159, 10, 0.2); color: var(--accent-orange); border-color: var(--accent-orange); }
 
-    /* --- Settings View --- */
+    /* --- Settings & Appearance Options --- */
     .settings-btn {
       width: 100%; background-color: var(--card-bg); border: 1px solid var(--card-border);
       color: var(--text); padding: 1rem; border-radius: 14px; font-size: 0.95rem; font-weight: 600;
@@ -546,6 +629,53 @@
 
     .theme-option:active { transform: scale(0.94); }
     .theme-option.active { border-color: var(--accent-pink); color: var(--accent-pink); }
+
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .template-card {
+      background-color: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 14px;
+      padding: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: border-color 0.2s ease, transform 0.15s var(--ease-ios);
+    }
+
+    .template-card:active { transform: scale(0.96); }
+    .template-card.active { border-color: var(--accent-blue); background-color: var(--input-bg); }
+    .template-card .title { font-size: 0.85rem; font-weight: 700; }
+    .template-card .desc { font-size: 0.7rem; color: var(--subtext); }
+
+    .app-icon-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .icon-picker-btn {
+      aspect-ratio: 1;
+      border-radius: 16px;
+      border: 2px solid var(--card-border);
+      background-color: var(--card-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 6px;
+      transition: transform 0.15s var(--ease-ios), border-color 0.2s ease;
+    }
+
+    .icon-picker-btn:active { transform: scale(0.9); }
+    .icon-picker-btn.active { border-color: var(--accent-pink); transform: scale(1.05); }
 
     .accent-grid {
       display: flex;
@@ -637,6 +767,59 @@
     }
     .modal-header h3 { font-size: 1.1rem; font-weight: 700; color: #ffffff; }
     .modal-header button.close-btn { background: none; border: none; color: #0a84ff; font-weight: 600; font-size: 0.95rem; cursor: pointer; }
+
+    /* --- CIRCULAR FOCUS TIMER UI --- */
+    .focus-timer-ring-wrapper {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      margin: 1rem auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .focus-timer-svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .focus-timer-bg-circle {
+      fill: none;
+      stroke: var(--card-border);
+      stroke-width: 10;
+    }
+
+    .focus-timer-progress-circle {
+      fill: none;
+      stroke: var(--accent-pink);
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 565.48; /* 2 * PI * 90 */
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 0.3s ease, stroke 0.3s ease;
+    }
+
+    .focus-timer-content {
+      position: absolute;
+      text-align: center;
+    }
+
+    .focus-time-display {
+      font-size: 3rem;
+      font-weight: 800;
+      font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      letter-spacing: -1px;
+      color: var(--text);
+    }
+
+    .focus-status-text {
+      font-size: 0.8rem;
+      color: var(--subtext);
+      font-weight: 600;
+      margin-top: 4px;
+    }
 
     .color-palette-grid {
       display: grid;
@@ -737,6 +920,11 @@
         <button class="icon-btn" onclick="openFocusModal()" title="Focus Timer">
           <span class="material-icons-round">timer</span>
         </button>
+        <!-- Pending Homework & Upcoming Exams Notification Bell -->
+        <button class="icon-btn" id="notifBellBtn" onclick="openPendingNotifModal()" title="Pending Tasks & Exams">
+          <span class="material-icons-round">notifications</span>
+          <span id="notifBadge" class="notif-badge">0</span>
+        </button>
         <button class="user-avatar-btn" id="headerUserAvatar" onclick="openAuthModal()">
           <span class="material-icons-round" style="font-size:1.1rem">person</span>
         </button>
@@ -756,9 +944,16 @@
 
     <!-- 1. Timetable View -->
     <div id="viewTimetable" class="view active">
+      <div class="week-nav-controls">
+        <button class="week-nav-btn" onclick="navigateWeek(-1)"><span class="material-icons-round" style="font-size:1rem">chevron_left</span> Prev Week</button>
+        <button class="week-nav-btn" onclick="resetToCurrentWeek()"><span class="material-icons-round" style="font-size:1rem">today</span> Today</button>
+        <button class="week-nav-btn" onclick="navigateWeek(1)">Next Week <span class="material-icons-round" style="font-size:1rem">chevron_right</span></button>
+      </div>
+
       <div class="week-scroller" id="weekScroller"></div>
+      
       <div class="card">
-        <div style="display:flex; justify-space-between; align-items:center;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
           <h2 id="selectedDayTitle">Schedule</h2>
           <button onclick="handleFabClick()" style="background:var(--card-border); border:none; color:var(--text); padding:0.4rem 0.8rem; border-radius:10px; font-weight:600; font-size:0.8rem; cursor:pointer;">+ Class</button>
         </div>
@@ -844,7 +1039,7 @@
         </div>
       </div>
 
-      <p class="section-title">Appearance Options</p>
+      <p class="section-title">App Theme Mode</p>
       <div class="theme-grid">
         <div class="theme-option" id="themeDarkBtn" onclick="setThemeMode('dark')">
           <span class="material-icons-round">dark_mode</span>
@@ -860,6 +1055,34 @@
         </div>
       </div>
 
+      <p class="section-title">App Template Theme</p>
+      <div class="template-grid">
+        <div class="template-card" id="tmplDefault" onclick="setAppTemplate('default')">
+          <div class="title">iOS Slate</div>
+          <div class="desc">Default dark OLED look</div>
+        </div>
+        <div class="template-card" id="tmplCyberpunk" onclick="setAppTemplate('cyberpunk')">
+          <div class="title">Cyberpunk Neon</div>
+          <div class="desc">Electric glow vibe</div>
+        </div>
+        <div class="template-card" id="tmplPastels" onclick="setAppTemplate('pastels')">
+          <div class="title">Soft Pastels</div>
+          <div class="desc">Warm lavender aesthetic</div>
+        </div>
+        <div class="template-card" id="tmplGlassmorphism" onclick="setAppTemplate('glassmorphism')">
+          <div class="title">Frosted Glass</div>
+          <div class="desc">Translucent blur UI</div>
+        </div>
+        <div class="template-card" id="tmplMidnight" onclick="setAppTemplate('midnight')">
+          <div class="title">Midnight OLED</div>
+          <div class="desc">Pure true black</div>
+        </div>
+      </div>
+
+      <p class="section-title">App Icon Design</p>
+      <div class="app-icon-grid" id="appIconPickerGrid"></div>
+
+      <p class="section-title">Accent Colors</p>
       <div class="accent-grid">
         <div class="accent-swatch" style="background-color: #ff375f;" onclick="setAccentColor('#ff375f')" id="accentPink"></div>
         <div class="accent-swatch" style="background-color: #0a84ff;" onclick="setAccentColor('#0a84ff')" id="accentBlue"></div>
@@ -950,22 +1173,47 @@
   <!-- FAB -->
   <button id="fab" onclick="handleFabClick()"><span class="material-icons-round">add</span></button>
 
-  <!-- FOCUS TIMER MODAL -->
-  <div class="modal-overlay" id="focusModalOverlay" style="align-items: center;">
-    <div class="modal" style="border-radius: 20px; max-width: 380px; text-align: center;">
+  <!-- PENDING HOMEWORK & EXAMS NOTIFICATION MODAL -->
+  <div class="modal-overlay" id="pendingNotifModalOverlay" style="align-items: center;">
+    <div class="modal" style="border-radius: 20px; max-width: 440px;">
       <div class="modal-header">
-        <h3>Focus Timer</h3>
+        <h3>Pending Tasks & Exams 🔔</h3>
+        <button class="close-btn" onclick="closePendingNotifModal()">Close</button>
+      </div>
+
+      <div class="tab-bar" style="margin-bottom: 0.8rem;">
+        <button class="tab-btn active" id="pNotifTabAll" onclick="filterPendingModal('all')">All</button>
+        <button class="tab-btn" id="pNotifTabHw" onclick="filterPendingModal('homework')">Homework</button>
+        <button class="tab-btn" id="pNotifTabExams" onclick="filterPendingModal('exam')">Exams</button>
+      </div>
+
+      <div id="pendingNotifListContainer" style="max-height: 50vh; overflow-y: auto;"></div>
+    </div>
+  </div>
+
+  <!-- COOL MODERN CIRCULAR FOCUS TIMER MODAL -->
+  <div class="modal-overlay" id="focusModalOverlay" style="align-items: center;">
+    <div class="modal" style="border-radius: 24px; max-width: 380px; text-align: center;">
+      <div class="modal-header">
+        <h3>Focus Session</h3>
         <button class="close-btn" onclick="closeFocusModal()">Close</button>
       </div>
       
-      <div style="margin: 1.5rem 0;">
-        <div id="focusTimerDisplay" style="font-size: 3.5rem; font-weight: 800; font-family: monospace; color: var(--accent-pink); margin-bottom: 0.3rem;">25:00</div>
-        <p id="focusTimerState" style="font-size: 0.85rem; color: var(--subtext);">Ready to focus</p>
+      <!-- Circular Progress SVG Ring -->
+      <div class="focus-timer-ring-wrapper">
+        <svg class="focus-timer-svg" viewBox="0 0 200 200">
+          <circle class="focus-timer-bg-circle" cx="100" cy="100" r="90" />
+          <circle id="focusTimerCircle" class="focus-timer-progress-circle" cx="100" cy="100" r="90" />
+        </svg>
+        <div class="focus-timer-content">
+          <div class="focus-time-display" id="focusTimerDisplay">25:00</div>
+          <div class="focus-status-text" id="focusTimerState">Ready to Focus</div>
+        </div>
       </div>
 
-      <!-- Quick Preset Chips & Custom Duration Field -->
-      <div style="margin-bottom: 1.2rem;">
-        <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 12px;">
+      <!-- Quick Duration Preset Chips -->
+      <div style="margin-bottom: 1rem;">
+        <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 10px;">
           <button class="chip-btn" onclick="setFocusMinutes(15)">15m</button>
           <button class="chip-btn active" onclick="setFocusMinutes(25)">25m</button>
           <button class="chip-btn" onclick="setFocusMinutes(45)">45m</button>
@@ -973,7 +1221,8 @@
         </div>
         <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
           <label style="font-size: 0.8rem; color: var(--subtext);">Custom Minutes:</label>
-          <input type="number" id="customFocusInput" value="25" min="1" max="240" style="width: 80px; padding: 6px; border-radius: 8px; text-align: center;" onchange="setFocusMinutes(this.value)" />
+          <input type="number" id="customFocusInput" value="25" min="1" max="240" style="width: 75px; padding: 6px; border-radius: 8px; text-align: center;" onchange="setFocusMinutes(this.value)" />
+          <button class="action-chip-btn" onclick="addFocusMinutes(5)">+5m Boost</button>
         </div>
       </div>
 
@@ -1130,7 +1379,7 @@
     const db = firebase.firestore();
     let currentUser = null;
 
-    const APP_VERSION = "1.4.1";
+    const APP_VERSION = "1.5.0";
 
     let activeView = 'Timetable';
     let currentTaskTab = 'homework';
@@ -1139,12 +1388,24 @@
     let activeModalTab = 'lesson';
     let selectedNoteSubject = '';
 
+    // Week Scroller Offset tracking
+    let weekOffsetDays = 0;
+
     // Subject editing state
     let editingSubjectIndex = -1;
     let selectedSubjectColor = '#0a84ff';
     const PRESET_COLORS = [
       '#0a84ff', '#30d158', '#ff375f', '#bf5af2', '#ff9f0a', '#ffd60a',
       '#64d2ff', '#ff453a', '#ac8e68', '#5e5ce6', '#ff2d55', '#32ade6'
+    ];
+
+    // SVG App Icons
+    const APP_ICONS = [
+      { id: 'flow', name: 'Classic Flow', svg: `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' style='background:%23000000'><rect width='512' height='512' fill='%23000000'/><path fill='%23ff375f' d='M256 120c-70 0-128 58-128 128s58 128 128 128 128-58 128-128-58-128-128-128zm0 216c-48.5 0-88-39.5-88-88s39.5-88 88-88 88 39.5 88-88-88z'/><circle cx='256' cy='248' r='48' fill='%230a84ff'/></svg>` },
+      { id: 'cyber', name: 'Cyber Glow', svg: `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' style='background:%2307070e'><rect width='512' height='512' fill='%2307070e'/><circle cx='256' cy='256' r='140' fill='none' stroke='%2300f0ff' stroke-width='32'/><circle cx='256' cy='256' r='70' fill='%23ff007f'/></svg>` },
+      { id: 'scholar', name: 'Scholar Book', svg: `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' style='background:%230a84ff'><rect width='512' height='512' fill='%230a84ff'/><path fill='%23ffffff' d='M256 160l-128 64 128 64 128-64-128-64zm-128 112v80l128 64 128-64v-80l-128 64-128-64z'/></svg>` },
+      { id: 'midnight', name: 'Midnight', svg: `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' style='background:%23000000'><rect width='512' height='512' fill='%23000000'/><rect x='156' y='156' width='200' height='200' rx='40' fill='none' stroke='%23ffffff' stroke-width='24'/><circle cx='256' cy='256' r='36' fill='%2330d158'/></svg>` },
+      { id: 'sunset', name: 'Sunset Glow', svg: `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' style='background:%23ff9f0a'><rect width='512' height='512' fill='%23ff9f0a'/><circle cx='256' cy='256' r='120' fill='%23ff375f'/><path fill='%23ffffff' d='M210 210h92v92h-92z'/></svg>` }
     ];
 
     let store = {
@@ -1158,6 +1419,8 @@
       tasks: JSON.parse(localStorage.getItem('sf_tasks')) || [],
       settings: JSON.parse(localStorage.getItem('sf_settings')) || {
         themeMode: 'dark',
+        appTemplate: 'default',
+        appIcon: 'flow',
         accentColor: '#ff375f',
         notifications: false,
         reminders: true,
@@ -1182,6 +1445,7 @@
       localStorage.setItem('sf_attendance', JSON.stringify(store.attendance));
       localStorage.setItem('sf_tasks', JSON.stringify(store.tasks));
       localStorage.setItem('sf_settings', JSON.stringify(store.settings));
+      updatePendingNotificationBadge();
       renderCurrentView();
 
       if (currentUser && db) {
@@ -1209,7 +1473,107 @@
       }
     }
 
-    // --- FOCUS TIMER MODULE ---
+    // --- PENDING HOMEWORK & EXAMS NOTIFICATION MODULE ---
+    let pendingModalFilter = 'all';
+
+    function updatePendingNotificationBadge() {
+      const badge = document.getElementById('notifBadge');
+      if (!badge) return;
+
+      const pendingCount = store.tasks.filter(t => !t.completed && (t.category === 'homework' || t.category === 'exam')).length;
+      if (pendingCount > 0) {
+        badge.textContent = pendingCount > 99 ? '99+' : pendingCount;
+        badge.style.display = 'flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function openPendingNotifModal() {
+      document.getElementById('pendingNotifModalOverlay').style.display = 'flex';
+      renderPendingNotifList();
+    }
+
+    function closePendingNotifModal() {
+      document.getElementById('pendingNotifModalOverlay').style.display = 'none';
+    }
+
+    function filterPendingModal(category) {
+      pendingModalFilter = category;
+      ['all', 'homework', 'exam'].forEach(cat => {
+        const btn = document.getElementById(`pNotifTab${cat.charAt(0).toUpperCase() + cat.slice(1)}`);
+        if (btn) {
+          if (cat === category) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+      });
+      renderPendingNotifList();
+    }
+
+    function renderPendingNotifList() {
+      const container = document.getElementById('pendingNotifListContainer');
+      const todayKey = dateToKey(new Date());
+
+      let pendingItems = store.tasks.filter(t => !t.completed && (t.category === 'homework' || t.category === 'exam'));
+      if (pendingModalFilter !== 'all') {
+        pendingItems = pendingItems.filter(t => t.category === pendingModalFilter);
+      }
+
+      if (pendingItems.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:2rem; color:var(--subtext);">🎉 All caught up! No uncompleted homework or upcoming exams.</div>`;
+        return;
+      }
+
+      // Group into Overdue, Today, Upcoming
+      const overdue = [], dueToday = [], upcoming = [];
+
+      pendingItems.forEach(t => {
+        const dueDateKey = t.dueDate || t.dayKey || todayKey;
+        if (dueDateKey < todayKey) overdue.push(t);
+        else if (dueDateKey === todayKey) dueToday.push(t);
+        else upcoming.push(t);
+      });
+
+      let html = '';
+
+      const renderGroup = (title, items, badgeColor) => {
+        if (items.length === 0) return '';
+        return `
+          <div style="font-size: 0.75rem; font-weight: 700; color: ${badgeColor}; text-transform: uppercase; margin: 1rem 0 0.5rem;">${title} (${items.length})</div>
+          ${items.map(t => {
+            const subColor = getSubjectColor(t.subject);
+            return `
+              <div class="task-card" style="border-left: 4px solid ${subColor}; margin-bottom: 0.5rem;" onclick="completeTaskFromNotif('${t.id}')">
+                <div style="display:flex; align-items:center; gap:10px; flex:1;">
+                  <span class="material-icons-round" style="color:var(--subtext); font-size:1.3rem;">radio_button_unchecked</span>
+                  <div>
+                    <strong>${t.title}</strong>
+                    <div style="display:flex; align-items:center; gap:6px; font-size:0.75rem; color:var(--subtext); margin-top:2px;">
+                      <span class="subject-badge" style="background:${subColor}22; color:${subColor}; font-weight:700;">${t.subject || 'General'}</span>
+                      • Due: ${t.dueDate || 'No date'}
+                    </div>
+                  </div>
+                </div>
+                <button class="action-chip-btn add-btn" onclick="event.stopPropagation(); completeTaskFromNotif('${t.id}')">Mark Done</button>
+              </div>
+            `;
+          }).join('')}
+        `;
+      };
+
+      html += renderGroup('🚨 Overdue', overdue, 'var(--accent-pink)');
+      html += renderGroup('📅 Due Today', dueToday, 'var(--accent-orange)');
+      html += renderGroup('⏳ Upcoming', upcoming, 'var(--accent-blue)');
+
+      container.innerHTML = html;
+    }
+
+    function completeTaskFromNotif(id) {
+      toggleTask(id);
+      renderPendingNotifList();
+    }
+
+    // --- CIRCULAR FOCUS TIMER MODULE ---
     let focusInterval = null;
     let focusTotalSeconds = 25 * 60;
     let focusRemainingSeconds = 25 * 60;
@@ -1240,10 +1604,24 @@
       updateFocusTimerDisplay();
     }
 
+    function addFocusMinutes(extraMins) {
+      focusTotalSeconds += extraMins * 60;
+      focusRemainingSeconds += extraMins * 60;
+      updateFocusTimerDisplay();
+    }
+
     function updateFocusTimerDisplay() {
       const m = Math.floor(focusRemainingSeconds / 60);
       const s = focusRemainingSeconds % 60;
       document.getElementById('focusTimerDisplay').textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+      // Update SVG Circular Ring Progress
+      const circle = document.getElementById('focusTimerCircle');
+      if (circle) {
+        const totalDash = 565.48; // 2 * PI * 90
+        const fraction = focusTotalSeconds > 0 ? (focusRemainingSeconds / focusTotalSeconds) : 0;
+        circle.style.strokeDashoffset = totalDash * (1 - fraction);
+      }
     }
 
     function toggleFocusTimer() {
@@ -1255,7 +1633,7 @@
       if (focusRemainingSeconds <= 0) focusRemainingSeconds = focusTotalSeconds;
       focusIsRunning = true;
       document.getElementById('btnToggleFocus').textContent = 'Pause';
-      document.getElementById('focusTimerState').textContent = 'Focus session in progress...';
+      document.getElementById('focusTimerState').textContent = 'Session in progress...';
 
       focusInterval = setInterval(() => {
         if (focusRemainingSeconds > 0) {
@@ -1264,6 +1642,7 @@
         } else {
           pauseFocusTimer();
           triggerHaptic([100, 50, 100, 50, 100]);
+          playTimerFinishedSound();
           alert('⏰ Focus Session Complete! Great job!');
           document.getElementById('focusTimerState').textContent = 'Session completed!';
         }
@@ -1283,6 +1662,23 @@
       updateFocusTimerDisplay();
       document.getElementById('btnToggleFocus').textContent = 'Start Focus';
       document.getElementById('focusTimerState').textContent = 'Ready to focus';
+    }
+
+    function playTimerFinishedSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.6);
+      } catch(e){}
     }
 
     // --- DYNAMIC HEADER & SUBJECT COLOR INDICATOR DOTS ---
@@ -1319,10 +1715,13 @@
       }
     }
 
-    // --- APPEARANCE & THEME ---
+    // --- APPEARANCE, THEME & APP ICON OPTION SYSTEM ---
     function initAppearance() {
       applyThemeMode(store.settings.themeMode || 'dark');
+      applyAppTemplate(store.settings.appTemplate || 'default');
       applyAccentColor(store.settings.accentColor || '#ff375f');
+      applyAppIcon(store.settings.appIcon || 'flow');
+      renderAppIconGrid();
       updateAppearanceUI();
 
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
@@ -1348,6 +1747,17 @@
       }
     }
 
+    function setAppTemplate(tmpl) {
+      store.settings.appTemplate = tmpl;
+      applyAppTemplate(tmpl);
+      saveStore();
+      updateAppearanceUI();
+    }
+
+    function applyAppTemplate(tmpl) {
+      document.documentElement.setAttribute('data-template', tmpl);
+    }
+
     function setAccentColor(color) {
       store.settings.accentColor = color;
       applyAccentColor(color);
@@ -1359,11 +1769,46 @@
       document.documentElement.style.setProperty('--accent-pink', color);
     }
 
+    function renderAppIconGrid() {
+      const container = document.getElementById('appIconPickerGrid');
+      if (!container) return;
+
+      container.innerHTML = APP_ICONS.map(icon => `
+        <div class="icon-picker-btn ${store.settings.appIcon === icon.id ? 'active' : ''}" onclick="selectAppIcon('${icon.id}')" title="${icon.name}">
+          ${icon.svg}
+        </div>
+      `).join('');
+    }
+
+    function selectAppIcon(iconId) {
+      store.settings.appIcon = iconId;
+      applyAppIcon(iconId);
+      saveStore();
+      renderAppIconGrid();
+    }
+
+    function applyAppIcon(iconId) {
+      const iconObj = APP_ICONS.find(i => i.id === iconId) || APP_ICONS[0];
+      const link = document.getElementById('appIconLink');
+      if (link && iconObj) {
+        const encodedSvg = encodeURIComponent(iconObj.svg).replace(/'/g, "%27").replace(/"/g, "%22");
+        link.href = `data:image/svg+xml,${encodedSvg}`;
+      }
+    }
+
     function updateAppearanceUI() {
       ['dark', 'light', 'system'].forEach(m => {
         const el = document.getElementById(`theme${m.charAt(0).toUpperCase() + m.slice(1)}Btn`);
         if (el) {
           if (store.settings.themeMode === m) el.classList.add('active');
+          else el.classList.remove('active');
+        }
+      });
+
+      ['default', 'cyberpunk', 'pastels', 'glassmorphism', 'midnight'].forEach(t => {
+        const el = document.getElementById(`tmpl${t.charAt(0).toUpperCase() + t.slice(1)}`);
+        if (el) {
+          if (store.settings.appTemplate === t) el.classList.add('active');
           else el.classList.remove('active');
         }
       });
@@ -1550,6 +1995,7 @@
           
           initAppearance();
           initNotificationsUI();
+          updatePendingNotificationBadge();
           renderCurrentView();
         } else {
           syncDataToCloud(false);
@@ -1588,14 +2034,30 @@
       if (activeView === 'Attendance') renderAttendanceView();
     }
 
-    // --- TIMETABLE LOGIC ---
+    // --- TIMETABLE LOGIC & WEEK NAVIGATION BUG FIX ---
+    function navigateWeek(direction) {
+      weekOffsetDays += direction * 7;
+      renderTimetable();
+    }
+
+    function resetToCurrentWeek() {
+      weekOffsetDays = 0;
+      currentDate = new Date();
+      selectedDayKey = dateToKey(currentDate);
+      renderTimetable();
+      updateHeaderDateAndDots();
+    }
+
     function renderTimetable() {
       const scroller = document.getElementById('weekScroller');
       scroller.innerHTML = '';
 
+      const baseDate = new Date();
+      baseDate.setDate(baseDate.getDate() + weekOffsetDays);
+
       for (let i = -2; i <= 4; i++) {
-        let d = new Date();
-        d.setDate(currentDate.getDate() + i);
+        let d = new Date(baseDate);
+        d.setDate(baseDate.getDate() + i);
         let key = dateToKey(d);
 
         let chip = document.createElement('div');
@@ -1605,8 +2067,10 @@
           renderTimetable(); 
           updateHeaderDateAndDots();
         };
+        
+        const isToday = key === dateToKey(new Date());
         chip.innerHTML = `
-          <div class="day-name">${i === 0 ? 'Today' : d.toLocaleDateString('en-US', {weekday:'short'})}</div>
+          <div class="day-name">${isToday ? 'Today' : d.toLocaleDateString('en-US', {weekday:'short'})}</div>
           <div class="day-date">${d.getDate()} ${d.toLocaleDateString('en-US', {month:'short'})}</div>
         `;
         scroller.appendChild(chip);
@@ -1853,6 +2317,7 @@
       document.getElementById('subjectModalOverlay').style.display = 'none';
     }
 
+    // CASCADE SUBJECT NAME CHANGE BUG FIX
     function saveSubjectModal() {
       const nameInput = document.getElementById('subjectNameInput').value.trim();
       if (!nameInput) {
@@ -1871,8 +2336,16 @@
           grades: []
         });
       } else {
+        const oldName = store.subjects[editingSubjectIndex].name;
         store.subjects[editingSubjectIndex].name = nameInput;
         store.subjects[editingSubjectIndex].color = selectedSubjectColor;
+
+        // Cascade update old subject name references in task items
+        store.tasks.forEach(t => {
+          if (t.subject && t.subject.toLowerCase() === oldName.toLowerCase()) {
+            t.subject = nameInput;
+          }
+        });
       }
 
       saveStore();
@@ -1997,7 +2470,7 @@
       saveStore();
     }
 
-    // --- MODAL & SCHEDULING SYSTEM ---
+    // --- MODAL & SCHEDULING SYSTEM WITH VALIDATION ---
     function handleFabClick() {
       const formattedDate = parseKeyToDate(selectedDayKey).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
       document.getElementById('modalTitleDisplay').textContent = `Add · ${formattedDate}`;
@@ -2122,28 +2595,32 @@
 
     function submitModal(keepOpen = false) {
       if (activeModalTab === 'lesson') {
-        let title = document.getElementById('mLessonTitle').value || 'Lesson';
+        let title = document.getElementById('mLessonTitle').value.trim() || 'Lesson';
         let subject = document.getElementById('mLessonSubject').value;
         let dateVal = document.getElementById('mLessonDate').value;
         store.tasks.push({ id: Date.now().toString(), dayKey: dateVal, dueDate: dateVal, title, subject, category: 'timetable', completed: false });
       } else if (activeModalTab === 'homework') {
-        let title = document.getElementById('mHwTitle').value;
+        let title = document.getElementById('mHwTitle').value.trim();
+        if (!title) return alert('Please enter a homework title.');
         let subject = document.getElementById('mHwSubject').value;
         let dueDate = document.getElementById('mHwDate').value;
-        if (title) store.tasks.push({ id: Date.now().toString(), category: 'homework', dayKey: dueDate, title, subject, dueDate, completed: false });
+        store.tasks.push({ id: Date.now().toString(), category: 'homework', dayKey: dueDate, title, subject, dueDate, completed: false });
       } else if (activeModalTab === 'exam') {
-        let title = document.getElementById('mExamTitle').value;
+        let title = document.getElementById('mExamTitle').value.trim();
+        if (!title) return alert('Please enter an exam title.');
         let subject = document.getElementById('mExamSubject').value;
         let dueDate = document.getElementById('mExamDate').value;
-        if (title) store.tasks.push({ id: Date.now().toString(), category: 'exam', dayKey: dueDate, title, subject, dueDate, completed: false });
+        store.tasks.push({ id: Date.now().toString(), category: 'exam', dayKey: dueDate, title, subject, dueDate, completed: false });
       } else if (activeModalTab === 'reminder') {
-        let title = document.getElementById('mRemTitle').value;
+        let title = document.getElementById('mRemTitle').value.trim();
+        if (!title) return alert('Please enter a reminder title.');
         let dueDate = document.getElementById('mRemDate').value;
         let timeVal = document.getElementById('mRemTime').value;
-        if (title) store.tasks.push({ id: Date.now().toString(), category: 'general', dayKey: dueDate, title: `🔔 ${title} (${timeVal})`, dueDate, completed: false });
+        store.tasks.push({ id: Date.now().toString(), category: 'general', dayKey: dueDate, title: `🔔 ${title} (${timeVal})`, dueDate, completed: false });
       } else if (activeModalTab === 'note') {
-        let text = document.getElementById('mNoteText').value;
-        if (text) store.tasks.push({ id: Date.now().toString(), category: 'general', title: `📓 ${text}`, subject: selectedNoteSubject, dayKey: selectedDayKey, dueDate: selectedDayKey, completed: false });
+        let text = document.getElementById('mNoteText').value.trim();
+        if (!text) return alert('Please write a note before saving.');
+        store.tasks.push({ id: Date.now().toString(), category: 'general', title: `📓 ${text}`, subject: selectedNoteSubject, dayKey: selectedDayKey, dueDate: selectedDayKey, completed: false });
       }
 
       saveStore();
@@ -2155,6 +2632,7 @@
       initAppearance();
       initNotificationsUI();
       renderColorSwatches();
+      updatePendingNotificationBadge();
       renderCurrentView();
     });
   </script>
