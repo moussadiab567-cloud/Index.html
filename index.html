@@ -111,7 +111,6 @@
       transition: background-color 0.3s var(--ease-ios), color 0.3s var(--ease-ios);
     }
 
-    /* --- Header & Subject Dot Indicators --- */
     header {
       padding: calc(0.8rem + env(safe-area-inset-top)) 1rem 0.5rem;
       background-color: var(--bg);
@@ -209,7 +208,6 @@
 
     .icon-btn:active { transform: scale(0.88); }
 
-    /* Notification Bell Badge */
     .notif-badge {
       position: absolute;
       top: -2px;
@@ -229,7 +227,6 @@
       display: none;
     }
 
-    /* --- Update Banner --- */
     #updateBanner {
       display: none;
       background-color: var(--accent-blue);
@@ -253,7 +250,6 @@
       cursor: pointer;
     }
 
-    /* --- Main Scroll Area --- */
     main {
       flex: 1;
       padding: 0.5rem 1rem calc(6rem + env(safe-area-inset-bottom));
@@ -296,7 +292,6 @@
       transition: background-color 0.3s var(--ease-ios), border-color 0.3s var(--ease-ios);
     }
 
-    /* --- Bottom Navigation --- */
     nav {
       position: fixed;
       bottom: 0;
@@ -342,7 +337,6 @@
       display: none;
     }
 
-    /* --- FAB --- */
     #fab {
       position: fixed;
       bottom: calc(5.2rem + env(safe-area-inset-bottom));
@@ -366,7 +360,6 @@
 
     #fab:active { transform: scale(0.88); }
 
-    /* --- Timetable View --- */
     .week-nav-controls {
       display: flex;
       align-items: center;
@@ -418,7 +411,6 @@
     .day-chip .day-name { font-size: 0.8rem; font-weight: 700; }
     .day-chip .day-date { font-size: 0.7rem; opacity: 0.8; }
 
-    /* --- Subjects & Grading View Styles --- */
     .subject-card {
       background-color: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -549,7 +541,6 @@
     .grade-val { font-size: 1.6rem; font-weight: 700; margin-bottom: 2px; }
     .grade-lbl { font-size: 0.7rem; color: var(--subtext); text-transform: uppercase; font-weight: 600; }
 
-    /* --- Tasks View --- */
     .tab-bar { display: flex; border-bottom: 1px solid var(--card-border); margin-bottom: 1.25rem; }
     .tab-btn { flex: 1; text-align: center; padding: 0.75rem 0; font-size: 0.9rem; font-weight: 600; color: var(--subtext); background: none; border: none; cursor: pointer; position: relative; transition: color 0.2s ease; }
     .tab-btn.active { color: var(--text); }
@@ -581,7 +572,18 @@
       font-weight: 600;
     }
 
-    /* --- Attendance View --- */
+    .repeat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.68rem;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: rgba(10, 132, 255, 0.15);
+      color: var(--accent-blue);
+      font-weight: 700;
+    }
+
     .attendance-header { display: flex; align-items: center; gap: 20px; }
     .progress-circle {
       width: 80px; height: 80px; border-radius: 50%;
@@ -600,7 +602,20 @@
     .cal-day.absent { background-color: rgba(255, 55, 95, 0.2); color: var(--accent-pink); border-color: var(--accent-pink); }
     .cal-day.holiday { background-color: rgba(255, 159, 10, 0.2); color: var(--accent-orange); border-color: var(--accent-orange); }
 
-    /* --- Settings & Appearance Options --- */
+    .monthly-history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem;
+      border-radius: 12px;
+      background-color: var(--input-bg);
+      border: 1px solid var(--card-border);
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .monthly-history-item:active { transform: scale(0.98); }
+
     .settings-btn {
       width: 100%; background-color: var(--card-bg); border: 1px solid var(--card-border);
       color: var(--text); padding: 1rem; border-radius: 14px; font-size: 0.95rem; font-weight: 600;
@@ -738,7 +753,6 @@
     .divider-line::before { margin-right: .5em; }
     .divider-line::after { margin-left: .5em; }
 
-    /* --- MODALS --- */
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background-color: var(--modal-overlay);
@@ -768,7 +782,6 @@
     .modal-header h3 { font-size: 1.1rem; font-weight: 700; color: #ffffff; }
     .modal-header button.close-btn { background: none; border: none; color: #0a84ff; font-weight: 600; font-size: 0.95rem; cursor: pointer; }
 
-    /* --- CIRCULAR FOCUS TIMER UI --- */
     .focus-timer-ring-wrapper {
       position: relative;
       width: 220px;
@@ -796,7 +809,7 @@
       stroke: var(--accent-pink);
       stroke-width: 10;
       stroke-linecap: round;
-      stroke-dasharray: 565.48; /* 2 * PI * 90 */
+      stroke-dasharray: 565.48;
       stroke-dashoffset: 0;
       transition: stroke-dashoffset 0.3s ease, stroke 0.3s ease;
     }
@@ -920,7 +933,6 @@
         <button class="icon-btn" onclick="openFocusModal()" title="Focus Timer">
           <span class="material-icons-round">timer</span>
         </button>
-        <!-- Pending Homework & Upcoming Exams Notification Bell -->
         <button class="icon-btn" id="notifBellBtn" onclick="openPendingNotifModal()" title="Pending Tasks & Exams">
           <span class="material-icons-round">notifications</span>
           <span id="notifBadge" class="notif-badge">0</span>
@@ -932,7 +944,6 @@
       </div>
     </div>
     
-    <!-- Dynamic Date Subtitle & Dynamic Subject Colors Circle Indicators -->
     <div class="date-subtitle-wrapper">
       <div class="date-subtitle" id="headerSub">Saturday, 26 September 2026</div>
       <div id="headerSubjectDots" class="subject-dots-container"></div>
@@ -1018,7 +1029,13 @@
         </div>
         <div class="calendar-grid" id="calDaysGrid" style="margin-top: 6px;"></div>
       </div>
-      <p style="text-align: center; font-size: 0.75rem; color: var(--subtext);">Tap a day to toggle: Present → Absent → Holiday → Clear</p>
+      <p style="text-align: center; font-size: 0.75rem; color: var(--subtext); margin-bottom: 1.25rem;">Tap a day to toggle: Present → Absent → Holiday → Clear</p>
+
+      <!-- Monthly Attendance History Summary -->
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 0.8rem; font-weight:700;">Monthly Attendance History</h3>
+        <div id="monthlyHistoryContainer"></div>
+      </div>
     </div>
 
     <!-- 5. Settings View -->
@@ -1191,7 +1208,7 @@
     </div>
   </div>
 
-  <!-- COOL MODERN CIRCULAR FOCUS TIMER MODAL -->
+  <!-- CIRCULAR FOCUS TIMER MODAL -->
   <div class="modal-overlay" id="focusModalOverlay" style="align-items: center;">
     <div class="modal" style="border-radius: 24px; max-width: 380px; text-align: center;">
       <div class="modal-header">
@@ -1199,7 +1216,6 @@
         <button class="close-btn" onclick="closeFocusModal()">Close</button>
       </div>
       
-      <!-- Circular Progress SVG Ring -->
       <div class="focus-timer-ring-wrapper">
         <svg class="focus-timer-svg" viewBox="0 0 200 200">
           <circle class="focus-timer-bg-circle" cx="100" cy="100" r="90" />
@@ -1211,7 +1227,6 @@
         </div>
       </div>
 
-      <!-- Quick Duration Preset Chips -->
       <div style="margin-bottom: 1rem;">
         <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 10px;">
           <button class="chip-btn" onclick="setFocusMinutes(15)">15m</button>
@@ -1233,7 +1248,7 @@
     </div>
   </div>
 
-  <!-- STREAMLINED GRADE ENTRY MODAL -->
+  <!-- GRADE ENTRY MODAL -->
   <div class="modal-overlay" id="gradeModalOverlay" style="align-items: center;">
     <div class="modal" style="border-radius: 20px; max-width: 400px;">
       <div class="modal-header">
@@ -1295,7 +1310,7 @@
     </div>
   </div>
 
-  <!-- ADD MODAL -->
+  <!-- ADD ITEM MODAL -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
       <div class="modal-header">
@@ -1388,6 +1403,9 @@
     let activeModalTab = 'lesson';
     let selectedNoteSubject = '';
 
+    // Attendance month tracker
+    let attCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
     // Week Scroller Offset tracking
     let weekOffsetDays = 0;
 
@@ -1473,7 +1491,7 @@
       }
     }
 
-    // --- PENDING HOMEWORK & EXAMS NOTIFICATION MODULE ---
+    // --- PENDING NOTIFICATION BADGE & MODAL ---
     let pendingModalFilter = 'all';
 
     function updatePendingNotificationBadge() {
@@ -1524,7 +1542,6 @@
         return;
       }
 
-      // Group into Overdue, Today, Upcoming
       const overdue = [], dueToday = [], upcoming = [];
 
       pendingItems.forEach(t => {
@@ -1615,10 +1632,9 @@
       const s = focusRemainingSeconds % 60;
       document.getElementById('focusTimerDisplay').textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 
-      // Update SVG Circular Ring Progress
       const circle = document.getElementById('focusTimerCircle');
       if (circle) {
-        const totalDash = 565.48; // 2 * PI * 90
+        const totalDash = 565.48;
         const fraction = focusTotalSeconds > 0 ? (focusRemainingSeconds / focusTotalSeconds) : 0;
         circle.style.strokeDashoffset = totalDash * (1 - fraction);
       }
@@ -1642,7 +1658,6 @@
         } else {
           pauseFocusTimer();
           triggerHaptic([100, 50, 100, 50, 100]);
-          playTimerFinishedSound();
           alert('⏰ Focus Session Complete! Great job!');
           document.getElementById('focusTimerState').textContent = 'Session completed!';
         }
@@ -1661,755 +1676,357 @@
       focusRemainingSeconds = focusTotalSeconds;
       updateFocusTimerDisplay();
       document.getElementById('btnToggleFocus').textContent = 'Start Focus';
-      document.getElementById('focusTimerState').textContent = 'Ready to focus';
+      document.getElementById('focusTimerState').textContent = 'Ready to Focus';
     }
 
-    function playTimerFinishedSound() {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
-        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.15);
-        gain.gain.setValueAtTime(0.3, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.6);
-      } catch(e){}
-    }
-
-    // --- DYNAMIC HEADER & SUBJECT COLOR INDICATOR DOTS ---
-    function updateHeaderDateAndDots() {
-      const selectedDateObj = parseKeyToDate(selectedDayKey);
-      const formattedDate = selectedDateObj.toLocaleDateString('en-US', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      });
-      document.getElementById('headerSub').textContent = formattedDate;
-
-      const dayTasks = store.tasks.filter(t => (t.dayKey === selectedDayKey || t.dueDate === selectedDayKey));
-      const dotsContainer = document.getElementById('headerSubjectDots');
-      if (!dotsContainer) return;
-
-      const subjectColors = [];
-      dayTasks.forEach(task => {
-        if (task.subject) {
-          const col = getSubjectColor(task.subject);
-          if (!subjectColors.includes(col)) subjectColors.push(col);
-        }
-      });
-
-      if (subjectColors.length > 0) {
-        dotsContainer.innerHTML = subjectColors.map(color => 
-          `<span class="header-subject-dot" style="background-color: ${color};" title="Class active today"></span>`
-        ).join('');
-        dotsContainer.style.display = 'inline-flex';
-      } else {
-        dotsContainer.innerHTML = '';
-        dotsContainer.style.display = 'none';
-      }
-    }
-
-    // --- APPEARANCE, THEME & APP ICON OPTION SYSTEM ---
-    function initAppearance() {
-      applyThemeMode(store.settings.themeMode || 'dark');
-      applyAppTemplate(store.settings.appTemplate || 'default');
-      applyAccentColor(store.settings.accentColor || '#ff375f');
-      applyAppIcon(store.settings.appIcon || 'flow');
-      renderAppIconGrid();
-      updateAppearanceUI();
-
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-        if (store.settings.themeMode === 'system') {
-          document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
-        }
-      });
-    }
-
-    function setThemeMode(mode) {
-      store.settings.themeMode = mode;
-      applyThemeMode(mode);
-      saveStore();
-      updateAppearanceUI();
-    }
-
-    function applyThemeMode(mode) {
-      if (mode === 'system') {
-        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-      } else {
-        document.documentElement.setAttribute('data-theme', mode);
-      }
-    }
-
-    function setAppTemplate(tmpl) {
-      store.settings.appTemplate = tmpl;
-      applyAppTemplate(tmpl);
-      saveStore();
-      updateAppearanceUI();
-    }
-
-    function applyAppTemplate(tmpl) {
-      document.documentElement.setAttribute('data-template', tmpl);
-    }
-
-    function setAccentColor(color) {
-      store.settings.accentColor = color;
-      applyAccentColor(color);
-      saveStore();
-      updateAppearanceUI();
-    }
-
-    function applyAccentColor(color) {
-      document.documentElement.style.setProperty('--accent-pink', color);
-    }
-
-    function renderAppIconGrid() {
-      const container = document.getElementById('appIconPickerGrid');
-      if (!container) return;
-
-      container.innerHTML = APP_ICONS.map(icon => `
-        <div class="icon-picker-btn ${store.settings.appIcon === icon.id ? 'active' : ''}" onclick="selectAppIcon('${icon.id}')" title="${icon.name}">
-          ${icon.svg}
-        </div>
-      `).join('');
-    }
-
-    function selectAppIcon(iconId) {
-      store.settings.appIcon = iconId;
-      applyAppIcon(iconId);
-      saveStore();
-      renderAppIconGrid();
-    }
-
-    function applyAppIcon(iconId) {
-      const iconObj = APP_ICONS.find(i => i.id === iconId) || APP_ICONS[0];
-      const link = document.getElementById('appIconLink');
-      if (link && iconObj) {
-        const encodedSvg = encodeURIComponent(iconObj.svg).replace(/'/g, "%27").replace(/"/g, "%22");
-        link.href = `data:image/svg+xml,${encodedSvg}`;
-      }
-    }
-
-    function updateAppearanceUI() {
-      ['dark', 'light', 'system'].forEach(m => {
-        const el = document.getElementById(`theme${m.charAt(0).toUpperCase() + m.slice(1)}Btn`);
-        if (el) {
-          if (store.settings.themeMode === m) el.classList.add('active');
-          else el.classList.remove('active');
-        }
-      });
-
-      ['default', 'cyberpunk', 'pastels', 'glassmorphism', 'midnight'].forEach(t => {
-        const el = document.getElementById(`tmpl${t.charAt(0).toUpperCase() + t.slice(1)}`);
-        if (el) {
-          if (store.settings.appTemplate === t) el.classList.add('active');
-          else el.classList.remove('active');
-        }
-      });
-
-      const swatches = {
-        '#ff375f': 'accentPink',
-        '#0a84ff': 'accentBlue',
-        '#30d158': 'accentGreen',
-        '#bf5af2': 'accentPurple',
-        '#ff9f0a': 'accentOrange'
-      };
-
-      Object.keys(swatches).forEach(hex => {
-        const el = document.getElementById(swatches[hex]);
-        if (el) {
-          if (store.settings.accentColor === hex) el.classList.add('active');
-          else el.classList.remove('active');
-        }
-      });
-    }
-
-    // --- NOTIFICATIONS ---
-    function initNotificationsUI() {
-      const masterToggle = document.getElementById('notifMasterToggle');
-      const reminderToggle = document.getElementById('notifReminderToggle');
-      const alertsToggle = document.getElementById('notifAlertsToggle');
-
-      if (masterToggle) masterToggle.checked = !!store.settings.notifications;
-      if (reminderToggle) reminderToggle.checked = store.settings.reminders !== false;
-      if (alertsToggle) alertsToggle.checked = store.settings.dueDateAlerts !== false;
-    }
-
-    async function handleNotificationToggle(enabled) {
-      if (enabled) {
-        if (!("Notification" in window)) {
-          alert("Web Notifications are not supported on this device.");
-          document.getElementById('notifMasterToggle').checked = false;
-          store.settings.notifications = false;
-          saveStore();
-          return;
-        }
-
-        const permission = await Notification.requestPermission();
-        if (permission === 'granted') {
-          store.settings.notifications = true;
-          sendWebNotification('Notifications Activated 🔔', 'StudyFlow is ready to track your schedule!');
-        } else {
-          alert("Notification permissions were denied.");
-          document.getElementById('notifMasterToggle').checked = false;
-          store.settings.notifications = false;
-        }
-      } else {
-        store.settings.notifications = false;
-      }
-      saveStore();
-    }
-
-    function updateSubNotifSetting(key, enabled) {
-      store.settings[key] = enabled;
-      saveStore();
-    }
-
-    function sendWebNotification(title, body) {
-      if ("Notification" in window && Notification.permission === "granted" && store.settings.notifications) {
-        new Notification(title, { body: body });
-      }
-    }
-
-    function sendTestNotification() {
-      if (!store.settings.notifications) return alert("Please enable notifications first!");
-      sendWebNotification('StudyFlow Test Notification 📚', 'Notification system operating correctly!');
-    }
-
-    // --- AUTHENTICATION & CLOUD SYNC ---
-    if (auth) {
-      auth.onAuthStateChanged(user => {
-        currentUser = user;
-        updateUserUI();
-        if (user) loadDataFromCloud();
-      });
-    }
-
-    function updateUserUI() {
-      const headerAvatar = document.getElementById('headerUserAvatar');
-      const settingsAvatar = document.getElementById('settingsUserAvatar');
-      const accountName = document.getElementById('accountName');
-      const accountEmail = document.getElementById('accountEmail');
-      const authBtn = document.getElementById('accountAuthBtn');
-      const signOutBtn = document.getElementById('accountSignOutBtn');
-
-      if (currentUser) {
-        let name = currentUser.displayName || currentUser.email.split('@')[0];
-        let photo = currentUser.photoURL;
-
-        if (photo) {
-          headerAvatar.innerHTML = `<img src="${photo}" alt="Avatar">`;
-          settingsAvatar.innerHTML = `<img src="${photo}" alt="Avatar">`;
-        } else {
-          let initial = name.charAt(0).toUpperCase();
-          headerAvatar.innerHTML = initial;
-          settingsAvatar.innerHTML = initial;
-        }
-
-        accountName.textContent = name;
-        accountEmail.textContent = currentUser.email;
-        authBtn.style.display = 'none';
-        signOutBtn.style.display = 'block';
-      } else {
-        headerAvatar.innerHTML = `<span class="material-icons-round" style="font-size:1.1rem">person</span>`;
-        settingsAvatar.innerHTML = `<span class="material-icons-round">person</span>`;
-        accountName.textContent = 'Guest User';
-        accountEmail.textContent = 'Not logged in (Local storage only)';
-        authBtn.style.display = 'block';
-        signOutBtn.style.display = 'none';
-      }
-    }
-
-    function openAuthModal() { document.getElementById('authModalOverlay').style.display = 'flex'; }
-    function closeAuthModal() { document.getElementById('authModalOverlay').style.display = 'none'; }
-
-    async function loginWithGoogle() {
-      try {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        await auth.signInWithPopup(provider);
-        closeAuthModal();
-      } catch (err) { alert(err.message); }
-    }
-
-    async function loginWithEmail() {
-      const email = document.getElementById('authEmail').value;
-      const pass = document.getElementById('authPassword').value;
-      if (!email || !pass) return alert('Please enter email and password.');
-      try {
-        await auth.signInWithEmailAndPassword(email, pass);
-        closeAuthModal();
-      } catch (err) { alert(err.message); }
-    }
-
-    async function signUpWithEmail() {
-      const email = document.getElementById('authEmail').value;
-      const pass = document.getElementById('authPassword').value;
-      if (!email || !pass) return alert('Please enter email and password.');
-      try {
-        await auth.createUserWithEmailAndPassword(email, pass);
-        closeAuthModal();
-      } catch (err) { alert(err.message); }
-    }
-
-    function signOutUser() {
-      if (confirm("Are you sure you want to sign out?")) auth.signOut();
-    }
-
-    async function syncDataToCloud(showToast = true) {
-      if (!currentUser || !db) {
-        if (showToast) alert("Please sign in to sync your data to the cloud.");
-        return;
-      }
-      try {
-        await db.collection('users').doc(currentUser.uid).set({
-          store: store,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        if (showToast) alert("✨ Cloud Backup Successful!");
-      } catch (err) {
-        if (showToast) alert("Backup failed: " + err.message);
-      }
-    }
-
-    async function loadDataFromCloud() {
-      if (!currentUser || !db) return;
-      try {
-        const doc = await db.collection('users').doc(currentUser.uid).get();
-        if (doc.exists && doc.data().store) {
-          const cloudStore = doc.data().store;
-          store.subjects = cloudStore.subjects || [];
-          store.attendance = cloudStore.attendance || {};
-          store.tasks = cloudStore.tasks || [];
-          if (cloudStore.settings) store.settings = cloudStore.settings;
-
-          localStorage.setItem('sf_subjects', JSON.stringify(store.subjects));
-          localStorage.setItem('sf_attendance', JSON.stringify(store.attendance));
-          localStorage.setItem('sf_tasks', JSON.stringify(store.tasks));
-          localStorage.setItem('sf_settings', JSON.stringify(store.settings));
-          
-          initAppearance();
-          initNotificationsUI();
-          updatePendingNotificationBadge();
-          renderCurrentView();
-        } else {
-          syncDataToCloud(false);
-        }
-      } catch (err) { console.error(err); }
-    }
-
-    function applyUpdate() {
-      if ('caches' in window) caches.keys().then(names => { for (let n of names) caches.delete(n); });
-      window.location.reload(true);
-    }
-
-    // --- NAVIGATION ---
-    function switchMainView(btn, viewName) {
-      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-
-      btn.classList.add('active');
-      const targetView = document.getElementById(`view${viewName}`);
-      targetView.classList.add('active');
+    // --- NAVIGATION & VIEWS ---
+    function switchMainView(btnEl, viewName) {
       activeView = viewName;
+      document.querySelectorAll('nav .nav-item').forEach(el => el.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
 
-      if (viewName === 'Lessons') document.getElementById('appHeading').textContent = 'Subjects & Grades';
-      else if (viewName === 'Updates') document.getElementById('appHeading').textContent = 'Settings & Updates';
-      else document.getElementById('appHeading').textContent = viewName;
+      document.querySelectorAll('main .view').forEach(v => v.classList.remove('active'));
+      const targetView = document.getElementById(`view${viewName}`);
+      if (targetView) targetView.classList.add('active');
 
-      document.getElementById('fab').style.display = viewName === 'Updates' ? 'none' : 'flex';
+      document.getElementById('appHeading').textContent = viewName === 'Updates' ? 'Settings' : viewName;
       renderCurrentView();
     }
 
-    function renderCurrentView() {
-      updateHeaderDateAndDots();
-      if (activeView === 'Timetable') renderTimetable();
-      if (activeView === 'Lessons') renderSubjectsView();
-      if (activeView === 'Tasks') renderTasksView();
-      if (activeView === 'Attendance') renderAttendanceView();
+    function renderHeaderDots() {
+      const container = document.getElementById('headerSubjectDots');
+      if (!container) return;
+      container.innerHTML = store.subjects.slice(0, 5).map(s => 
+        `<span class="header-subject-dot" style="background-color:${s.color}" title="${s.name}"></span>`
+      ).join('');
     }
 
-    // --- TIMETABLE LOGIC & WEEK NAVIGATION BUG FIX ---
-    function navigateWeek(direction) {
-      weekOffsetDays += direction * 7;
-      renderTimetable();
+    function renderCurrentView() {
+      renderHeaderDots();
+      const dObj = parseKeyToDate(selectedDayKey);
+      const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+      document.getElementById('headerSub').textContent = dObj.toLocaleDateString('en-US', options);
+
+      if (activeView === 'Timetable') {
+        renderWeekScroller();
+        renderTimetableList();
+      } else if (activeView === 'Lessons') {
+        renderSubjectList();
+      } else if (activeView === 'Tasks') {
+        renderTaskList();
+      } else if (activeView === 'Attendance') {
+        renderAttendanceCalendar();
+        renderMonthlyHistorySummary();
+      }
+    }
+
+    // --- TIMETABLE & RECURRING LESSONS ---
+    function navigateWeek(deltaWeeks) {
+      weekOffsetDays += deltaWeeks * 7;
+      renderWeekScroller();
     }
 
     function resetToCurrentWeek() {
       weekOffsetDays = 0;
-      currentDate = new Date();
-      selectedDayKey = dateToKey(currentDate);
-      renderTimetable();
-      updateHeaderDateAndDots();
+      selectedDayKey = dateToKey(new Date());
+      renderCurrentView();
     }
 
-    function renderTimetable() {
+    function renderWeekScroller() {
       const scroller = document.getElementById('weekScroller');
-      scroller.innerHTML = '';
+      if (!scroller) return;
 
       const baseDate = new Date();
       baseDate.setDate(baseDate.getDate() + weekOffsetDays);
-
-      for (let i = -2; i <= 4; i++) {
-        let d = new Date(baseDate);
-        d.setDate(baseDate.getDate() + i);
-        let key = dateToKey(d);
-
-        let chip = document.createElement('div');
-        chip.className = `day-chip ${key === selectedDayKey ? 'active' : ''}`;
-        chip.onclick = () => { 
-          selectedDayKey = key; 
-          renderTimetable(); 
-          updateHeaderDateAndDots();
-        };
-        
-        const isToday = key === dateToKey(new Date());
-        chip.innerHTML = `
-          <div class="day-name">${isToday ? 'Today' : d.toLocaleDateString('en-US', {weekday:'short'})}</div>
-          <div class="day-date">${d.getDate()} ${d.toLocaleDateString('en-US', {month:'short'})}</div>
-        `;
-        scroller.appendChild(chip);
-      }
-
-      document.getElementById('selectedDayTitle').textContent = parseKeyToDate(selectedDayKey).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+      const currentDayIdx = baseDate.getDay();
       
-      const dayTasks = store.tasks.filter(t => t.dayKey === selectedDayKey || t.dueDate === selectedDayKey);
-      const container = document.getElementById('timetableList');
+      const sunday = new Date(baseDate);
+      sunday.setDate(baseDate.getDate() - currentDayIdx);
 
       let html = '';
+      const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
-      if (dayTasks.length === 0) {
-        html += `<p style="color:var(--subtext); font-size:0.85rem; margin: 0.8rem 0;">No classes or tasks scheduled for this day.</p>`;
-      } else {
-        html += dayTasks.map(t => {
-          const subColor = getSubjectColor(t.subject);
-          return `
-            <div class="task-card ${t.completed ? 'completed' : ''}" style="border-left: 4px solid ${subColor};" onclick="toggleTask('${t.id}')">
-              <div style="display:flex; align-items:center; gap:12px; flex:1;">
-                <span class="material-icons-round" style="color:${t.completed ? 'var(--accent-green)' : subColor}; font-size: 1.4rem;">
-                  ${t.completed ? 'check_circle' : 'radio_button_unchecked'}
-                </span>
-                <div>
-                  <strong>${t.title}</strong>
-                  <div style="display:flex; align-items:center; gap:6px; font-size:0.75rem; color:var(--subtext); margin-top:2px;">
-                    <span class="subject-badge" style="background:${subColor}22; color:${subColor}; font-weight:700;">
-                      ${t.subject || 'General'}
-                    </span>
-                    • ${(t.category || 'task').toUpperCase()}
-                  </div>
-                </div>
-              </div>
-              <button class="icon-btn" onclick="event.stopPropagation(); deleteTask('${t.id}')">
-                <span class="material-icons-round">delete_outline</span>
-              </button>
-            </div>
-          `;
-        }).join('');
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(sunday);
+        d.setDate(sunday.getDate() + i);
+        const k = dateToKey(d);
+        const isActive = k === selectedDayKey ? 'active' : '';
+
+        html += `
+          <div class="day-chip ${isActive}" onclick="selectDay('${k}')">
+            <div class="day-name">${dayNames[i]}</div>
+            <div class="day-date">${d.getDate()}</div>
+          </div>
+        `;
       }
-
-      container.innerHTML = html;
+      scroller.innerHTML = html;
     }
 
-    // --- SUBJECTS & GRADES LOGIC ---
-    function getSubjectGradeData(sub) {
-      if (!sub.grades) sub.grades = [];
-      if (sub.grades.length === 0) return null;
+    function selectDay(keyStr) {
+      selectedDayKey = keyStr;
+      renderCurrentView();
+    }
 
-      let totalEarned = 0;
-      let totalMax = 0;
-      sub.grades.forEach(g => {
-        totalEarned += parseFloat(g.score) || 0;
-        totalMax += parseFloat(g.maxScore) || 0;
+    function renderTimetableList() {
+      const container = document.getElementById('timetableList');
+      if (!container) return;
+
+      const targetDate = parseKeyToDate(selectedDayKey);
+      const targetDayOfWeek = targetDate.getDay();
+
+      // Filter tasks & weekly lessons
+      const dayTasks = store.tasks.filter(t => {
+        if (t.category === 'lesson') {
+          if (t.repeatWeekly) {
+            const startDate = parseKeyToDate(t.dayKey || t.dueDate);
+            return t.dayOfWeek === targetDayOfWeek && targetDate >= new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+          }
+          return (t.dayKey === selectedDayKey || t.dueDate === selectedDayKey);
+        }
+        return (t.dayKey === selectedDayKey || t.dueDate === selectedDayKey);
       });
 
-      let pct = totalMax > 0 ? (totalEarned / totalMax) * 100 : 0;
-      return { pct, totalEarned, totalMax };
-    }
+      const dObj = parseKeyToDate(selectedDayKey);
+      document.getElementById('selectedDayTitle').textContent = `${dObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`;
 
-    function renderSubjectsView() {
-      const list = document.getElementById('subjectList');
-      let grandTotalEarned = 0;
-      let grandTotalMax = 0;
-
-      list.innerHTML = store.subjects.length === 0
-        ? `<p style="color:var(--subtext); text-align:center; padding: 2rem 0;">No subjects added yet. Tap "+ Add Subject" above to start!</p>`
-        : store.subjects.map((sub, i) => {
-            const gradeData = getSubjectGradeData(sub);
-            let pctVal = gradeData !== null ? gradeData.pct : 0;
-            let pctDisplay = gradeData !== null ? `${gradeData.pct.toFixed(0)}%` : '--';
-            let ptsDisplay = gradeData !== null ? `${gradeData.totalEarned} / ${gradeData.totalMax} pts` : 'No grades logged';
-
-            if (gradeData !== null) {
-              grandTotalEarned += gradeData.totalEarned;
-              grandTotalMax += gradeData.totalMax;
-            }
-
-            let gradesChipsHtml = (sub.grades && sub.grades.length > 0) ? sub.grades.map((g, gIdx) => {
-              let gPct = g.maxScore > 0 ? ((g.score / g.maxScore) * 100).toFixed(0) : 0;
-              return `
-                <div class="grade-chip">
-                  <span><strong>${g.title || 'Exam'}</strong>: ${g.score}/${g.maxScore} (${gPct}%)</span>
-                  <span class="grade-chip-delete" onclick="deleteGrade(${i}, ${gIdx})" title="Delete Grade">✕</span>
-                </div>`;
-            }).join('') : '';
-
-            return `
-              <div class="subject-card" style="border-left: 5px solid ${sub.color || '#0a84ff'};">
-                <div class="subject-card-header">
-                  <div class="subject-title-group">
-                    <div class="subject-dot" style="background-color: ${sub.color || '#0a84ff'}"></div>
-                    <span class="subject-name">${sub.name}</span>
-                  </div>
-                  <span class="subject-grade-badge" style="color: ${sub.color || 'var(--text)'};">${pctDisplay}</span>
-                </div>
-
-                <div class="subject-progress-container">
-                  <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" style="width: ${Math.min(100, Math.max(0, pctVal))}%; background-color: ${sub.color || '#0a84ff'};"></div>
-                  </div>
-                  <div class="subject-meta-info">
-                    <span>Total Score</span>
-                    <span>${ptsDisplay}</span>
-                  </div>
-                </div>
-
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.6rem;">
-                  <div class="subject-actions">
-                    <button class="action-chip-btn add-btn" onclick="addGradePrompt(${i})">
-                      <span class="material-icons-round" style="font-size:0.9rem">add</span> Grade
-                    </button>
-                    <button class="action-chip-btn" onclick="editSubject(${i})">
-                      <span class="material-icons-round" style="font-size:0.9rem">palette</span>
-                    </button>
-                    <button class="action-chip-btn" onclick="deleteSubject(${i})">
-                      <span class="material-icons-round" style="font-size:0.9rem">delete</span>
-                    </button>
-                  </div>
-                </div>
-
-                ${gradesChipsHtml ? `<div class="grades-chips-wrapper">${gradesChipsHtml}</div>` : ''}
-              </div>
-            `;
-          }).join('');
-
-      let overallAvg = grandTotalMax > 0 ? ((grandTotalEarned / grandTotalMax) * 100).toFixed(1) : "0.0";
-      document.getElementById('overallGradeDisplay').textContent = `${overallAvg}%`;
-      document.getElementById('totalSubjectsDisplay').textContent = store.subjects.length;
-    }
-
-    let pendingGradeTask = null;
-
-    function openGradeModalForTask(task) {
-      pendingGradeTask = task;
-      document.getElementById('gradeModalTitle').textContent = 'Exam Grade Recorded';
-      document.getElementById('gradeModalSub').textContent = `Record score for "${task.title}"`;
-      document.getElementById('gModalTitleInput').value = task.title;
-
-      populateGradeSubjectSelect(task.subject);
-
-      document.getElementById('gModalScoreInput').value = '';
-      document.getElementById('gModalMaxInput').value = '20';
-      document.getElementById('gModalSkipBtn').style.display = 'block';
-      document.getElementById('gradeModalOverlay').style.display = 'flex';
-    }
-
-    function addGradePrompt(subjectIdx) {
-      pendingGradeTask = null;
-      const sub = store.subjects[subjectIdx];
-      document.getElementById('gradeModalTitle').textContent = `Add Grade · ${sub.name}`;
-      document.getElementById('gradeModalSub').textContent = 'Record a score to update your average';
-      document.getElementById('gModalTitleInput').value = 'Quiz';
-
-      populateGradeSubjectSelect(sub.name);
-
-      document.getElementById('gModalScoreInput').value = '';
-      document.getElementById('gModalMaxInput').value = '100';
-      document.getElementById('gModalSkipBtn').style.display = 'none';
-      document.getElementById('gradeModalOverlay').style.display = 'flex';
-    }
-
-    function populateGradeSubjectSelect(defaultSubject) {
-      const select = document.getElementById('gModalSubjectSelect');
-      select.innerHTML = store.subjects.length > 0
-        ? store.subjects.map(s => `<option value="${s.name}" ${s.name.toLowerCase() === (defaultSubject || '').toLowerCase() ? 'selected' : ''}>${s.name}</option>`).join('')
-        : `<option value="General">General</option>`;
-    }
-
-    function closeGradeModal() {
-      document.getElementById('gradeModalOverlay').style.display = 'none';
-      pendingGradeTask = null;
-    }
-
-    function saveGradeFromModal() {
-      const title = document.getElementById('gModalTitleInput').value.trim() || 'Assessment';
-      const subName = document.getElementById('gModalSubjectSelect').value;
-      const score = parseFloat(document.getElementById('gModalScoreInput').value);
-      const maxScore = parseFloat(document.getElementById('gModalMaxInput').value);
-
-      if (isNaN(score) || isNaN(maxScore) || maxScore <= 0) {
-        alert('Please enter valid numeric scores.');
+      if (dayTasks.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:2rem; color:var(--subtext);">No classes or tasks scheduled for this day.</div>`;
         return;
       }
 
-      let sub = store.subjects.find(s => s.name.toLowerCase() === subName.toLowerCase());
-      if (!sub && store.subjects.length > 0) sub = store.subjects[0];
+      // Sort by start time
+      dayTasks.sort((a, b) => (a.startTime || '00:00').localeCompare(b.startTime || '00:00'));
 
-      if (sub) {
-        if (!sub.grades) sub.grades = [];
-        sub.grades.push({ title, score, maxScore });
-        saveStore();
-        triggerHaptic([40, 40]);
-      }
+      container.innerHTML = dayTasks.map(t => {
+        const subColor = getSubjectColor(t.subject);
+        const isCompleted = t.repeatWeekly ? (t.completedDates && t.completedDates.includes(selectedDayKey)) : t.completed;
 
-      closeGradeModal();
+        return `
+          <div class="task-card ${isCompleted ? 'completed' : ''}" style="border-left: 4px solid ${subColor}" onclick="toggleTask('${t.id}', '${selectedDayKey}')">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span class="material-icons-round" style="color: ${isCompleted ? 'var(--accent-green)' : 'var(--subtext)'}">
+                ${isCompleted ? 'check_circle' : 'radio_button_unchecked'}
+              </span>
+              <div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <strong>${t.title}</strong>
+                  ${t.repeatWeekly ? `<span class="repeat-badge"><span class="material-icons-round" style="font-size:0.75rem;">autorenew</span> Weekly</span>` : ''}
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; font-size:0.75rem; color:var(--subtext); margin-top:3px;">
+                  <span class="subject-badge" style="background:${subColor}22; color:${subColor};">${t.subject || 'General'}</span>
+                  ${t.startTime ? `<span>🕒 ${t.startTime}${t.endTime ? ' - ' + t.endTime : ''}</span>` : ''}
+                  ${t.room ? `<span>📍 ${t.room}</span>` : ''}
+                </div>
+              </div>
+            </div>
+            <button class="icon-btn" onclick="event.stopPropagation(); deleteTask('${t.id}')">
+              <span class="material-icons-round" style="font-size:1.1rem; color:var(--subtext);">delete</span>
+            </button>
+          </div>
+        `;
+      }).join('');
     }
 
-    function deleteGrade(subIdx, gradeIdx) {
-      if (confirm("Delete this grade record?")) {
-        store.subjects[subIdx].grades.splice(gradeIdx, 1);
-        saveStore();
-      }
-    }
-
-    function renderColorSwatches() {
-      const container = document.getElementById('subjectColorSwatches');
-      container.innerHTML = PRESET_COLORS.map(c => `
-        <div class="color-swatch-option ${c.toLowerCase() === selectedSubjectColor.toLowerCase() ? 'selected' : ''}"
-             style="background-color: ${c};"
-             onclick="selectSubjectColor('${c}')"></div>
-      `).join('');
-    }
-
-    function selectSubjectColor(color) {
-      selectedSubjectColor = color;
-      document.getElementById('customColorPicker').value = color;
-      renderColorSwatches();
-    }
-
-    function selectCustomColor(color) {
-      selectedSubjectColor = color;
-      renderColorSwatches();
-    }
-
+    // --- SUBJECTS & GRADING ---
     function addSubjectPrompt() {
-      editingSubjectIndex = -1;
-      document.getElementById('subjectModalTitle').textContent = 'Add Subject';
-      document.getElementById('subjectNameInput').value = '';
-      selectSubjectColor('#0a84ff');
-      document.getElementById('subjectModalOverlay').style.display = 'flex';
+      openSubjectModal(-1);
     }
 
-    function editSubject(idx) {
-      editingSubjectIndex = idx;
-      const sub = store.subjects[idx];
-      document.getElementById('subjectModalTitle').textContent = 'Edit Subject';
-      document.getElementById('subjectNameInput').value = sub.name;
-      selectSubjectColor(sub.color || '#0a84ff');
-      document.getElementById('subjectModalOverlay').style.display = 'flex';
+    function openSubjectModal(index = -1) {
+      editingSubjectIndex = index;
+      const modal = document.getElementById('subjectModalOverlay');
+      const title = document.getElementById('subjectModalTitle');
+      const nameInput = document.getElementById('subjectNameInput');
+
+      if (index >= 0) {
+        title.textContent = 'Edit Subject';
+        const sub = store.subjects[index];
+        nameInput.value = sub.name;
+        selectedSubjectColor = sub.color;
+      } else {
+        title.textContent = 'Add Subject';
+        nameInput.value = '';
+        selectedSubjectColor = PRESET_COLORS[Math.floor(Math.random() * PRESET_COLORS.length)];
+      }
+
+      renderSubjectColorSwatches();
+      modal.style.display = 'flex';
     }
 
     function closeSubjectModal() {
       document.getElementById('subjectModalOverlay').style.display = 'none';
     }
 
-    // CASCADE SUBJECT NAME CHANGE BUG FIX
+    function renderSubjectColorSwatches() {
+      const container = document.getElementById('subjectColorSwatches');
+      container.innerHTML = PRESET_COLORS.map(c => `
+        <div class="color-swatch-option ${c === selectedSubjectColor ? 'selected' : ''}" style="background-color:${c}" onclick="selectCustomColor('${c}')"></div>
+      `).join('');
+    }
+
+    function selectCustomColor(color) {
+      selectedSubjectColor = color;
+      renderSubjectColorSwatches();
+    }
+
     function saveSubjectModal() {
-      const nameInput = document.getElementById('subjectNameInput').value.trim();
-      if (!nameInput) {
-        alert('Please enter a subject name.');
-        return;
-      }
+      const nameInput = document.getElementById('subjectNameInput');
+      const name = nameInput.value.trim();
+      if (!name) return alert('Please enter a subject name.');
 
-      if (editingSubjectIndex === -1) {
-        if (store.subjects.some(s => s.name.toLowerCase() === nameInput.toLowerCase())) {
-          alert('A subject with this name already exists!');
-          return;
-        }
-        store.subjects.push({
-          name: nameInput,
-          color: selectedSubjectColor,
-          grades: []
-        });
-      } else {
-        const oldName = store.subjects[editingSubjectIndex].name;
-        store.subjects[editingSubjectIndex].name = nameInput;
+      if (editingSubjectIndex >= 0) {
+        store.subjects[editingSubjectIndex].name = name;
         store.subjects[editingSubjectIndex].color = selectedSubjectColor;
-
-        // Cascade update old subject name references in task items
-        store.tasks.forEach(t => {
-          if (t.subject && t.subject.toLowerCase() === oldName.toLowerCase()) {
-            t.subject = nameInput;
-          }
-        });
+      } else {
+        store.subjects.push({ name: name, color: selectedSubjectColor, grades: [] });
       }
 
       saveStore();
       closeSubjectModal();
     }
 
-    function deleteSubject(idx) { 
-      if (confirm(`Delete subject "${store.subjects[idx].name}" and all its grades?`)) {
-        store.subjects.splice(idx, 1); 
-        saveStore(); 
-      }
-    }
+    function renderSubjectList() {
+      const container = document.getElementById('subjectList');
+      if (!container) return;
 
-    // --- TASKS LOGIC ---
-    function switchTaskTab(btn, category) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentTaskTab = category;
-      renderTasksView();
-    }
+      let totalWeightedSum = 0;
+      let totalGradesCount = 0;
 
-    function renderTasksView() {
-      const container = document.getElementById('taskList');
-      const filtered = store.tasks.filter(t => t.category === currentTaskTab);
-
-      container.innerHTML = filtered.length === 0
-        ? `<p style="color:var(--subtext); text-align:center; padding: 2rem 0;">No ${currentTaskTab} tasks added yet.</p>`
-        : filtered.map(t => {
-            const subColor = getSubjectColor(t.subject);
-            return `
-              <div class="task-card ${t.completed ? 'completed' : ''}" style="border-left: 4px solid ${subColor};" onclick="toggleTask('${t.id}')">
-                <div style="display:flex; align-items:center; gap:10px; flex:1;">
-                  <span class="material-icons-round" style="color:${t.completed ? 'var(--accent-green)' : subColor}; font-size:1.3rem;">
-                    ${t.completed ? 'check_circle' : 'radio_button_unchecked'}
-                  </span>
-                  <div>
-                    <strong>${t.title}</strong>
-                    <div style="display:flex; align-items:center; gap:6px; font-size:0.75rem; color:var(--subtext); margin-top:2px;">
-                      ${t.subject ? `<span class="subject-badge" style="background:${subColor}22; color:${subColor}; font-weight:700;">${t.subject}</span> • ` : ''}
-                      Due: ${t.dueDate || 'No date'}
-                    </div>
-                  </div>
-                </div>
-                <button class="icon-btn" onclick="event.stopPropagation(); deleteTask('${t.id}')">
-                  <span class="material-icons-round">delete_outline</span>
-                </button>
-              </div>
-            `;
-          }).join('');
-    }
-
-    function toggleTask(id) {
-      let task = store.tasks.find(t => t.id === id);
-      if (task) { 
-        task.completed = !task.completed;
-
-        if (task.completed) {
-          triggerHaptic([20, 30, 20]);
-          if (task.category === 'exam' || task.category === 'homework') {
-            openGradeModalForTask(task);
-          }
+      container.innerHTML = store.subjects.map((sub, sIdx) => {
+        let avg = 0;
+        if (sub.grades && sub.grades.length > 0) {
+          const sumPct = sub.grades.reduce((acc, g) => acc + (g.score / g.max) * 100, 0);
+          avg = sumPct / sub.grades.length;
+          totalWeightedSum += avg;
+          totalGradesCount++;
         }
 
-        saveStore(); 
+        return `
+          <div class="subject-card">
+            <div class="subject-card-header">
+              <div class="subject-title-group">
+                <span class="subject-dot" style="background-color:${sub.color}"></span>
+                <span class="subject-name">${sub.name}</span>
+              </div>
+              <div class="subject-actions">
+                <span class="subject-grade-badge">${sub.grades.length > 0 ? avg.toFixed(1) + '%' : 'N/A'}</span>
+                <button class="action-chip-btn add-btn" onclick="openGradeModal(${sIdx})">+ Grade</button>
+                <button class="action-chip-btn" onclick="openSubjectModal(${sIdx})">Edit</button>
+              </div>
+            </div>
+
+            <div class="subject-progress-container">
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width:${Math.min(100, avg)}%; background-color:${sub.color}"></div>
+              </div>
+              <div class="subject-meta-info">
+                <span>${sub.grades.length} Graded Assessments</span>
+                <span>Average: ${avg.toFixed(1)}%</span>
+              </div>
+            </div>
+
+            <div class="grades-chips-wrapper">
+              ${sub.grades.map((g, gIdx) => `
+                <div class="grade-chip">
+                  <span>${g.title \vert{}\vert{} 'Grade'}: <strong>${g.score}/${g.max}</strong> (${((g.score/g.max)*100).toFixed(0)}%)</span>
+                  <span class="grade-chip-delete" onclick="deleteGrade(${sIdx},${gIdx})">&times;</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const overallAvg = totalGradesCount > 0 ? (totalWeightedSum / totalGradesCount).toFixed(1) + '%' : '0.0%';
+      document.getElementById('overallGradeDisplay').textContent = overallAvg;
+      document.getElementById('totalSubjectsDisplay').textContent = store.subjects.length;
+    }
+
+    let activeGradeSubjectIndex = 0;
+    function openGradeModal(sIdx) {
+      activeGradeSubjectIndex = sIdx;
+      const select = document.getElementById('gModalSubjectSelect');
+      select.innerHTML = store.subjects.map((s, idx) => `<option value="${idx}" ${idx === sIdx ? 'selected' : ''}>${s.name}</option>`).join('');
+      document.getElementById('gradeModalOverlay').style.display = 'flex';
+    }
+
+    function closeGradeModal() {
+      document.getElementById('gradeModalOverlay').style.display = 'none';
+    }
+
+    function saveGradeFromModal() {
+      const sIdx = parseInt(document.getElementById('gModalSubjectSelect').value);
+      const title = document.getElementById('gModalTitleInput').value.trim() || 'Quiz';
+      const score = parseFloat(document.getElementById('gModalScoreInput').value);
+      const max = parseFloat(document.getElementById('gModalMaxInput').value) || 20;
+
+      if (isNaN(score)) return alert('Please enter a valid score.');
+
+      store.subjects[sIdx].grades.push({ title, score, max });
+      saveStore();
+      closeGradeModal();
+    }
+
+    function deleteGrade(sIdx, gIdx) {
+      store.subjects[sIdx].grades.splice(gIdx, 1);
+      saveStore();
+    }
+
+    // --- TASKS MODULE ---
+    function switchTaskTab(btnEl, category) {
+      currentTaskTab = category;
+      document.querySelectorAll('#viewTasks .tab-btn').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+      renderTaskList();
+    }
+
+    function renderTaskList() {
+      const container = document.getElementById('taskList');
+      if (!container) return;
+
+      const tasks = store.tasks.filter(t => t.category === currentTaskTab);
+
+      if (tasks.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:2rem; color:var(--subtext);">No ${currentTaskTab} tasks found.</div>`;
+        return;
+      }
+
+      container.innerHTML = tasks.map(t => {
+        const subColor = getSubjectColor(t.subject);
+        return `
+          <div class="task-card ${t.completed ? 'completed' : ''}" style="border-left: 4px solid ${subColor}" onclick="toggleTask('${t.id}')">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span class="material-icons-round" style="color: ${t.completed ? 'var(--accent-green)' : 'var(--subtext)'}">
+                ${t.completed ? 'check_circle' : 'radio_button_unchecked'}
+              </span>
+              <div>
+                <strong>${t.title}</strong>
+                <div style="display:flex; align-items:center; gap:8px; font-size:0.75rem; color:var(--subtext); margin-top:2px;">
+                  <span class="subject-badge" style="background:${subColor}22; color:${subColor};">${t.subject || 'General'}</span>
+                  ${t.dueDate ? `<span>📅 Due: ${t.dueDate}</span>` : ''}
+                </div>
+              </div>
+            </div>
+            <button class="icon-btn" onclick="event.stopPropagation(); deleteTask('${t.id}')">
+              <span class="material-icons-round" style="font-size:1.1rem; color:var(--subtext);">delete</span>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleTask(id, dayKeyInstance) {
+      const task = store.tasks.find(t => t.id === id);
+      if (task) {
+        if (task.repeatWeekly && dayKeyInstance) {
+          if (!task.completedDates) task.completedDates = [];
+          const idx = task.completedDates.indexOf(dayKeyInstance);
+          if (idx >= 0) task.completedDates.splice(idx, 1);
+          else task.completedDates.push(dayKeyInstance);
+        } else {
+          task.completed = !task.completed;
+        }
+        saveStore();
       }
     }
 
@@ -2418,222 +2035,377 @@
       saveStore();
     }
 
-    // --- ATTENDANCE LOGIC ---
-    let calViewDate = new Date();
-    function changeMonth(dir) { calViewDate.setMonth(calViewDate.getMonth() + dir); renderAttendanceView(); }
-
-    function renderAttendanceView() {
-      const year = calViewDate.getFullYear();
-      const month = calViewDate.getMonth();
-      
-      document.getElementById('calMonthYear').textContent = calViewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-      document.getElementById('attMonthTitle').textContent = `${calViewDate.toLocaleDateString('en-US', { month: 'long' })} Attendance`;
-
-      const firstDay = new Date(year, month, 1).getDay();
-      const totalDays = new Date(year, month + 1, 0).getDate();
+    // --- ATTENDANCE MODULE WITH MONTHLY SAVING & HISTORY ---
+    function renderAttendanceCalendar() {
+      const monthYearTitle = document.getElementById('calMonthYear');
       const grid = document.getElementById('calDaysGrid');
-      grid.innerHTML = '';
+      if (!grid) return;
 
-      for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div')).className = 'cal-day empty';
+      const year = attCurrentMonth.getFullYear();
+      const month = attCurrentMonth.getMonth();
 
-      let presentCount = 0, absentCount = 0;
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      monthYearTitle.textContent = `${monthNames[month]} ${year}`;
 
-      for (let day = 1; day <= totalDays; day++) {
-        let dKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        let status = store.attendance[dKey] || '';
+      const firstDayIdx = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-        if (status === 'present') presentCount++;
-        if (status === 'absent') absentCount++;
+      let presentCount = 0;
+      let absentCount = 0;
+      let holidayCount = 0;
 
-        let dayEl = document.createElement('div');
-        dayEl.className = `cal-day ${status}`;
-        dayEl.textContent = day;
-        dayEl.onclick = () => cycleAttendance(dKey);
-        grid.appendChild(dayEl);
+      let html = '';
+
+      for (let i = 0; i < firstDayIdx; i++) {
+        html += `<div class="cal-day empty"></div>`;
       }
 
-      let totalLogged = presentCount + absentCount;
-      let pct = totalLogged > 0 ? ((presentCount / totalLogged) * 100).toFixed(1) : "0.0";
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dayKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const status = store.attendance[dayKey] || '';
 
-      document.getElementById('attCircle').style.setProperty('--progress', `${pct}%`);
-      document.getElementById('attPercentText').textContent = `${pct}%`;
-      document.getElementById('attStatText').textContent = `${presentCount} present, ${absentCount} absent`;
+        if (status === 'present') presentCount++;
+        else if (status === 'absent') absentCount++;
+        else if (status === 'holiday') holidayCount++;
+
+        html += `
+          <div class="cal-day ${status}" onclick="toggleAttendanceDay('${dayKey}')">
+            ${d}
+          </div>
+        `;
+      }
+
+      grid.innerHTML = html;
+
+      const totalMarked = presentCount + absentCount;
+      const percent = totalMarked > 0 ? ((presentCount / totalMarked) * 100).toFixed(1) : 0;
+
+      document.getElementById('attPercentText').textContent = `${percent}%`;
+      document.getElementById('attCircle').style.setProperty('--progress', `${percent}%`);
+      document.getElementById('attMonthTitle').textContent = `${monthNames[month]} Attendance`;
+      document.getElementById('attStatText').textContent = `${presentCount} present, ${absentCount} absent, ${holidayCount} holidays`;
     }
 
-    function cycleAttendance(dKey) {
-      const current = store.attendance[dKey];
-      if (!current) store.attendance[dKey] = 'present';
-      else if (current === 'present') store.attendance[dKey] = 'absent';
-      else if (current === 'absent') store.attendance[dKey] = 'holiday';
-      else delete store.attendance[dKey];
+    function changeMonth(delta) {
+      attCurrentMonth.setMonth(attCurrentMonth.getMonth() + delta);
+      renderCurrentView();
+    }
+
+    function toggleAttendanceDay(dayKey) {
+      const current = store.attendance[dayKey];
+      if (!current) store.attendance[dayKey] = 'present';
+      else if (current === 'present') store.attendance[dayKey] = 'absent';
+      else if (current === 'absent') store.attendance[dayKey] = 'holiday';
+      else delete store.attendance[dayKey];
 
       saveStore();
     }
 
-    // --- MODAL & SCHEDULING SYSTEM WITH VALIDATION ---
+    function renderMonthlyHistorySummary() {
+      const container = document.getElementById('monthlyHistoryContainer');
+      if (!container) return;
+
+      const monthGroups = {};
+
+      Object.keys(store.attendance).forEach(dayKey => {
+        const monthKey = dayKey.substring(0, 7);
+        if (!monthGroups[monthKey]) {
+          monthGroups[monthKey] = { present: 0, absent: 0, holiday: 0 };
+        }
+        const st = store.attendance[dayKey];
+        if (st === 'present') monthGroups[monthKey].present++;
+        else if (st === 'absent') monthGroups[monthKey].absent++;
+        else if (st === 'holiday') monthGroups[monthKey].holiday++;
+      });
+
+      const sortedMonths = Object.keys(monthGroups).sort().reverse();
+
+      if (sortedMonths.length === 0) {
+        container.innerHTML = `<p style="font-size: 0.8rem; color: var(--subtext); text-align: center; padding: 1rem;">No saved attendance records yet.</p>`;
+        return;
+      }
+
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+      container.innerHTML = sortedMonths.map(mKey => {
+        const [yr, mo] = mKey.split('-');
+        const stats = monthGroups[mKey];
+        const total = stats.present + stats.absent;
+        const rate = total > 0 ? ((stats.present / total) * 100).toFixed(1) : 0;
+
+        return `
+          <div class="monthly-history-item" onclick="jumpToMonth(${parseInt(yr)}, ${parseInt(mo) - 1})">
+            <div>
+              <strong style="font-size:0.9rem;">${monthNames[parseInt(mo) - 1]} ${yr}</strong>
+              <div style="font-size:0.75rem; color:var(--subtext); margin-top:2px;">
+                ✅ ${stats.present} P | ❌ ${stats.absent} A | 🏖️ ${stats.holiday} H
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <span class="subject-grade-badge" style="background:${rate >= 80 ? 'rgba(48,209,88,0.2)' : 'rgba(255,55,95,0.2)'}; color:${rate >= 80 ? 'var(--accent-green)' : 'var(--accent-pink)'}">
+                ${rate}%
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function jumpToMonth(year, monthIndex) {
+      attCurrentMonth = new Date(year, monthIndex, 1);
+      renderCurrentView();
+    }
+
+    // --- ADD MODAL HANDLING ---
     function handleFabClick() {
-      const formattedDate = parseKeyToDate(selectedDayKey).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-      document.getElementById('modalTitleDisplay').textContent = `Add · ${formattedDate}`;
+      openModal(activeView === 'Tasks' ? 'homework' : 'lesson');
+    }
+
+    function openModal(defaultTab = 'lesson') {
+      activeModalTab = defaultTab;
+      setModalTab(defaultTab);
       document.getElementById('modalOverlay').style.display = 'flex';
-      setModalTab(activeModalTab || 'lesson');
     }
 
     function closeModal() {
       document.getElementById('modalOverlay').style.display = 'none';
     }
 
-    function setModalTab(tabType) {
-      activeModalTab = tabType;
+    function setModalTab(tab) {
+      activeModalTab = tab;
+      document.querySelectorAll('.add-type-btn').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.getElementById(`tabBtn${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+      if (activeBtn) activeBtn.classList.add('active');
 
-      ['lesson', 'homework', 'exam', 'reminder', 'note'].forEach(t => {
-        const btn = document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
-        if (btn) {
-          if (t === tabType) btn.classList.add('active');
-          else btn.classList.remove('active');
-        }
-      });
+      renderModalForm();
+    }
 
+    function renderModalForm() {
       const container = document.getElementById('modalFormContainer');
       const submitBtn = document.getElementById('btnSubmitMain');
-      const formattedDate = selectedDayKey;
+      
+      const subjectOptions = store.subjects.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
 
-      let subjectOpts = store.subjects.length > 0 
-        ? store.subjects.map(s => `<option value="${s.name}">${s.name}</option>`).join('')
-        : `<option value="General">General</option>`;
-
-      if (tabType === 'lesson') {
-        submitBtn.textContent = 'Add lesson';
-        container.innerHTML = `
-          <div class="form-row-grid">
-            <select id="mLessonSubject">${subjectOpts}</select>
-            <select id="mLessonType"><option value="Lessons">Lessons</option><option value="Lecture">Lecture</option></select>
-          </div>
-          <div class="form-row-grid-full">
-            <input type="text" id="mLessonTitle" placeholder="Title (e.g. Unit 3 Review)" />
-          </div>
-          <div class="form-row-grid-full">
-            <input type="date" id="mLessonDate" value="${formattedDate}" />
-          </div>
-          <div class="checkbox-row">
-            <input type="checkbox" id="mLessonRepeat" />
-            <label for="mLessonRepeat">Repeat every week on this day</label>
-          </div>
-        `;
-      } else if (tabType === 'homework') {
-        submitBtn.textContent = 'Add homework';
-        container.innerHTML = `
-          <div class="form-row-grid-full">
-            <input type="text" id="mHwTitle" placeholder="Homework (e.g. Essay page 40)" />
-          </div>
-          <div class="form-row-grid">
-            <select id="mHwSubject">${subjectOpts}</select>
-            <input type="date" id="mHwDate" value="${formattedDate}" />
-          </div>
-          <div class="quick-chips-row">
-            <button class="chip-btn" onclick="quickSetDate('mHwDate', 0)">Today</button>
-            <button class="chip-btn" onclick="quickSetDate('mHwDate', 1)">Tomorrow</button>
-          </div>
-        `;
-      } else if (tabType === 'exam') {
-        submitBtn.textContent = 'Add exam';
-        container.innerHTML = `
-          <div class="form-row-grid-full">
-            <input type="text" id="mExamTitle" placeholder="Exam name (e.g. Arabic midterm)" />
-          </div>
-          <div class="form-row-grid">
-            <select id="mExamSubject">${subjectOpts}</select>
-            <input type="date" id="mExamDate" value="${formattedDate}" />
-          </div>
-          <div class="quick-chips-row">
-            <button class="chip-btn" onclick="quickSetDate('mExamDate', 0)">Today</button>
-            <button class="chip-btn" onclick="quickSetDate('mExamDate', 1)">Tomorrow</button>
-            <button class="chip-btn" onclick="quickSetDate('mExamDate', 7)">In a week</button>
-          </div>
-        `;
-      } else if (tabType === 'reminder') {
-        submitBtn.textContent = 'Add reminder';
-        container.innerHTML = `
-          <div class="form-row-grid-full">
-            <input type="text" id="mRemTitle" placeholder="Remind me to..." />
-          </div>
-          <div class="form-row-grid">
-            <input type="date" id="mRemDate" value="${formattedDate}" />
-            <input type="time" id="mRemTime" value="18:00" />
-          </div>
-        `;
-      } else if (tabType === 'note') {
-        submitBtn.textContent = 'Save note';
-        let pillsHtml = store.subjects.map((s, idx) => `
-          <div class="subject-pill ${idx === 0 ? 'selected' : ''}" style="border-left: 3px solid ${s.color}" onclick="selectNotePill(this, '${s.name}')">
-            <div style="width:12px; height:12px; border-radius:50%; background:${s.color}"></div>
-            <span>${s.name}</span>
-          </div>
-        `).join('');
-
-        selectedNoteSubject = store.subjects[0] ? store.subjects[0].name : 'General';
-
-        container.innerHTML = `
-          <div class="subject-pills-grid">${pillsHtml}</div>
-          <div class="form-row-grid-full">
-            <textarea id="mNoteText" rows="3" placeholder="Write a note..."></textarea>
-          </div>
-        `;
-      }
-    }
-
-    function selectNotePill(el, subName) {
-      document.querySelectorAll('.subject-pill').forEach(p => p.classList.remove('selected'));
-      el.classList.add('selected');
-      selectedNoteSubject = subName;
-    }
-
-    function quickSetDate(inputId, addDays) {
-      let d = new Date();
-      d.setDate(d.getDate() + addDays);
-      document.getElementById(inputId).value = dateToKey(d);
-    }
-
-    function submitModal(keepOpen = false) {
       if (activeModalTab === 'lesson') {
-        let title = document.getElementById('mLessonTitle').value.trim() || 'Lesson';
-        let subject = document.getElementById('mLessonSubject').value;
-        let dateVal = document.getElementById('mLessonDate').value;
-        store.tasks.push({ id: Date.now().toString(), dayKey: dateVal, dueDate: dateVal, title, subject, category: 'timetable', completed: false });
-      } else if (activeModalTab === 'homework') {
-        let title = document.getElementById('mHwTitle').value.trim();
-        if (!title) return alert('Please enter a homework title.');
-        let subject = document.getElementById('mHwSubject').value;
-        let dueDate = document.getElementById('mHwDate').value;
-        store.tasks.push({ id: Date.now().toString(), category: 'homework', dayKey: dueDate, title, subject, dueDate, completed: false });
-      } else if (activeModalTab === 'exam') {
-        let title = document.getElementById('mExamTitle').value.trim();
-        if (!title) return alert('Please enter an exam title.');
-        let subject = document.getElementById('mExamSubject').value;
-        let dueDate = document.getElementById('mExamDate').value;
-        store.tasks.push({ id: Date.now().toString(), category: 'exam', dayKey: dueDate, title, subject, dueDate, completed: false });
-      } else if (activeModalTab === 'reminder') {
-        let title = document.getElementById('mRemTitle').value.trim();
-        if (!title) return alert('Please enter a reminder title.');
-        let dueDate = document.getElementById('mRemDate').value;
-        let timeVal = document.getElementById('mRemTime').value;
-        store.tasks.push({ id: Date.now().toString(), category: 'general', dayKey: dueDate, title: `🔔 ${title} (${timeVal})`, dueDate, completed: false });
-      } else if (activeModalTab === 'note') {
-        let text = document.getElementById('mNoteText').value.trim();
-        if (!text) return alert('Please write a note before saving.');
-        store.tasks.push({ id: Date.now().toString(), category: 'general', title: `📓 ${text}`, subject: selectedNoteSubject, dayKey: selectedDayKey, dueDate: selectedDayKey, completed: false });
+        submitBtn.textContent = 'Add Lesson';
+        container.innerHTML = `
+          <div class="form-row-grid-full">
+            <input type="text" id="mTitle" placeholder="Lesson Title (e.g. Data Structures)" />
+          </div>
+          <div class="form-row-grid">
+            <select id="mSubject">${subjectOptions}</select>
+            <input type="text" id="mRoom" placeholder="Room / Link" />
+          </div>
+          <div class="form-row-grid">
+            <input type="time" id="mStartTime" value="09:00" />
+            <input type="time" id="mEndTime" value="10:30" />
+          </div>
+          <div class="checkbox-row" style="margin-top:0.8rem;">
+            <input type="checkbox" id="mRepeatWeekly" />
+            <label for="mRepeatWeekly" style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <span class="material-icons-round" style="font-size:1.1rem; color:var(--accent-blue);">autorenew</span>
+              Repeat every week on this day
+            </label>
+          </div>
+        `;
+      } else if (activeModalTab === 'homework' || activeModalTab === 'exam') {
+        submitBtn.textContent = `Add ${activeModalTab.charAt(0).toUpperCase() + activeModalTab.slice(1)}`;
+        container.innerHTML = `
+          <div class="form-row-grid-full">
+            <input type="text" id="mTitle" placeholder="Title (e.g. Chapter 4 Exercises)" />
+          </div>
+          <div class="form-row-grid">
+            <select id="mSubject">${subjectOptions}</select>
+            <input type="date" id="mDueDate" value="${selectedDayKey}" />
+          </div>
+        `;
+      } else {
+        submitBtn.textContent = 'Add Item';
+        container.innerHTML = `
+          <div class="form-row-grid-full">
+            <input type="text" id="mTitle" placeholder="Note / Reminder Details" />
+          </div>
+        `;
       }
-
-      saveStore();
-      if (!keepOpen) closeModal();
     }
 
-    // --- INITIALIZATION ---
-    window.addEventListener('DOMContentLoaded', () => {
-      initAppearance();
-      initNotificationsUI();
-      renderColorSwatches();
-      updatePendingNotificationBadge();
+    function submitModal(addNext) {
+      const title = document.getElementById('mTitle')?.value.trim();
+      if (!title) return alert('Please enter a title.');
+
+      const subject = document.getElementById('mSubject')?.value || 'General';
+      const repeatWeekly = document.getElementById('mRepeatWeekly')?.checked || false;
+
+      const newItem = {
+        id: 'task_' + Date.now(),
+        category: activeModalTab,
+        title: title,
+        subject: subject,
+        dayKey: selectedDayKey,
+        dayOfWeek: parseKeyToDate(selectedDayKey).getDay(),
+        dueDate: document.getElementById('mDueDate')?.value || selectedDayKey,
+        startTime: document.getElementById('mStartTime')?.value || '',
+        endTime: document.getElementById('mEndTime')?.value || '',
+        room: document.getElementById('mRoom')?.value || '',
+        repeatWeekly: repeatWeekly,
+        completed: false,
+        completedDates: []
+      };
+
+      store.tasks.push(newItem);
+      saveStore();
+
+      if (addNext) {
+        document.getElementById('mTitle').value = '';
+      } else {
+        closeModal();
+      }
+    }
+
+    // --- SETTINGS & THEMES ---
+    function setThemeMode(mode) {
+      store.settings.themeMode = mode;
+      document.documentElement.setAttribute('data-theme', mode);
+      saveStore();
+    }
+
+    function setAppTemplate(tmpl) {
+      store.settings.appTemplate = tmpl;
+      document.documentElement.setAttribute('data-template', tmpl);
+      saveStore();
+    }
+
+    function setAccentColor(color) {
+      store.settings.accentColor = color;
+      document.documentElement.style.setProperty('--accent-pink', color);
+      saveStore();
+    }
+
+    // --- FIREBASE AUTHENTICATION ---
+    function openAuthModal() {
+      document.getElementById('authModalOverlay').style.display = 'flex';
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authModalOverlay').style.display = 'none';
+    }
+
+    function loginWithGoogle() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).then(res => {
+        currentUser = res.user;
+        updateUserUI();
+        closeAuthModal();
+        syncDataFromCloud();
+      }).catch(err => alert(err.message));
+    }
+
+    function loginWithEmail() {
+      const e = document.getElementById('authEmail').value;
+      const p = document.getElementById('authPassword').value;
+      auth.signInWithEmailAndPassword(e, p).then(res => {
+        currentUser = res.user;
+        updateUserUI();
+        closeAuthModal();
+        syncDataFromCloud();
+      }).catch(err => alert(err.message));
+    }
+
+    function signUpWithEmail() {
+      const e = document.getElementById('authEmail').value;
+      const p = document.getElementById('authPassword').value;
+      auth.createUserWithEmailAndPassword(e, p).then(res => {
+        currentUser = res.user;
+        updateUserUI();
+        closeAuthModal();
+        syncDataToCloud(true);
+      }).catch(err => alert(err.message));
+    }
+
+    function signOutUser() {
+      auth.signOut().then(() => {
+        currentUser = null;
+        updateUserUI();
+      });
+    }
+
+    function updateUserUI() {
+      const nameEl = document.getElementById('accountName');
+      const emailEl = document.getElementById('accountEmail');
+      const signOutBtn = document.getElementById('accountSignOutBtn');
+      const authBtn = document.getElementById('accountAuthBtn');
+
+      if (currentUser) {
+        nameEl.textContent = currentUser.displayName || 'User Account';
+        emailEl.textContent = currentUser.email;
+        signOutBtn.style.display = 'block';
+        authBtn.style.display = 'none';
+      } else {
+        nameEl.textContent = 'Guest User';
+        emailEl.textContent = 'Not logged in (Local storage only)';
+        signOutBtn.style.display = 'none';
+        authBtn.style.display = 'block';
+      }
+    }
+
+    function syncDataToCloud(showToast = false) {
+      if (!currentUser || !db) return;
+      db.collection('users').doc(currentUser.uid).set(store).then(() => {
+        if (showToast) alert('☁️ Data synced successfully to cloud!');
+      }).catch(err => console.error(err));
+    }
+
+    function syncDataFromCloud() {
+      if (!currentUser || !db) return;
+      db.collection('users').doc(currentUser.uid).get().then(doc => {
+        if (doc.exists) {
+          store = doc.data();
+          saveStore();
+        }
+      });
+    }
+
+    function handleNotificationToggle(enabled) {
+      store.settings.notifications = enabled;
+      saveStore();
+    }
+
+    function updateSubNotifSetting(key, val) {
+      store.settings[key] = val;
+      saveStore();
+    }
+
+    function sendTestNotification() {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('StudyFlow', { body: 'Test Notification: Your timetable and tasks are synced!' });
+      } else if ('Notification' in window) {
+        Notification.requestPermission().then(perm => {
+          if (perm === 'granted') new Notification('StudyFlow', { body: 'Test Notification enabled!' });
+        });
+      } else {
+        alert('Notifications not supported in this browser.');
+      }
+    }
+
+    function applyUpdate() {
+      location.reload();
+    }
+
+    // --- APP INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', () => {
+      auth.onAuthStateChanged(user => {
+        currentUser = user;
+        updateUserUI();
+        if (currentUser) syncDataFromCloud();
+      });
+
+      // Apply initial theme settings
+      if (store.settings.themeMode) setThemeMode(store.settings.themeMode);
+      if (store.settings.appTemplate) setAppTemplate(store.settings.appTemplate);
+      if (store.settings.accentColor) setAccentColor(store.settings.accentColor);
+
       renderCurrentView();
+      updatePendingNotificationBadge();
     });
   </script>
 </body>
